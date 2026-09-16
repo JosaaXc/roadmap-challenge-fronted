@@ -1,0 +1,30 @@
+import { computed, Service, signal } from '@angular/core';
+
+export interface SessionUser {
+  id: string;
+  email: string;
+  name: string;
+  roles: readonly string[];
+}
+
+@Service()
+export class SessionStore {
+  private readonly _user = signal<SessionUser | null>(null);
+  private readonly _token = signal<string | null>(null);
+
+  readonly user = this._user.asReadonly();
+  readonly token = this._token.asReadonly();
+
+  readonly isAuthenticated = computed(() => this._user() !== null);
+  readonly isAdmin = computed(() => this._user()?.roles.includes('admin') ?? false);
+
+  setSession(user: SessionUser, token: string): void {
+    this._user.set(user);
+    this._token.set(token);
+  }
+
+  clear(): void {
+    this._user.set(null);
+    this._token.set(null);
+  }
+}
