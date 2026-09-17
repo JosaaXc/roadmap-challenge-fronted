@@ -9,6 +9,7 @@ import { provideSpartanHlm } from '@spartan-ng/helm/utils';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/http/auth-interceptor';
 import { errorInterceptor } from './core/http/error-interceptor';
+import { headersInterceptor } from './core/http/header-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,6 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideSpartanHlm(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([headersInterceptor, authInterceptor, errorInterceptor])),
   ],
 };
