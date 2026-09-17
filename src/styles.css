@@ -4,83 +4,56 @@
 @import 'tailwindcss/utilities.css';
 
 @import '@spartan-ng/brain/hlm-tailwind-preset.css';
-/* You can add global styles to this file, and also import other style files */
 
-:root {
-  color-scheme: light;
-
-  --font-sans:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+/* Tipography */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
 }
 
-:root.dark {
-  color-scheme: dark;
+/* Owned tokens */
+@theme inline {
+  --color-card-raised: var(--card-raised);
+  --color-highlight: var(--highlight);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+}
 
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.985 0 0);
-  --sidebar-primary-foreground: oklch(0.205 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+:root {
+  color-scheme: dark;
+  --radius: 0.625rem;
+
+  /* Surface */
+  --background: oklch(0.192 0.046 298);        /* #170F26 */
+  --card: oklch(0.227 0.045 298.8);            /* #1F172E */
+  --card-raised: oklch(0.243 0.064 297.8);     /* #24183A */
+  --popover: oklch(0.227 0.045 298.8);         /* #1F172E */
+  --secondary: oklch(0.243 0.064 297.8);       /* #24183A */
+  --muted: oklch(0.227 0.045 298.8);           /* #1F172E */
+  --accent: oklch(0.243 0.064 297.8);          /* #24183A — hover, not the cyan */
+
+  /* Text */
+  --foreground: oklch(0.914 0.006 334);        /* #E5E1E4 */
+  --card-foreground: oklch(0.914 0.006 334);
+  --popover-foreground: oklch(0.914 0.006 334);
+  --secondary-foreground: oklch(0.914 0.006 334);
+  --accent-foreground: oklch(0.914 0.006 334);
+  --muted-foreground: oklch(0.827 0.015 218.1); /* #BCC9CD */
+
+  /* Acción */
+  --primary: oklch(0.429 0.231 288.5);         /* #5515C2 */
+  --primary-foreground: oklch(1 0 0);          /* #FFFFFF */
+
+  /* Estado */
+  --highlight: oklch(0.817 0.124 215.7);       /* #4CD7F6 — progress */
+  --success: oklch(0.773 0.153 163.2);         /* #34D399 — to review yet!! */
+  --warning: oklch(0.837 0.164 84.4);          /* #FBBF24 — to review yet!!  */
+  --destructive: oklch(0.711 0.166 22.2);      /* #F87171 — to review yet!!  */
+
+  /* Líneas y foco */
+  --border: oklch(0.453 0.056 300.4);          /* #5B4F71 */
+  --input: oklch(0.453 0.056 300.4);
+  --ring: oklch(0.817 0.124 215.7);            /* cian */
 }
 
 @layer base {
@@ -88,6 +61,13 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Label styles */
+  .label-mono {
+    @apply font-mono text-[11px] font-medium uppercase tracking-[0.06em];
   }
 }
