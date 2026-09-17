@@ -28,10 +28,14 @@ src/
  │    │    ├── landing/  auth/  assessment/  paths/  admin/
  │    │    │    ├── pages/<page-name>/       # Route components
  │    │    │    ├── services/                # <feature>-api.ts, <feature>-store.ts
- │    │    │    ├── models/                  # <feature>-models.ts
+ │    │    │    ├── models/                  # <feature>-models.ts (types only)
+ │    │    │    ├── constants/               # <feature>-constants.ts (static data, label maps)
  │    │    │    └── <feature>.routes.ts      # Lazy routes (multi-page features only)
  │    │
  │    ├── shared/               # Feature-agnostic reusable pieces
+ │    │    ├── ui/             # Presentational components shared by features
+ │    │    ├── icons/          # Raw SVG strings consumed by provideIcons()
+ │    │    └── pages/          # Feature-agnostic routes
  │    ├── app.routes.ts         # Root routing table and layout composition
  │    └── app.config.ts         # Application providers
  │
@@ -149,7 +153,8 @@ ng generate interceptor core/http/auth --skip-tests
 
 - Do **not** pass `--standalone` or `--functional`; both are the Angular 22 default.
 - Delete the `.css` file the component schematic generates.
-- Stores, API services, models and route files are written by hand, not scaffolded.
+- Stores, API services, models, constants and route files are written by hand, not scaffolded.
+- Page components stay thin. A `models/<feature>-models.ts` file holds **types only**; hardcoded content, preview data and status-to-copy maps go in `constants/<feature>-constants.ts`. The component keeps just the fields its template reads.
 
 ---
 

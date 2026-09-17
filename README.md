@@ -32,10 +32,14 @@ src/
  │    │    └── admin/           # Course catalog management
  │    │         ├── pages/      # Route components
  │    │         ├── services/   # <feature>-api.ts and <feature>-store.ts
- │    │         ├── models/     # Domain types
+ │    │         ├── models/     # Domain and view types
+ │    │         ├── constants/  # Static content: hardcoded data and label maps
  │    │         └── admin.routes.ts         # Lazy route definitions
  │    │
  │    ├── shared/               # Reusable, feature-agnostic pieces
+ │    │    ├── ui/             # Presentational components (BrandLogo, ...)
+ │    │    ├── icons/          # Raw SVG strings for provideIcons()
+ │    │    └── pages/          # Feature-agnostic routes (NotFoundPage)
  │    ├── app.routes.ts         # Root routing table and layout composition
  │    └── app.config.ts         # Application providers
  │
