@@ -77,6 +77,7 @@
           hlmBtn
           variant="outline"
           type="button"
+          (click)="loginWithDiscord()"
           class="rounded-full size-12 bg-white hover:bg-gray-100 border-0 flex items-center justify-center transition-colors shadow-sm"
         >
         </button>
@@ -85,7 +86,7 @@
       <!-- Footer -->
       <p class="text-center text-sm text-muted-foreground pt-1">
         ¿No tienes una cuenta?
-        <a routerLink="/auth/register" class="text-foreground font-medium hover:underline transition-all">
+        <a routerLink="/auth/register" class="text-foreground font-medium hover:underline transition-all ">
           Crear cuenta
         </a>
       </p>

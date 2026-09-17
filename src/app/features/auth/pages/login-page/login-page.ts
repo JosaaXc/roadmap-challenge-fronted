@@ -2,17 +2,18 @@ import { Component, inject, signal} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthApi } from '../../services/auth-api';
 import { SessionStore, SessionUser } from '../../../../core/auth/session-store';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { HlmCard, HlmCardHeader, HlmCardContent } from '@spartan-ng/helm/card';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [ReactiveFormsModule, HlmCard, HlmCardHeader, HlmInput, HlmLabel, HlmCardContent, HlmButton],
+  imports: [ReactiveFormsModule, HlmCard, HlmCardHeader, HlmInput, HlmLabel, HlmCardContent, HlmButton, RouterLink],
   templateUrl: './login-page.html',
 })
 export class LoginPage {
@@ -60,6 +61,10 @@ export class LoginPage {
         this.errorMessage.set(serverMessage || 'Credenciales inválidas.');
       }
     });
+  }
+
+  loginWithDiscord(){
+    window.location.href = `${environment.apiUrl}/auth/discord`;
   }
 
   private captureAndStoreLocation(): Promise<void> {

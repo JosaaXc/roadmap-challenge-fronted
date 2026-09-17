@@ -28,6 +28,5 @@ export const headersInterceptor: HttpInterceptorFn = (req, next) => {
     }
   });
 
-  console.log('Interceptor ejecutado. Headers inyectados:', modifiedReq.headers.keys());
   return next(modifiedReq);
 };

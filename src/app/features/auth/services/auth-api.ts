@@ -11,4 +11,11 @@ export class AuthApi {
   login(credentials: { identifier: string; password: string}){
     return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials);
   }
+
+  refreshToken() {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/refresh`,
+      {},
+      {withCredentials: true}
+    );
+  }
 }
