@@ -1,0 +1,96 @@
+<main class="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
+  <section hlmCard class="w-full max-w-[420px] bg-card border-border shadow-2xl rounded-2xl overflow-hidden px-4 py-6 sm:p-8">
+
+    <div hlmCardHeader class="flex flex-col items-center text-center space-y-3 pb-8">
+      <h1 class="text-2xl font-bold tracking-tight">Iniciar Sesión</h1>
+      <p class="text-sm text-muted-foreground max-w-[260px] leading-relaxed">
+        Accede a tus rutas de aprendizaje personalizadas
+      </p>
+    </div>
+
+    <div hlmCardContent class="space-y-6">
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+        <!-- Correo Electrónico -->
+        <div class="space-y-2">
+          <label hlmLabel for="identifier" class="label-mono text-foreground">Correo Electrónico</label>
+          <input
+            hlmInput
+            id="identifier"
+            type="email"
+            placeholder="desarrollador@ejemplo.com"
+            formControlName="identifier"
+            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
+          />
+        </div>
+
+        <!-- Contraseña -->
+        <div class="space-y-2">
+          <label hlmLabel for="password" class="label-mono text-foreground">Contraseña</label>
+          <input
+            hlmInput
+            id="password"
+            type="password"
+            placeholder="••••••••••••"
+            formControlName="password"
+            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
+          />
+          <div class="flex justify-end pt-1">
+            <a routerLink="/auth/recuperar" class="text-[13px] text-muted-foreground hover:text-foreground transition-colors">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+        </div>
+
+        <!-- Manejo de Errores -->
+        @if (errorMessage()) {
+          <p class="text-sm text-destructive text-center font-medium">
+            {{ errorMessage() }}
+          </p>
+        }
+
+        <!-- Botón Principal -->
+        <button
+          hlmBtn
+          type="submit"
+          class="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-11 text-base mt-2 transition-colors disabled:opacity-50"
+          [disabled]="isLoading() || loginForm.invalid"
+        >
+          @if (isLoading()) {
+            Iniciando Sesión...
+          } @else {
+            Iniciar Sesión
+          }
+        </button>
+      </form>
+
+      <!-- Separador -->
+      <div class="relative flex items-center justify-center py-2">
+        <span class="absolute w-full border-t border-border"></span>
+        <span class="label-mono bg-card px-4 text-muted-foreground relative">O continúa con</span>
+      </div>
+
+      <!-- OAuth Discord -->
+      <div class="flex justify-center">
+        <button
+          hlmBtn
+          variant="outline"
+          type="button"
+          (click)="loginWithDiscord()"
+          class="rounded-full size-12 bg-white hover:bg-gray-100 border-0 flex items-center justify-center transition-colors shadow-sm"
+        >
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <p class="text-center text-sm text-muted-foreground pt-1">
+        ¿No tienes una cuenta?
+        <a routerLink="/auth/register" class="text-foreground font-medium hover:underline transition-all ">
+          Crear cuenta
+        </a>
+      </p>
+
+    </div>
+  </section>
+</main>
