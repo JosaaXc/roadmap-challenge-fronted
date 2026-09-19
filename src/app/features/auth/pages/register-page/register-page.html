@@ -1,0 +1,118 @@
+<main class="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
+  <section hlmCard class="w-full max-w-[420px] bg-card border-border shadow-2xl rounded-2xl overflow-hidden px-4 py-6 sm:p-8">
+
+    <div hlmCardHeader class="flex flex-col items-center text-center space-y-3 pb-8">
+      <h1 class="text-2xl font-bold tracking-tight">Crear Cuenta</h1>
+      <p class="text-sm text-muted-foreground max-w-[260px] leading-relaxed">
+        Únete a nuestra comunidad y comienza a crear tus rutas de aprendizaje
+      </p>
+    </div>
+
+    <div hlmCardContent class="space-y-6">
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+        <!-- Nombre de Usuario -->
+        <div class="space-y-2">
+          <label hlmLabel for="username" class="label-mono text-foreground">Nombre de Usuario</label>
+          <input
+            hlmInput
+            id="username"
+            type="text"
+            placeholder="Desarrollador123"
+            formControlName="username"
+            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
+          />
+           @if (registerForm.controls.username.touched && registerForm.controls.username.errors?.['pattern']) {
+        <span class="text-sm px-4 text-muted-foreground relative">El nombre de usuario solo puede contener letras, números y guiones bajos.</span>
+        }
+        @if (registerForm.controls.username.touched && registerForm.controls.username.errors?.['minlength']) {
+          <span class="text-sm px-4 text-muted-foreground relative">El nombre de usuario debe tener al menos 3 caracteres.</span>
+        }
+        </div>
+
+
+        <!-- Correo Electrónico -->
+        <div class="space-y-2">
+          <label hlmLabel for="email" class="label-mono text-foreground">Correo Electrónico</label>
+          <input
+            hlmInput
+            id="email"
+            type="email"
+            placeholder="desarrollador@ejemplo.com"
+            formControlName="email"
+            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
+          />
+        </div>
+
+        <!-- Contraseña -->
+        <div class="space-y-2">
+          <label hlmLabel for="password" class="label-mono text-foreground">Contraseña</label>
+          <input
+            hlmInput
+            id="password"
+            type="password"
+            placeholder="••••••••••••"
+            formControlName="password"
+            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
+          />
+          @if (registerForm.controls.password.touched && registerForm.controls.password.errors?.['pattern']) {
+          <span class="text-sm px-4 text-muted-foreground relative">La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.</span>
+        }
+        @if (registerForm.controls.password.touched && registerForm.controls.password.errors?.['minlength']) {
+          <span class="text-sm px-4 text-muted-foreground relative">La contraseña debe tener al menos 8 caracteres.</span>
+        }
+        </div>
+
+
+        <!-- Manejo de Errores -->
+        @if (errorMessage()) {
+          <p class="text-sm text-destructive text-center font-medium">
+            {{ errorMessage() }}
+          </p>
+        }
+
+        <!-- Botón Principal -->
+        <button
+          hlmBtn
+          type="submit"
+          class="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-11 text-base mt-2 transition-colors disabled:opacity-50"
+          [disabled]="isLoading() || registerForm.invalid"
+        >
+          @if (isLoading()) {
+            Creando Cuenta...
+          } @else {
+            Crear Cuenta
+          }
+        </button>
+      </form>
+
+      <!-- Separador -->
+      <div class="relative flex items-center justify-center py-2">
+        <span class="absolute w-full border-t border-border"></span>
+        <span class="label-mono bg-card px-4 text-muted-foreground relative">O continúa con</span>
+      </div>
+
+      <!-- OAuth Discord -->
+      <div class="flex justify-center">
+        <button
+          hlmBtn
+          variant="outline"
+          type="button"
+          (click)="loginWithDiscord()"
+          class="rounded-full size-12 bg-white hover:bg-gray-100 border-0 flex items-center justify-center transition-colors shadow-sm"
+        >
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <p class="text-center text-sm text-muted-foreground pt-1">
+        ¿Ya tienes una cuenta?
+        <a routerLink="/auth/login" class="text-foreground font-medium hover:underline transition-all ">
+          Iniciar sesión
+        </a>
+      </p>
+
+    </div>
+  </section>
+</main>
