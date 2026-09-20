@@ -30,7 +30,7 @@ export class SessionStore {
     const mappedUser: SessionUser = {
       id: backendUser.id,
       email: backendUser.email,
-      name: backendUser.displayName ,
+      name: backendUser.username ,
       roles: [backendUser.roleName.toLowerCase()],
     }
     this.setSession(mappedUser, response.data.accessToken);

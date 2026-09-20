@@ -8,6 +8,7 @@
       <a routerLink="/mis-rutas" routerLinkActive="text-foreground">Mis rutas</a>
       <a routerLink="/cuestionario" routerLinkActive="text-foreground">Cuestionario</a>
       <a routerLink="/admin" routerLinkActive="text-foreground">Admin</a>
+      <button type="button" (click)="authStore.executeLogout()" class="cursor-pointer">Cerrar sesión</button>
     </nav>
   </header>
 

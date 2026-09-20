@@ -13,6 +13,7 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmSpinner } from '@spartan-ng/helm/spinner';
 import { DiscordButton } from '../../../../shared/ui/discord-button/discord-button';
+import { GeolocationService } from '../../../../core/services/geolocation.service';
 
 @Component({
   selector: 'app-login-page',
@@ -68,16 +69,7 @@ export class LoginPage {
 
     this.authApi.login(credentials).subscribe({
       next: (response) => {
-        const backendUser = response.data.user;
-
-        const mappedUser: SessionUser = {
-          id: backendUser.id,
-          email: backendUser.email,
-          name: backendUser.displayName,
-          roles: [backendUser.roleName.toLowerCase()],
-        };
-
-        this.sessionStorage.setSession(mappedUser, response.data.accessToken);
+        this.sessionStorage.handleAuthResponse(response);
         this.isLoading.set(false);
         this.router.navigate(['/cuestionario']);
       },
@@ -86,24 +78,6 @@ export class LoginPage {
         const serverMessage = err.error?.error?.message;
         this.errorMessage.set(serverMessage || 'Credenciales inválidas.');
       },
-    });
-  }
-
-  private captureAndStoreLocation(): Promise<void> {
-    return new Promise((resolve) => {
-      if (!navigator.geolocation) {
-        resolve();
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          localStorage.setItem('geo-lat', position.coords.latitude.toString());
-          localStorage.setItem('geo-lng', position.coords.longitude.toString());
-          resolve();
-        },
-        () => resolve(),
-        { timeout: 3000 },
-      );
     });
   }
 }
