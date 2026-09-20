@@ -1,5 +1,22 @@
-<div class="bg-background flex min-h-screen items-center justify-center px-4">
-  <div class="w-full max-w-sm">
-    <router-outlet />
+<div class="bg-background text-foreground flex min-h-dvh">
+  <app-auth-aside />
+
+  <div class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 sm:px-8">
+    <!--
+      Ambient glow under the form: two radial washes rather than filter: blur(),
+      which would force the browser to rasterise the whole column on every frame
+    -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-[-15%] bottom-[-30%] h-2/3 bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-20 motion-safe:animate-drift"
+    ></div>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-[10%] bottom-[-20%] h-1/2 bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-[0.12] motion-safe:animate-drift [animation-delay:-13s]"
+    ></div>
+
+    <div class="relative w-full max-w-md">
+      <router-outlet />
+    </div>
   </div>
 </div>
