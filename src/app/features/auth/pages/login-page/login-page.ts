@@ -71,7 +71,7 @@ export class LoginPage {
       next: (response) => {
         this.sessionStorage.handleAuthResponse(response);
         this.isLoading.set(false);
-        this.router.navigate(['/cuestionario']);
+        this.router.navigate(['/mis-rutas']);
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
