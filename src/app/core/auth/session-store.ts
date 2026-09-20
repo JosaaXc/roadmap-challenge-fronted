@@ -10,8 +10,8 @@ export interface SessionUser {
 
 @Service()
 export class SessionStore {
-  private readonly _user = signal<SessionUser | null>(null);
-  private readonly _token = signal<string | null>(null);
+  private readonly _user = signal<SessionUser | null>(this.lodadUser());
+  private readonly _token = signal<string | null>(this.loadToken());
 
   readonly user = this._user.asReadonly();
   readonly token = this._token.asReadonly();
@@ -22,6 +22,9 @@ export class SessionStore {
   setSession(user: SessionUser, token: string): void {
     this._user.set(user);
     this._token.set(token);
+
+    localStorage.setItem('session_user', JSON.stringify(user));
+    localStorage.setItem('access_token', token);
   }
 
   handleAuthResponse(response: AuthResponse) {
@@ -30,7 +33,7 @@ export class SessionStore {
     const mappedUser: SessionUser = {
       id: backendUser.id,
       email: backendUser.email,
-      name: backendUser.displayName ,
+      name: backendUser.username ,
       roles: [backendUser.roleName.toLowerCase()],
     }
     this.setSession(mappedUser, response.data.accessToken);
@@ -39,5 +42,15 @@ export class SessionStore {
   clear(): void {
     this._user.set(null);
     this._token.set(null);
+    localStorage.removeItem('session_user');
+    localStorage.removeItem('access_token');
+  }
+
+  private lodadUser(): SessionUser | null {
+    const userStr = localStorage.getItem('session_user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+  private loadToken(): string | null {
+    return localStorage.getItem('access_token');
   }
 }

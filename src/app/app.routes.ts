@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin-guard';
-import { authGuard } from './core/auth/auth-guard';
+import { authGuard, guestGuard } from './core/auth/auth-guard';
 
 export const routes: Routes = [
   // Pública, sin layout
   {
     path: '',
     pathMatch: 'full',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/landing/pages/landing-page/landing-page').then((m) => m.LandingPage),
   },
@@ -14,6 +15,7 @@ export const routes: Routes = [
   // Shell público de autenticación
   {
     path: 'auth',
+    canActivate: [guestGuard],
     loadComponent: () => import('./layouts/auth-layout/auth-layout').then((m) => m.AuthLayout),
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },

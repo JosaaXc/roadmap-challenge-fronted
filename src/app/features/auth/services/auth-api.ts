@@ -26,6 +26,14 @@ export class AuthApi {
     );
   }
 
+  logout() {
+    return this.http.post(
+      `${this.baseUrl}/auth/logout`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
   refreshToken() {
     return this.http.post<AuthResponse>(`${this.baseUrl}/auth/refresh`,
       {},
