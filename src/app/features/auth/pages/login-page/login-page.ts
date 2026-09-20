@@ -10,6 +10,7 @@ import { HlmLabel } from '@spartan-ng/helm/label';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { environment } from '../../../../../environments/environment';
 import { GeolocationService } from '../../../../core/services/geolocation.service';
+import { injectOAuthError } from '../../../../core/auth/utils/oauth-error.utils';
 
 @Component({
   selector: 'app-login-page',
@@ -26,7 +27,7 @@ export class LoginPage {
  private geolocationService = inject(GeolocationService);
 
   isLoading = signal(false);
-  errorMessage = signal<string | null>(null);
+  errorMessage = injectOAuthError();
 
   loginForm = this.fb.nonNullable.group({
     identifier: ['', [Validators.required, Validators.email]],

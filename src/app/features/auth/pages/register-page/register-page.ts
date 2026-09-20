@@ -2,13 +2,14 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthApi } from '../../services/auth-api';
 import { SessionStore } from '../../../../core/auth/session-store';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HlmCard, HlmCardHeader, HlmCardContent } from '@spartan-ng/helm/card';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { environment } from '../../../../../environments/environment';
 import { GeolocationService } from '../../../../core/services/geolocation.service';
+import { injectOAuthError } from '../../../../core/auth/utils/oauth-error.utils';
 
 @Component({
   imports: [
@@ -33,7 +34,7 @@ export class RegisterPage {
   private geolocationService = inject(GeolocationService);
 
   isLoading = signal(false);
-  errorMessage = signal<string | null>(null);
+  errorMessage = injectOAuthError();
 
   registerForm = this.fb.nonNullable.group({
     username: [
