@@ -34,6 +34,7 @@ src/
  │    │         ├── services/   # <feature>-api.ts and <feature>-store.ts
  │    │         ├── models/     # Domain and view types
  │    │         ├── constants/  # Static content: hardcoded data and label maps
+ │    │         ├── components/ # Section components used by that feature's pages
  │    │         └── admin.routes.ts         # Lazy route definitions
  │    │
  │    ├── shared/               # Reusable, feature-agnostic pieces
