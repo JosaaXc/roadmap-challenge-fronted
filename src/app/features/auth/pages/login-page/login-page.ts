@@ -9,6 +9,8 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { environment } from '../../../../../environments/environment';
+import { GeolocationService } from '../../../../core/services/geolocation.service';
+import { injectOAuthError } from '../../../../core/auth/utils/oauth-error.utils';
 
 @Component({
   selector: 'app-login-page',
@@ -22,9 +24,10 @@ export class LoginPage {
   private authApi = inject(AuthApi);
   private sessionStorage = inject(SessionStore);
   private router = inject(Router);
+ private geolocationService = inject(GeolocationService);
 
   isLoading = signal(false);
-  errorMessage = signal<string | null>(null);
+  errorMessage = injectOAuthError();
 
   loginForm = this.fb.nonNullable.group({
     identifier: ['', [Validators.required, Validators.email]],
@@ -37,22 +40,13 @@ export class LoginPage {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    await this.captureAndStoreLocation();
+    await this.geolocationService.captureAndStoreLocation();
 
     const credentials = this.loginForm.getRawValue();
 
     this.authApi.login(credentials).subscribe({
       next: (response) => {
-        const backendUser = response.data.user;
-
-        const mappedUser: SessionUser = {
-          id: backendUser.id,
-          email: backendUser.email,
-          name: backendUser.displayName,
-          roles: [backendUser.roleName.toLowerCase()],
-        }
-
-        this.sessionStorage.setSession(mappedUser, response.data.accessToken);
+        this.sessionStorage.handleAuthResponse(response);
         this.isLoading.set(false);
         this.router.navigate(['/cuestionario']);
       }, error: (err: HttpErrorResponse) => {
@@ -65,23 +59,5 @@ export class LoginPage {
 
   loginWithDiscord(){
     window.location.href = `${environment.apiUrl}/auth/discord`;
-  }
-
-  private captureAndStoreLocation(): Promise<void> {
-    return new Promise((resolve) => {
-      if (!navigator.geolocation){
-        resolve();
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          localStorage.setItem('geo-lat', position.coords.latitude.toString());
-          localStorage.setItem('geo-lng', position.coords.longitude.toString());
-          resolve();
-        },
-        () => resolve(),
-        {timeout: 3000}
-      );
-    });
   }
 }

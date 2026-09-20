@@ -1,4 +1,5 @@
 import { computed, Service, signal } from '@angular/core';
+import { AuthResponse } from '../../features/auth/models/auth-models';
 
 export interface SessionUser {
   id: string;
@@ -21,6 +22,18 @@ export class SessionStore {
   setSession(user: SessionUser, token: string): void {
     this._user.set(user);
     this._token.set(token);
+  }
+
+  handleAuthResponse(response: AuthResponse) {
+    const backendUser = response.data.user;
+
+    const mappedUser: SessionUser = {
+      id: backendUser.id,
+      email: backendUser.email,
+      name: backendUser.displayName ,
+      roles: [backendUser.roleName.toLowerCase()],
+    }
+    this.setSession(mappedUser, response.data.accessToken);
   }
 
   clear(): void {
