@@ -1,0 +1,25 @@
+<aside
+  class="bg-card border-border hidden w-2/5 shrink-0 flex-col overflow-y-auto border-r px-10 py-10 lg:flex lg:h-dvh xl:px-16">
+  <div class="my-auto flex flex-col gap-8">
+    <a routerLink="/" aria-label="DevTalles, ir al inicio" class="w-fit">
+      <app-brand-logo />
+    </a>
+
+    <div class="flex items-start justify-between gap-8">
+      <h2 class="max-w-md text-2xl leading-tight font-extrabold tracking-tight">
+        Tu ruta queda guardada y sigue desde el curso que dejaste abierto.
+      </h2>
+
+      <div class="flex shrink-0 flex-col items-center gap-2">
+        <p class="label-mono text-muted-foreground">¡Hola de nuevo!</p>
+        <app-devi-mascot pose="hello-border" class="h-20" />
+      </div>
+    </div>
+
+    <app-suggested-path-card [courses]="samplePath" [topic]="samplePathTopic" compact />
+
+    <p class="text-muted-foreground max-w-md text-xs leading-relaxed">
+      El orden lo definen los prerequisitos declarados en cada curso del catálogo.
+    </p>
+  </div>
+</aside>

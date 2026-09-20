@@ -1,0 +1,25 @@
+<!-- Closing block: Devi lifting off anchors the invitation, two full-width actions stacked -->
+<section class="mx-auto w-full max-w-6xl px-4 pb-12 sm:px-6 lg:pb-16">
+  <div
+    hlmCard
+    class="border-border gap-8 rounded-lg border px-6 py-10 ring-0 sm:px-10 sm:py-12 md:flex-row md:items-center md:justify-center md:gap-12"
+  >
+    <app-devi-mascot pose="launch" class="mx-auto h-32 shrink-0 md:mx-0 md:h-48" />
+
+    <div class="md:max-w-md">
+      <h2 class="text-xl font-semibold">Tu próxima ruta de aprendizaje empieza aquí</h2>
+
+      <p class="text-muted-foreground mt-3 max-w-md text-sm leading-relaxed">
+        Crea tu cuenta para guardar la ruta y retomarla desde donde la dejaste
+      </p>
+
+      <div class="mt-8 flex max-w-sm flex-col gap-3">
+        <a hlmBtn size="lg" routerLink="/auth/register" class="h-12 w-full text-base">
+          Crear mi cuenta
+        </a>
+
+        <app-discord-button />
+      </div>
+    </div>
+  </div>
+</section>

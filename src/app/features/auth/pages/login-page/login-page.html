@@ -1,96 +1,70 @@
-<main class="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
-  <section hlmCard class="w-full max-w-[420px] bg-card border-border shadow-2xl rounded-2xl overflow-hidden px-4 py-6 sm:p-8">
+<h1 class="text-2xl font-semibold tracking-tight">Inicio de sesión</h1>
 
-    <div hlmCardHeader class="flex flex-col items-center text-center space-y-3 pb-8">
-      <h1 class="text-2xl font-bold tracking-tight">Iniciar Sesión</h1>
-      <p class="text-sm text-muted-foreground max-w-[260px] leading-relaxed">
-        Accede a tus rutas de aprendizaje personalizadas
-      </p>
-    </div>
+<p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+  Entra para retomar tu ruta y marcar los cursos que ya cerraste.
+</p>
 
-    <div hlmCardContent class="space-y-6">
+<app-discord-button class="mt-6" />
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+<p class="text-muted-foreground mt-2 text-xs">Es la vía que usa la mayoría de la comunidad.</p>
 
-        <!-- Correo Electrónico -->
-        <div class="space-y-2">
-          <label hlmLabel for="identifier" class="label-mono text-foreground">Correo Electrónico</label>
-          <input
-            hlmInput
-            id="identifier"
-            type="email"
-            placeholder="desarrollador@ejemplo.com"
-            formControlName="identifier"
-            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
-          />
-        </div>
+<hlm-field-separator class="my-7">
+  <span class="label-mono">o con tu correo</span>
+</hlm-field-separator>
 
-        <!-- Contraseña -->
-        <div class="space-y-2">
-          <label hlmLabel for="password" class="label-mono text-foreground">Contraseña</label>
-          <input
-            hlmInput
-            id="password"
-            type="password"
-            placeholder="••••••••••••"
-            formControlName="password"
-            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
-          />
-          <div class="flex justify-end pt-1">
-            <a routerLink="/auth/recuperar" class="text-[13px] text-muted-foreground hover:text-foreground transition-colors">
-              ¿Olvidaste tu contraseña?
-            </a>
-          </div>
-        </div>
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <div hlmFieldGroup>
+    <hlm-field>
+      <label hlmFieldLabel>Correo</label>
+      <input hlmInput class="h-11" type="email" formControlName="identifier" placeholder="tu@correo.com"
+        autocomplete="email" />
+      <hlm-field-error validator="required">Escribe tu correo.</hlm-field-error>
+      <hlm-field-error validator="email">Ese correo no tiene un formato válido.</hlm-field-error>
+    </hlm-field>
 
-        <!-- Manejo de Errores -->
-        @if (errorMessage()) {
-          <p class="text-sm text-destructive text-center font-medium">
-            {{ errorMessage() }}
-          </p>
-        }
-
-        <!-- Botón Principal -->
-        <button
-          hlmBtn
-          type="submit"
-          class="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-11 text-base mt-2 transition-colors disabled:opacity-50"
-          [disabled]="isLoading() || loginForm.invalid"
-        >
-          @if (isLoading()) {
-            Iniciando Sesión...
-          } @else {
-            Iniciar Sesión
-          }
-        </button>
-      </form>
-
-      <!-- Separador -->
-      <div class="relative flex items-center justify-center py-2">
-        <span class="absolute w-full border-t border-border"></span>
-        <span class="label-mono bg-card px-4 text-muted-foreground relative">O continúa con</span>
-      </div>
-
-      <!-- OAuth Discord -->
-      <div class="flex justify-center">
-        <button
-          hlmBtn
-          variant="outline"
-          type="button"
-          (click)="loginWithDiscord()"
-          class="rounded-full size-12 bg-white hover:bg-gray-100 border-0 flex items-center justify-center transition-colors shadow-sm"
-        >
+    <hlm-field>
+      <div class="flex items-center justify-between gap-3">
+        <label hlmFieldLabel>Contraseña</label>
+        <!-- No password recovery page yet, so this stays inert instead of leading to a 404 -->
+        <button type="button" class="text-muted-foreground hover:text-foreground text-xs">
+          ¿Olvidaste tu contraseña?
         </button>
       </div>
 
-      <!-- Footer -->
-      <p class="text-center text-sm text-muted-foreground pt-1">
-        ¿No tienes una cuenta?
-        <a routerLink="/auth/register" class="text-foreground font-medium hover:underline transition-all ">
-          Crear cuenta
-        </a>
-      </p>
+      <hlm-input-group class="h-11">
+        <input hlmInputGroupInput class="h-full" [type]="passwordVisible() ? 'text' : 'password'"
+          formControlName="password" placeholder="Tu contraseña" autocomplete="current-password" />
+        <hlm-input-group-addon align="inline-end">
+          <button hlmInputGroupButton type="button" (click)="togglePassword()"
+            [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <ng-icon [name]="passwordVisible() ? 'lucideEyeOff' : 'lucideEye'" aria-hidden="true" />
+          </button>
+        </hlm-input-group-addon>
+      </hlm-input-group>
 
-    </div>
-  </section>
-</main>
+      <hlm-field-error validator="required">Escribe tu contraseña.</hlm-field-error>
+      <hlm-field-error validator="minlength">
+        La contraseña necesita al menos 6 caracteres.
+      </hlm-field-error>
+    </hlm-field>
+  </div>
+
+  @if (errorMessage()) {
+  <div hlmAlert variant="destructive" class="mt-5">{{ errorMessage() }}</div>
+  }
+
+  <button hlmBtn type="submit" size="lg" class="mt-7 h-11 w-full gap-2 text-base" [disabled]="isLoading()">
+    @if (isLoading()) {
+    <hlm-spinner class="text-base" />
+    }
+    Iniciar sesión
+  </button>
+</form>
+
+<p class="text-muted-foreground mt-6 text-center text-sm">
+  ¿No tienes cuenta?
+  <a routerLink="/auth/register"
+    class="text-foreground hover:text-highlight font-medium underline underline-offset-4 transition-colors">
+    Crear cuenta
+  </a>
+</p>

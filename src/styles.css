@@ -11,6 +11,49 @@
   --font-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
 }
 
+/* Motion. Ambient drift for the mascot: translation only, no rotation or scaling. */
+@theme {
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Ambient glow behind the auth form: slow enough to read as atmosphere. */
+  --animate-drift: drift 26s ease-in-out infinite;
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(0, -8%, 0) scale(1.15);
+    }
+  }
+
+  /* Thruster flicker: short, shallow, anchored at the nozzle. */
+  --animate-flame: flame 360ms ease-in-out infinite;
+
+  @keyframes flame {
+    0%,
+    100% {
+      transform: scaleY(1) scaleX(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scaleY(0.84) scaleX(1.06);
+      opacity: 0.85;
+    }
+  }
+}
+
 /* Owned tokens */
 @theme inline {
   --color-card-raised: var(--card-raised);

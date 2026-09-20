@@ -30,6 +30,7 @@ src/
  │    │    │    ├── services/                # <feature>-api.ts, <feature>-store.ts
  │    │    │    ├── models/                  # <feature>-models.ts (types only)
  │    │    │    ├── constants/               # <feature>-constants.ts (static data, label maps)
+ │    │    │    ├── components/              # Section components, feature-local
  │    │    │    └── <feature>.routes.ts      # Lazy routes (multi-page features only)
  │    │
  │    ├── shared/               # Feature-agnostic reusable pieces

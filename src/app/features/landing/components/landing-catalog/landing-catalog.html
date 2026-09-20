@@ -1,0 +1,30 @@
+<!-- Catalog: headline figures and category pills -->
+<section id="catalogo" class="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+  <h2 class="text-2xl font-extrabold tracking-tight">
+    El catálogo completo, en el orden que te sirve
+  </h2>
+
+  <p class="text-muted-foreground mt-3 max-w-xl text-sm leading-relaxed">
+    Las rutas se arman con los cursos que ya están publicados en la academia y con los prerequisitos
+    que cada uno declara.
+  </p>
+
+  <dl class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-6 sm:gap-x-8">
+    @for (stat of catalogStats; track stat.label) {
+      <div>
+        <dd class="text-3xl font-extrabold tracking-tight">{{ stat.value }}</dd>
+        <dt class="label-mono text-muted-foreground mt-1">{{ stat.label }}</dt>
+      </div>
+
+      @if (!$last) {
+        <hlm-separator orientation="vertical" decorative class="h-12" />
+      }
+    }
+  </dl>
+
+  <ul class="mt-8 flex flex-wrap gap-2.5">
+    @for (category of catalogCategories; track category) {
+      <li hlmBadge variant="outline" class="h-9 rounded-full px-4 text-sm">{{ category }}</li>
+    }
+  </ul>
+</section>
