@@ -36,6 +36,7 @@ export class LoginPage {
   private authApi = inject(AuthApi);
   private sessionStorage = inject(SessionStore);
   private router = inject(Router);
+ private geolocationService = inject(GeolocationService);
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -61,7 +62,7 @@ export class LoginPage {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    await this.captureAndStoreLocation();
+    await this.geolocationService.captureAndStoreLocation();
 
     const credentials = this.loginForm.getRawValue();
 
