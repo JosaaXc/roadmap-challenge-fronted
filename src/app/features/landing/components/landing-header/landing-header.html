@@ -1,0 +1,26 @@
+<!-- Top bar: bordered logo pill, text link and primary action -->
+<header class="border-border border-b">
+  <div
+    class="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-1.5 px-4 sm:h-16 sm:gap-4 sm:px-6"
+  >
+    <a routerLink="/" aria-label="DevTalles, ir al inicio">
+      <app-brand-logo />
+    </a>
+
+    <nav class="flex items-center gap-1.5 sm:gap-3">
+      <a
+        hlmBtn
+        variant="link"
+        size="lg"
+        routerLink="/auth/login"
+        class="text-foreground px-1 whitespace-nowrap sm:px-2"
+      >
+        Iniciar sesión
+      </a>
+
+      <a hlmBtn size="lg" routerLink="/auth/register" class="px-4 whitespace-nowrap sm:px-5">
+        Empezar
+      </a>
+    </nav>
+  </div>
+</header>

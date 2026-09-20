@@ -1,0 +1,27 @@
+<!-- Hero: pitch on the left, generated path preview on the right -->
+<section
+  class="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-14 lg:py-20"
+>
+  <div>
+    <p class="label-mono text-muted-foreground">Generador de rutas de aprendizaje</p>
+
+    <h1 class="mt-5 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl">
+      <span class="block">Sabes qué quieres aprender.</span>
+      <span class="block">El problema es en qué orden.</span>
+    </h1>
+
+    <p class="text-muted-foreground mt-5 max-w-lg text-sm leading-relaxed">
+      Responde un par de preguntas y recibe una secuencia de cursos de DevTalles que respeta los
+      prerequisitos, sin repetir lo que ya sabes.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center gap-3">
+      <button hlmBtn size="lg" type="button" class="h-10 px-5">Armar mi ruta</button>
+      <button hlmBtn variant="outline" size="lg" type="button" class="h-10 px-5">
+        Ver un ejemplo
+      </button>
+    </div>
+  </div>
+
+  <app-suggested-path-card [courses]="samplePath" [topic]="samplePathTopic" />
+</section>

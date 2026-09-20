@@ -1,26 +1,4 @@
-import { CatalogStat, CourseStatus, LandingStep, SuggestedCourse } from '../models/landing-models';
-
-// Topic the previewed path is generated for
-export const SUGGESTED_PATH_TOPIC = 'Backend';
-
-// Preview of a generated path. Hardcoded because this is an example.
-export const SUGGESTED_PATH: readonly SuggestedCourse[] = [
-  { title: 'JavaScript Moderno', status: 'completed' },
-  { title: 'Node y Express', status: 'completed' },
-  { title: 'TypeScript: Tu guía completa', status: 'in-progress', progress: 40 },
-  {
-    title: 'Nest: backend escalable',
-    status: 'locked',
-    unlockAfter: 'TypeScript: Tu guía completa',
-  },
-  { title: 'Docker y despliegue', status: 'locked', unlockAfter: 'Nest: backend escalable' },
-];
-
-export const COURSE_STATUS_LABEL: Record<CourseStatus, string> = {
-  completed: 'Completado',
-  'in-progress': 'En progreso',
-  locked: 'Bloqueado',
-};
+import { CatalogStat, LandingStep } from '../models/landing-models';
 
 export const LANDING_STEPS: readonly LandingStep[] = [
   {
@@ -38,14 +16,14 @@ export const LANDING_STEPS: readonly LandingStep[] = [
     ordinal: '03',
     title: 'Marca tu avance',
     description:
-      'Cierras un módulo, se desbloquea el siguiente y la ruta queda guardada en tu cuenta.',
+      'Cierras un curso, se desbloquea el siguiente y la ruta queda guardada en tu cuenta.',
   },
 ];
 
 export const CATALOG_STATS: readonly CatalogStat[] = [
-  { value: '+80', label: 'Cursos a elegir' },
-  { value: '+6', label: 'Categorías' },
-  { value: '+4', label: 'Instructores' },
+  { value: '+82', label: 'Cursos a elegir' },
+  { value: '6', label: 'Categorías' },
+  { value: '4', label: 'Instructores' },
 ];
 
 export const CATALOG_CATEGORIES: readonly string[] = [
