@@ -20,9 +20,4 @@ export class AssessmentPage implements OnInit {
     );
   }
 
-  submitAssessment(){
-    if(this.store.canGoNext()){
-      console.log('Respuestas: ', this.store.answers());
-    }
-  }
 }
