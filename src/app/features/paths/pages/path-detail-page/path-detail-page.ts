@@ -34,7 +34,6 @@ export class PathDetailPage implements OnInit{
     this.isLoading.set(true);
     this.api.getPathById(id).subscribe({
       next: (response) => {
-        console.log('Path: ', response);
         const sortedPath = {
           ...response.data,
           nodes: response.data.nodes.sort((a,b) => a.position - b.position)

@@ -36,3 +36,16 @@ export interface SinglePathResponse {
     timestamp: string;
   };
 }
+
+export interface PaginatedPathsResponse {
+  success: boolean;
+  data: {
+    items: LearningPath[];
+  };
+  meta: {
+    timestamp: string;
+    nextCursor?: string;
+    hasNextPage: boolean;
+    take: number;
+  };
+}

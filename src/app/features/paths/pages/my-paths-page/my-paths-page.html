@@ -1,0 +1,112 @@
+<section class="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+
+  <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+        Mis Rutas de Aprendizaje
+      </h1>
+      <p class="mt-2 text-muted-foreground">Retoma tus estudios desde donde los dejaste.</p>
+    </div>
+
+    <a hlmBtn routerLink="/cuestionario">
+      Generar Nueva Ruta
+    </a>
+  </header>
+
+  <!-- Estado: Cargando inicial -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="border-primary h-10 w-10 animate-spin rounded-full border-b-2"></div>
+    </div>
+  }
+
+  <!-- Estado: Error -->
+  @if (error()) {
+    <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4 text-center">
+      <p>{{ error() }}</p>
+      <button hlmBtn variant="link" (click)="loadInitialPaths()" class="mt-2 h-auto p-0">Reintentar</button>
+    </div>
+  }
+
+  <!-- Estado: Éxito con datos -->
+  @if (!isLoading() && !error()) {
+
+    <!-- Empty State -->
+    @if (paths().length === 0) {
+      <div class="border-border bg-secondary/50 flex flex-col items-center justify-center rounded-xl border p-12 text-center">
+        <h3 class="text-xl font-bold text-foreground">Aún no tienes rutas</h3>
+        <p class="mt-2 text-muted-foreground max-w-md">
+          Completa nuestro breve cuestionario de habilidades para que te armemos un plan de estudio a medida.
+        </p>
+        <a hlmBtn routerLink="/cuestionario" class="mt-6">Ir al Cuestionario</a>
+      </div>
+    }
+
+    <!-- Grilla de Tarjetas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (path of paths(); track path.id) {
+
+        <a
+          [routerLink]="['/mis-rutas', path.id]"
+          hlmCard
+          class="border-border hover:border-primary/50 group flex flex-col justify-between rounded-xl border p-5 shadow-sm transition-all hover:shadow-md cursor-pointer block">
+
+          <div>
+            <div class="flex items-start justify-between gap-4">
+              <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                {{ path.title }}
+              </h3>
+              <!-- Botón visual para favoritos (puedes aislarlo luego para que no lance la navegación) -->
+              @if (path.isFavorite) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500 shrink-0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              }
+            </div>
+
+            <p class="mt-2 text-sm text-muted-foreground line-clamp-2">
+              {{ path.description }}
+            </p>
+
+            <div class="mt-6 mb-2 flex items-center justify-between text-xs">
+              <span class="label-mono text-muted-foreground">Progreso</span>
+              <span class="font-bold">{{ path.progress }}%</span>
+            </div>
+            <div class="bg-secondary h-1.5 w-full overflow-hidden rounded-full">
+              <div
+                class="bg-primary h-full rounded-full transition-all"
+                [style.width.%]="path.progress">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pie de la tarjeta -->
+          <div class="mt-6 border-t border-border pt-4">
+            <p class="text-xs font-medium text-foreground line-clamp-1">
+              <span class="text-muted-foreground mr-1 font-normal">Siguiente:</span>
+              {{ path.nextStep }}
+            </p>
+          </div>
+        </a>
+      }
+    </div>
+
+    <!-- Botón Cargar Más -->
+    @if (hasNextPage()) {
+      <div class="mt-12 flex justify-center">
+        <button
+          hlmBtn
+          variant="outline"
+          (click)="loadMore()"
+          [disabled]="isLoadingMore()"
+          class="w-full sm:w-auto min-w-[200px]">
+          @if (isLoadingMore()) {
+            <span class="border-t-transparent mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current"></span>
+            Cargando...
+          } @else {
+            Cargar más rutas
+          }
+        </button>
+      </div>
+    }
+  }
+
+</section>

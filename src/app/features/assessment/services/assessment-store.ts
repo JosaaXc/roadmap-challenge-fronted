@@ -87,7 +87,7 @@ export class AssessmentStore {
     this.api.generatePath(this._answers()).subscribe({
       next: (response) => {
         this._isSubmitting.set(false);
-        console.log('Respuesta path:', response);
+        this.reset();
         this.router.navigate(['mis-rutas', response.data.id]);
       },
       error: (err) => {
@@ -102,5 +102,11 @@ export class AssessmentStore {
         }
       }
     })
+  }
+
+  reset(){
+    this._currentStepIndex.set(0);
+    this._answers.set([]);
+    this._error.set(null);
   }
 }

@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { SinglePathResponse } from '../models/paths-models';
+import { PaginatedPathsResponse, SinglePathResponse } from '../models/paths-models';
 import { Observable } from 'rxjs';
 
 @Service()
@@ -11,6 +11,23 @@ export class PathsApi {
 
   getPathById(id: string): Observable<SinglePathResponse>{
     return this.http.get<SinglePathResponse>(`${this.baseUrl}/paths/${id}`, {
+      withCredentials: true
+    });
+  }
+
+  getPaths(params?: {take?: number; cursor?: string; order?: 'asc' | 'desc'; isFavorite?: boolean; isPublic?: boolean}): Observable<PaginatedPathsResponse>{
+    let httpParams = new HttpParams();
+
+    if(params){
+      if(params.take) httpParams = httpParams.set('take', params.take);
+      if (params.cursor) httpParams = httpParams.set('cursor', params.cursor);
+      if (params.order) httpParams = httpParams.set('order', params.order);
+      if (params.isFavorite !== undefined) httpParams = httpParams.set('isFavorite', params.isFavorite);
+      if (params.isPublic !== undefined) httpParams = httpParams.set('isPublic', params.isPublic);
+    }
+
+    return this.http.get<PaginatedPathsResponse>(`${this.baseUrl}/paths`, {
+      params: httpParams,
       withCredentials: true
     });
   }
