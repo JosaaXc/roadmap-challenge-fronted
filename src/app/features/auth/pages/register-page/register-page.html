@@ -1,118 +1,91 @@
-<main class="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
-  <section hlmCard class="w-full max-w-[420px] bg-card border-border shadow-2xl rounded-2xl overflow-hidden px-4 py-6 sm:p-8">
+<h1 class="text-2xl font-semibold tracking-tight">Crear cuenta</h1>
 
-    <div hlmCardHeader class="flex flex-col items-center text-center space-y-3 pb-8">
-      <h1 class="text-2xl font-bold tracking-tight">Crear Cuenta</h1>
-      <p class="text-sm text-muted-foreground max-w-[260px] leading-relaxed">
-        Únete a nuestra comunidad y comienza a crear tus rutas de aprendizaje
-      </p>
-    </div>
+<p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+  Arma tu ruta y guárdala para seguir marcando tu avance.
+</p>
 
-    <div hlmCardContent class="space-y-6">
+<app-discord-button class="mt-6" />
 
-      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+<p class="text-muted-foreground mt-2 text-xs">Es la vía que usa la mayoría de la comunidad.</p>
 
-        <!-- Nombre de Usuario -->
-        <div class="space-y-2">
-          <label hlmLabel for="username" class="label-mono text-foreground">Nombre de Usuario</label>
-          <input
-            hlmInput
-            id="username"
-            type="text"
-            placeholder="Desarrollador123"
-            formControlName="username"
-            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
-          />
-           @if (registerForm.controls.username.touched && registerForm.controls.username.errors?.['pattern']) {
-        <span class="text-sm px-4 text-muted-foreground relative">El nombre de usuario solo puede contener letras, números y guiones bajos.</span>
-        }
-        @if (registerForm.controls.username.touched && registerForm.controls.username.errors?.['minlength']) {
-          <span class="text-sm px-4 text-muted-foreground relative">El nombre de usuario debe tener al menos 3 caracteres.</span>
-        }
-        </div>
+<hlm-field-separator class="my-7">
+  <span class="label-mono">o con tu correo</span>
+</hlm-field-separator>
 
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <div hlmFieldGroup>
+    <hlm-field>
+      <label hlmFieldLabel>Nombre de usuario</label>
+      <input hlmInput class="h-11" type="text" formControlName="username" placeholder="tu_usuario123"
+        autocomplete="username" />
+      <hlm-field-error validator="required">Elige un nombre de usuario.</hlm-field-error>
+      <hlm-field-error validator="minlength">Necesita al menos 3 caracteres.</hlm-field-error>
+      <hlm-field-error validator="maxlength">No puede pasar de 32 caracteres.</hlm-field-error>
+      <hlm-field-error validator="pattern">Solo letras, números y guiones bajos.</hlm-field-error>
+    </hlm-field>
 
-        <!-- Correo Electrónico -->
-        <div class="space-y-2">
-          <label hlmLabel for="email" class="label-mono text-foreground">Correo Electrónico</label>
-          <input
-            hlmInput
-            id="email"
-            type="email"
-            placeholder="desarrollador@ejemplo.com"
-            formControlName="email"
-            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
-          />
-        </div>
+    <hlm-field>
+      <label hlmFieldLabel>Correo</label>
+      <input hlmInput class="h-11" type="email" formControlName="email" placeholder="tu@correo.com"
+        autocomplete="email" />
+      <hlm-field-error validator="required">Escribe tu correo.</hlm-field-error>
+      <hlm-field-error validator="email">Ese correo no tiene un formato válido.</hlm-field-error>
+    </hlm-field>
 
-        <!-- Contraseña -->
-        <div class="space-y-2">
-          <label hlmLabel for="password" class="label-mono text-foreground">Contraseña</label>
-          <input
-            hlmInput
-            id="password"
-            type="password"
-            placeholder="••••••••••••"
-            formControlName="password"
-            class="w-full bg-white text-black h-11 border-border focus:ring-ring transition-colors"
-          />
-          @if (registerForm.controls.password.touched && registerForm.controls.password.errors?.['pattern']) {
-          <span class="text-sm px-4 text-muted-foreground relative">La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.</span>
-        }
-        @if (registerForm.controls.password.touched && registerForm.controls.password.errors?.['minlength']) {
-          <span class="text-sm px-4 text-muted-foreground relative">La contraseña debe tener al menos 8 caracteres.</span>
-        }
-        </div>
+    <hlm-field>
+      <label hlmFieldLabel>Contraseña</label>
 
+      <hlm-input-group class="h-11">
+        <input hlmInputGroupInput class="h-full" [type]="passwordVisible() ? 'text' : 'password'"
+          formControlName="password" placeholder="Tu contraseña" autocomplete="new-password" />
+        <hlm-input-group-addon align="inline-end">
+          <button hlmInputGroupButton type="button" (click)="togglePassword()"
+            [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <ng-icon [name]="passwordVisible() ? 'lucideEyeOff' : 'lucideEye'" aria-hidden="true" />
+          </button>
+        </hlm-input-group-addon>
+      </hlm-input-group>
 
-        <!-- Manejo de Errores -->
-        @if (errorMessage()) {
-          <p class="text-sm text-destructive text-center font-medium">
-            {{ errorMessage() }}
-          </p>
-        }
+      <!-- The backend rule is strict, so it is stated up front instead of only after a failed attempt -->
+      <p hlmFieldDescription>Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo.</p>
+      <hlm-field-error validator="required">Escribe una contraseña.</hlm-field-error>
+      <hlm-field-error validator="minlength">Necesita al menos 8 caracteres.</hlm-field-error>
+      <hlm-field-error validator="maxlength">No puede pasar de 128 caracteres.</hlm-field-error>
+      <hlm-field-error validator="pattern">
+        Le falta una mayúscula, una minúscula, un número o un símbolo.
+      </hlm-field-error>
+    </hlm-field>
+  </div>
 
-        <!-- Botón Principal -->
-        <button
-          hlmBtn
-          type="submit"
-          class="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-11 text-base mt-2 transition-colors disabled:opacity-50"
-          [disabled]="isLoading() || registerForm.invalid"
-        >
-          @if (isLoading()) {
-            Creando Cuenta...
-          } @else {
-            Crear Cuenta
-          }
-        </button>
-      </form>
+  @if (errorMessage()) {
+  <div hlmAlert variant="destructive" class="mt-5">{{ errorMessage() }}</div>
+  }
 
-      <!-- Separador -->
-      <div class="relative flex items-center justify-center py-2">
-        <span class="absolute w-full border-t border-border"></span>
-        <span class="label-mono bg-card px-4 text-muted-foreground relative">O continúa con</span>
-      </div>
+  <button hlmBtn type="submit" size="lg" class="mt-7 h-11 w-full gap-2 text-base" [disabled]="isLoading()">
+    @if (isLoading()) {
+    <hlm-spinner class="text-base" />
+    }
+    Crear cuenta
+  </button>
 
-      <!-- OAuth Discord -->
-      <div class="flex justify-center">
-        <button
-          hlmBtn
-          variant="outline"
-          type="button"
-          (click)="loginWithDiscord()"
-          class="rounded-full size-12 bg-white hover:bg-gray-100 border-0 flex items-center justify-center transition-colors shadow-sm"
-        >
-        </button>
-      </div>
+  <!-- No legal pages yet: inert buttons like the footer's, to become routerLinks once the pages exist -->
+  <p class="text-muted-foreground mt-4 text-xs leading-relaxed">
+    Al crear tu cuenta aceptas los
+    <button type="button" class="text-foreground hover:text-highlight font-medium transition-colors">
+      términos del servicio
+    </button>
+    y la
+    <button type="button" class="text-foreground hover:text-highlight font-medium transition-colors">
+      política de privacidad
+    </button>
+    de DevTalles.
+  </p>
+</form>
 
-      <!-- Footer -->
-      <p class="text-center text-sm text-muted-foreground pt-1">
-        ¿Ya tienes una cuenta?
-        <a routerLink="/auth/login" class="text-foreground font-medium hover:underline transition-all ">
-          Iniciar sesión
-        </a>
-      </p>
-
-    </div>
-  </section>
-</main>
+<p class="text-muted-foreground mt-6 text-center text-sm">
+  ¿Ya tienes cuenta?
+  <a routerLink="/auth/login"
+    class="text-foreground hover:text-highlight font-medium underline underline-offset-4 transition-colors">
+    Inicia sesión
+  </a>
+</p>
