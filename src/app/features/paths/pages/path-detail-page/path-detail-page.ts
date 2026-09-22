@@ -20,6 +20,7 @@ export class PathDetailPage implements OnInit{
   readonly path = signal<LearningPath | null>(null);
   readonly isLoading = signal<boolean>(true);
   readonly error = signal<string | null>(null);
+  readonly togglingNodes = signal<Set<string>>(new Set());
 
   ngOnInit() {
     const pathId = this.route.snapshot.paramMap.get('id');
@@ -45,5 +46,41 @@ export class PathDetailPage implements OnInit{
         this.isLoading.set(false);
       }
     });
+  }
+
+  toggleNode(nodeId: string){
+    const currentPath = this.path();
+    if(!currentPath) return;
+
+    this.togglingNodes.update(set => {
+      const newSet = new Set(set);
+      newSet.add(nodeId);
+      return newSet;
+    });
+
+    this.api.toggleNodeCompletion(currentPath.id, nodeId).subscribe({
+      next: (response) => {
+        this.path.update(p => {
+          if(!p) return p;
+
+          return {
+            ...p,
+            progress: response.data.progress,
+            nodes: p.nodes.map(n => n.id === nodeId ? response.data.node : n)
+          };
+        });
+        this.removeTogglingNode(nodeId);
+      }, error: () => {
+        this.removeTogglingNode(nodeId);
+      }
+    });
+  }
+
+  private removeTogglingNode(nodeId: string){
+    this.togglingNodes.update(set => {
+      const newSet = new Set(set);
+      newSet.delete(nodeId);
+      return newSet;
+    })
   }
 }

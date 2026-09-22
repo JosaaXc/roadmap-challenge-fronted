@@ -49,3 +49,14 @@ export interface PaginatedPathsResponse {
     take: number;
   };
 }
+
+export interface ToggleNodeResponse {
+  success: boolean;
+  data: {
+    node: PathNode;
+    progress: number;
+  };
+  meta: {
+    timestamp: string;
+  }
+}

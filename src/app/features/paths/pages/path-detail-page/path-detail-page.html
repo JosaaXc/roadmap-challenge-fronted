@@ -63,28 +63,49 @@
                 </h3>
               </div>
 
-              <!-- Botón de acción inteligente -->
-              @if (node.externalUrl) {
-                <!-- Si tiene URL, es un enlace que saca al usuario (ej. a Udemy o YouTube) -->
-                <a
-                  hlmBtn
-                  [variant]="node.isCompleted ? 'outline' : 'default'"
-                  [href]="node.externalUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center gap-2 w-fit">
-                  {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </a>
-              } @else {
-                <!-- Si no tiene URL, es un botón normal (próximamente abrirá el curso interno) -->
-                <button
-                  hlmBtn
-                  [variant]="node.isCompleted ? 'outline' : 'default'"
-                  class="w-fit">
-                  {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
-                </button>
-              }
+              <!-- Controles de acción del Nodo -->
+              <div class="flex items-center gap-3">
+
+                <!-- Botón de Toggle (Check) -->
+              <button
+                hlmBtn
+                variant="ghost"
+                (click)="toggleNode(node.id)"
+                [disabled]="togglingNodes().has(node.id)"
+                [class.text-primary]="node.isCompleted"
+                [class.bg-secondary/10]="node.isCompleted"
+                class="transition-colors bg">
+
+                @if (togglingNodes().has(node.id)) {
+                <span class="border-current mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></span>
+                Guardando...
+                } @else {
+                <span>{{ node.isCompleted ? 'Desmarcar' : 'Marcar como completado' }}</span>
+                }
+              </button>
+
+                <!-- Botón de acción inteligente -->
+                @if (node.externalUrl) {
+                  <!-- Si tiene URL, es un enlace que saca al usuario (ej. a Udemy o YouTube) -->
+                  <a
+                    hlmBtn
+                    [variant]="node.isCompleted ? 'outline' : 'default'"
+                    [href]="node.externalUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-2 w-fit">
+                    {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
+                  </a>
+                } @else {
+                  <!-- Si no tiene URL, es un botón normal (próximamente abrirá el curso interno) -->
+                  <button
+                    hlmBtn
+                    [variant]="node.isCompleted ? 'outline' : 'default'"
+                    class="w-fit">
+                    {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
+                  </button>
+                }
+              </div>
 
             </div>
           </div>
