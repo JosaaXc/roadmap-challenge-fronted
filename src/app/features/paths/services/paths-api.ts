@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { PaginatedPathsResponse, SinglePathResponse, ToggleFavoriteResponse, ToggleNodeResponse } from '../models/paths-models';
+import { AddExternalNodeRequest, AddNodeResponse, PaginatedPathsResponse, SinglePathResponse, ToggleFavoriteResponse, ToggleNodeResponse } from '../models/paths-models';
 import { Observable } from 'rxjs';
 
 @Service()
@@ -45,6 +45,21 @@ export class PathsApi {
       `${this.baseUrl}/paths/${pathId}/favorite`,
       {},
       {withCredentials: true}
+    );
+  }
+
+  addExternalNode(pathId: string, payload: AddExternalNodeRequest): Observable<AddNodeResponse> {
+    const idempotencyKey = crypto.randomUUID();
+
+    return this.http.post<AddNodeResponse>(
+      `${this.baseUrl}/paths/${pathId}/nodes`,
+      payload,
+      {
+        headers: {
+          'Idempotency-Key': idempotencyKey
+        },
+        withCredentials: true
+      }
     );
   }
 }

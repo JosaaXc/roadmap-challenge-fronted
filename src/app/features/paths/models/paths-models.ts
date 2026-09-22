@@ -71,3 +71,20 @@ export interface ToggleFavoriteResponse {
     timestamp: string;
   };
 }
+
+export interface AddExternalNodeRequest {
+  title: string;
+  url: string;
+  previousNodeId: string;
+}
+
+export interface AddNodeResponse {
+  success: boolean;
+  data: {
+    node: PathNode;
+    progress: number;
+  };
+  meta: {
+    timestamp: string;
+  };
+}

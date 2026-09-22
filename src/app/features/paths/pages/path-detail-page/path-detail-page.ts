@@ -22,6 +22,12 @@ export class PathDetailPage implements OnInit{
   readonly isLoading = signal<boolean>(true);
   readonly error = signal<string | null>(null);
   readonly togglingNodes = signal<Set<string>>(new Set());
+  readonly isAddingNodeFormVisible = signal<boolean>(false);
+  readonly insertingAfterId = signal<string | null>(null);
+  readonly isSubmittingNode = signal<boolean>(false);
+
+  readonly newTitle = signal<string>('');
+  readonly newUrl = signal<string>('');
 
   ngOnInit() {
     const pathId = this.route.snapshot.paramMap.get('id');
@@ -40,6 +46,7 @@ export class PathDetailPage implements OnInit{
           ...response.data,
           nodes: response.data.nodes.sort((a,b) => a.position - b.position)
         };
+        console.log(sortedPath);
         this.path.set(sortedPath);
         this.isLoading.set(false);
       }, error: () => {
@@ -83,5 +90,49 @@ export class PathDetailPage implements OnInit{
       newSet.delete(nodeId);
       return newSet;
     })
+  }
+
+  toggleAddNodeForm(previousNodeId: string){
+    if(this.insertingAfterId() === previousNodeId) {
+      this.insertingAfterId.set(null);
+    } else {
+      this.insertingAfterId.set(previousNodeId);
+      this.newTitle.set('');
+      this.newUrl.set('');
+    }
+  }
+
+  submitNewNode() {
+    const currentPath = this.path();
+    const previousNodeId = this.insertingAfterId();
+    const title = this.newTitle();
+    const url = this.newUrl();
+
+    if(!currentPath || !previousNodeId || !title || !url) return;
+
+    this.isSubmittingNode.set(true);
+
+    const payload = {title, url, previousNodeId };
+
+    this.api.addExternalNode(currentPath.id, payload).subscribe({
+      next: (response) => {
+        this.path.update(p => {
+          if(!p) return p;
+
+          return{
+            ...p,
+            progress: response.data.progress,
+            nodes: [...p.nodes, response.data.node]
+          };
+        });
+        this.isSubmittingNode.set(false);
+        this.isAddingNodeFormVisible.set(false);
+        this.insertingAfterId.set(null);
+        this.newTitle.set('');
+        this.newUrl.set('');
+      }, error: () => {
+        this.isSubmittingNode.set(false);
+      }
+    });
   }
 }
