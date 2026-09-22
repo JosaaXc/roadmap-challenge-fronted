@@ -27,6 +27,7 @@ export class PathDetailPage implements OnInit{
   readonly insertingAfterId = signal<string | null>(null);
   readonly isSubmittingNode = signal<boolean>(false);
   readonly deletingNodes = signal<Set<string>>(new Set());
+  readonly isDeletingPath = signal<boolean>(false);
 
   readonly newTitle = signal<string>('');
   readonly newUrl = signal<string>('');
@@ -142,7 +143,10 @@ export class PathDetailPage implements OnInit{
     const currentPath = this.path();
     if (!currentPath || this.deletingNodes().has(nodeId)) return;
 
-    // 1. Añadimos el ID al Set para activar el spinner de ese nodo
+    if (!confirm('¿Estás seguro de eliminarlo?')) {
+      return;
+    }
+
     this.deletingNodes.update(set => new Set(set).add(nodeId));
 
     this.api.deleteExternalNode(currentPath.id, nodeId).pipe(
@@ -168,6 +172,26 @@ export class PathDetailPage implements OnInit{
         console.error('No se pudo eliminar el nodo', err);
       }
     });
+  }
+
+  deletePath() {
+    const currentPath = this.path();
+    if(!currentPath || this.isDeletingPath()) return;
+
+    if(!confirm('¿Estás seguro de eliminarlo?')){
+      return;
+    }
+    this.isDeletingPath.set(true);
+
+    this.api.deletePath(currentPath.id).subscribe({
+      next: () => {
+        this.isDeletingPath.set(false);
+        this.router.navigate(['/mis-rutas']);
+      }, error: (err) => {
+        this.isDeletingPath.set(false);
+        console.error('Error al eliminar la ruta', err);
+      }
+    })
   }
 
 }

@@ -68,4 +68,11 @@ export class PathsApi {
       `${this.baseUrl}/paths/${pathId}/nodes/${nodeId}`
     );
   }
+
+  deletePath(id: string): Observable<void>{
+    return this.http.delete<void>(
+      `${this.baseUrl}/paths/${id}`,
+      { withCredentials: true }
+    );
+  }
 }

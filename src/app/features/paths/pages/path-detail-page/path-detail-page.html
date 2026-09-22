@@ -32,9 +32,20 @@
       <span class="label-mono text-muted-foreground text-sm font-medium">
         {{ activePath.progress }}% completado
       </span>
+      <!-- Boton de Marcar como Favorito -->
       <app-favorite-toggle [pathId]="activePath.id" [isFavorite]="activePath.isFavorite" variant="text"
         (toggled)="activePath.isFavorite = $event">
       </app-favorite-toggle>
+
+      <button hlmBtn variant="outline" size="sm" (click)="deletePath()" [disabled]="isDeletingPath()"
+        class="text-destructive border-destructive/30 hover:bg-destructive/10">
+
+        @if (isDeletingPath()) {
+        Eliminando...
+        } @else {
+        Eliminar ruta
+        }
+      </button>
     </div>
   </header>
 
@@ -82,7 +93,7 @@
             </button>
 
             <!-- Botón de acción inteligente -->
-            @if (node.externalUrl) {
+            <!-- @if (node.externalUrl) {
             <a hlmBtn [variant]="node.isCompleted ? 'outline' : 'default'" [href]="node.externalUrl" target="_blank"
               rel="noopener noreferrer" class="flex items-center gap-2 w-fit">
               {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
@@ -91,7 +102,7 @@
             <button hlmBtn [variant]="node.isCompleted ? 'outline' : 'default'" class="w-fit">
               {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
             </button>
-            }
+            } -->
 
             <!-- BOTON DE ELIMINAR NODO EXTERNO -->
 
@@ -112,7 +123,7 @@
         </div>
       </div>
 
-      <!-- FORMULARIO DE INSERCIÓN (Ahora SÍ está dentro del relative pl-8) -->
+      <!-- FORMULARIO DE INSERCIÓN -->
       <div class="mt-4 mb-6">
 
         @if (insertingAfterId() === node.id) {
