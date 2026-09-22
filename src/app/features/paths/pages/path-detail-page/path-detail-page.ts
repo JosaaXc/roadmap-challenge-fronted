@@ -6,6 +6,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCard } from '@spartan-ng/helm/card';
 import { CommonModule } from '@angular/common';
 import { FavoriteToggleComponent } from '../../components/favorite-toggle/favorite-toggle.component';
+import { finalize } from 'rxjs';
 
 @Component({
   imports: [CommonModule,HlmButton, HlmCard, FavoriteToggleComponent],
@@ -25,6 +26,7 @@ export class PathDetailPage implements OnInit{
   readonly isAddingNodeFormVisible = signal<boolean>(false);
   readonly insertingAfterId = signal<string | null>(null);
   readonly isSubmittingNode = signal<boolean>(false);
+  readonly deletingNodes = signal<Set<string>>(new Set());
 
   readonly newTitle = signal<string>('');
   readonly newUrl = signal<string>('');
@@ -135,4 +137,37 @@ export class PathDetailPage implements OnInit{
       }
     });
   }
+
+  deleteNode(nodeId: string) {
+    const currentPath = this.path();
+    if (!currentPath || this.deletingNodes().has(nodeId)) return;
+
+    // 1. Añadimos el ID al Set para activar el spinner de ese nodo
+    this.deletingNodes.update(set => new Set(set).add(nodeId));
+
+    this.api.deleteExternalNode(currentPath.id, nodeId).pipe(
+      finalize(() => {
+        this.deletingNodes.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(nodeId);
+          return newSet;
+        });
+      })
+    ).subscribe({
+      next: (response) => {
+        this.path.update(p => {
+          if (!p) return p;
+          return {
+            ...p,
+            progress: response.data.progress,
+            nodes: p.nodes.filter(n => n.id !== nodeId)
+          };
+        });
+      },
+      error: (err) => {
+        console.error('No se pudo eliminar el nodo', err);
+      }
+    });
+  }
+
 }

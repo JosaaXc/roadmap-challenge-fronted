@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { AddExternalNodeRequest, AddNodeResponse, PaginatedPathsResponse, SinglePathResponse, ToggleFavoriteResponse, ToggleNodeResponse } from '../models/paths-models';
+import { AddExternalNodeRequest, AddNodeResponse, DeleteNodeResponse, PaginatedPathsResponse, SinglePathResponse, ToggleFavoriteResponse, ToggleNodeResponse } from '../models/paths-models';
 import { Observable } from 'rxjs';
 
 @Service()
@@ -60,6 +60,12 @@ export class PathsApi {
         },
         withCredentials: true
       }
+    );
+  }
+
+  deleteExternalNode(pathId: string, nodeId: string): Observable<DeleteNodeResponse>{
+    return this.http.delete<DeleteNodeResponse>(
+      `${this.baseUrl}/paths/${pathId}/nodes/${nodeId}`
     );
   }
 }

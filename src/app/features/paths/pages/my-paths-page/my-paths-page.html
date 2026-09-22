@@ -8,9 +8,12 @@
       </h1>
       <p class="mt-2 text-muted-foreground">Retoma tus estudios desde donde los dejaste.</p>
     </div>
-    <a hlmBtn routerLink="/cuestionario">
-      Generar Nueva Ruta
-    </a>
+    @if (!isCompletelyEmpty){
+      <a hlmBtn routerLink="/cuestionario">
+        Generar Nueva Ruta
+      </a>
+    }
+
   </header>
 
   <!-- Empty State Global -->
@@ -66,24 +69,9 @@
 
       <!-- Botón de Ordenamiento Individual -->
       @if (list.items().length > 0 && !list.isLoading()) {
-      <button hlmBtn variant="ghost" size="sm" (click)="list.toggleOrder()"
-        class="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+      <button hlmBtn variant="ghost" size="sm" (click)="list.toggleOrder()">
 
-        @if (list.currentOrder() === 'desc') {
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14"></path>
-          <path d="m19 12-7 7-7-7"></path>
-        </svg>
-        Más recientes
-        } @else {
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 19V5"></path>
-          <path d="m5 12 7-7 7 7"></path>
-        </svg>
-        Más antiguas
-        }
+        {{ list.currentOrder() === 'desc' ? 'Más recientes' : 'Más antiguas' }}
       </button>
       }
     </div>

@@ -2,7 +2,7 @@ export interface PathEdge{
   id: string;
   isOptional: boolean;
   sourceNodeId: string;
-  targetNodeId: String;
+  targetNodeId: string;
 }
 
 export interface PathNode {
@@ -13,6 +13,7 @@ export interface PathNode {
   position: number;
   courseId?: any;
   externalUrl?: string | null;
+  deletedAt: string;
 }
 
 export interface LearningPath {
@@ -27,49 +28,34 @@ export interface LearningPath {
   nextStep: string;
   createdAt: string;
   updatedAt?: string;
+  deletedAt: string;
 }
 
-export interface SinglePathResponse {
-  success: boolean;
-  data: LearningPath;
-  meta: {
-    timestamp: string;
-  };
+export interface ApiMeta {
+  timestamp: string;
+  nextCursor?: string;
+  hasNextPage: boolean;
+  take?: number;
 }
 
-export interface PaginatedPathsResponse {
+export interface ApiResponse<T> {
   success: boolean;
-  data: {
-    items: LearningPath[];
-  };
-  meta: {
-    timestamp: string;
-    nextCursor?: string;
-    hasNextPage: boolean;
-    take: number;
-  };
+  data: T;
+  meta: ApiMeta;
 }
 
-export interface ToggleNodeResponse {
-  success: boolean;
-  data: {
-    node: PathNode;
-    progress: number;
-  };
-  meta: {
-    timestamp: string;
-  }
+export interface PaginatedData<T> {
+  items: T[];
 }
 
-export interface ToggleFavoriteResponse {
-  success: boolean;
-  data: {
-    id: string;
-    isFavorite: boolean;
-  };
-  meta: {
-    timestamp: string;
-  };
+export interface NodeUpdateData {
+  node: PathNode;
+  progress: number;
+}
+
+export interface FavoriteUpdateData {
+  id: string;
+  isFavorite: boolean;
 }
 
 export interface AddExternalNodeRequest {
@@ -78,13 +64,20 @@ export interface AddExternalNodeRequest {
   previousNodeId: string;
 }
 
-export interface AddNodeResponse {
-  success: boolean;
-  data: {
-    node: PathNode;
-    progress: number;
-  };
-  meta: {
-    timestamp: string;
-  };
-}
+// GET /paths/:id
+export type SinglePathResponse = ApiResponse<LearningPath>;
+
+// GET /paths (Listado de rutas)
+export type PaginatedPathsResponse = ApiResponse<PaginatedData<LearningPath>>;
+
+// PATCH /paths/:id/favorite
+export type ToggleFavoriteResponse = ApiResponse<FavoriteUpdateData>;
+
+// PATCH /paths/:id/nodes
+export type ToggleNodeResponse = ApiResponse<NodeUpdateData>;
+
+// POST /paths/:id/nodes
+export type AddNodeResponse = ApiResponse<NodeUpdateData>;
+
+// DELETE /paths/:id/nodes/:nodeID
+export type DeleteNodeResponse = ApiResponse<NodeUpdateData>;

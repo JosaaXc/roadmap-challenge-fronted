@@ -92,7 +92,22 @@
               {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
             </button>
             }
+
+            <!-- BOTON DE ELIMINAR NODO EXTERNO -->
+
+            @if (node.type === 'EXTERNAL_LINK') {
+            <button hlmBtn variant="outline" size="sm" (click)="deleteNode(node.id)" [disabled]="deletingNodes().has(node.id)">
+
+              @if (deletingNodes().has(node.id)) {
+              Eliminando...
+              } @else {
+              Eliminar
+              }
+            </button>
+            }
           </div>
+
+
 
         </div>
       </div>
