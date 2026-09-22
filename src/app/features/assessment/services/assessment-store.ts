@@ -1,17 +1,21 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { AssessmentApi } from './assessment-api';
 import { Question, UserAnswer } from '../models/assessment-models';
+import { Router } from '@angular/router';
 
 @Service()
 export class AssessmentStore {
   private readonly api = inject(AssessmentApi);
+  private readonly router = inject(Router);
 
+  private readonly _isSubmitting = signal<boolean>(false);
   private readonly _questions = signal<Question[]>([]);
   private readonly _currentStepIndex = signal<number>(0);
   private readonly _answers = signal<UserAnswer[]>([]);
   private readonly _isLoading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 
+  readonly isSubmitting = this._isSubmitting.asReadonly();
   readonly questions = this._questions.asReadonly();
   readonly currentStepIndex = this._currentStepIndex.asReadonly();
   readonly answers = this._answers.asReadonly();
@@ -72,5 +76,31 @@ export class AssessmentStore {
     if (this._currentStepIndex() > 0){
       this._currentStepIndex.update(idx => idx - 1);
     }
+  }
+
+  submitAssessment() {
+    if(!this.canGoNext() || this._isSubmitting()) return;
+
+    this._isSubmitting.set(true);
+    this._error.set(null);
+
+    this.api.generatePath(this._answers()).subscribe({
+      next: (response) => {
+        this._isSubmitting.set(false);
+        console.log('Respuesta path:', response);
+        this.router.navigate(['mis-rutas', response.data.id]);
+      },
+      error: (err) => {
+        this._isSubmitting.set(false);
+
+        if(err.status === 422) {
+          this._error.set('No encontramos cursos activos que coincidan con tus respuestas. Intenta cambiar alguna opción.');
+        }else if (err.status === 409) {
+          this._error.set('Tu solicitud ya se está procesando.');
+        }else {
+          this._error.set('Hubo un problema la generar tu ruta. Por favor, intenta de nuevo.');
+        }
+      }
+    })
   }
 }

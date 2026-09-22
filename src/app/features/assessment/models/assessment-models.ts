@@ -1,3 +1,5 @@
+import { LearningPath } from "../../paths/models/paths-models";
+
 export interface QuestionnaireOption {
   id: string;
   questionId: string;
@@ -27,4 +29,16 @@ export interface QuestionnaireResponse {
 export interface UserAnswer {
   questionId: string;
   optionId: string;
+}
+
+export interface GeneratePathRequest {
+  answers: UserAnswer[];
+}
+
+export interface GeneratePathResponse {
+  success: boolean;
+  data: LearningPath;
+  meta: {
+    timestamp: string;
+  };
 }

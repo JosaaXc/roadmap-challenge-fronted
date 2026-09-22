@@ -1,0 +1,97 @@
+<section class="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="border-primary h-10 w-10 animate-spin rounded-full border-b-2"></div>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4 text-center">
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  @if (path(); as activePath) {
+    <!-- Cabecera de la Ruta -->
+    <header class="mb-12">
+      <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-foreground">
+        {{ activePath.title }}
+      </h1>
+      <p class="mt-4 text-muted-foreground text-base leading-relaxed">
+        {{ activePath.description }}
+      </p>
+
+      <!-- Resumen de progreso -->
+      <div class="mt-6 flex items-center gap-4">
+        <div class="bg-secondary h-2.5 w-full max-w-xs overflow-hidden rounded-full">
+          <div
+            class="bg-primary h-full rounded-full transition-all duration-500 ease-out"
+            [style.width.%]="activePath.progress">
+          </div>
+        </div>
+        <span class="label-mono text-muted-foreground text-sm font-medium">
+          {{ activePath.progress }}% completado
+        </span>
+      </div>
+    </header>
+
+    <!-- Línea de tiempo de los Cursos (Nodos) -->
+    <div class="relative border-l-2 border-border ml-4 space-y-8 pb-4">
+
+      @for (node of activePath.nodes; track node.id) {
+        <div class="relative pl-8">
+
+          <!-- El punto en la línea de tiempo -->
+          <div
+            class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 bg-background transition-colors"
+            [class.border-primary]="node.isCompleted"
+            [class.border-muted-foreground]="!node.isCompleted"
+            [class.bg-primary]="node.isCompleted">
+          </div>
+
+          <!-- Tarjeta del Curso -->
+          <div hlmCard class="border-border rounded-lg border p-5 shadow-sm transition-all hover:border-primary/50">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+              <div>
+                <span class="label-mono text-xs text-muted-foreground uppercase tracking-wider mb-1 block">
+                  Paso {{ node.position + 1 }}
+                </span>
+                <h3 class="text-lg font-bold text-foreground">
+                  {{ node.title }}
+                </h3>
+              </div>
+
+              <!-- Botón de acción inteligente -->
+              @if (node.externalUrl) {
+                <!-- Si tiene URL, es un enlace que saca al usuario (ej. a Udemy o YouTube) -->
+                <a
+                  hlmBtn
+                  [variant]="node.isCompleted ? 'outline' : 'default'"
+                  [href]="node.externalUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-2 w-fit">
+                  {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+              } @else {
+                <!-- Si no tiene URL, es un botón normal (próximamente abrirá el curso interno) -->
+                <button
+                  hlmBtn
+                  [variant]="node.isCompleted ? 'outline' : 'default'"
+                  class="w-fit">
+                  {{ node.isCompleted ? 'Repasar' : 'Comenzar' }}
+                </button>
+              }
+
+            </div>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  }
+</section>
