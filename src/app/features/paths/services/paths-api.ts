@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { PaginatedPathsResponse, SinglePathResponse, ToggleNodeResponse } from '../models/paths-models';
+import { PaginatedPathsResponse, SinglePathResponse, ToggleFavoriteResponse, ToggleNodeResponse } from '../models/paths-models';
 import { Observable } from 'rxjs';
 
 @Service()
@@ -35,6 +35,14 @@ export class PathsApi {
   toggleNodeCompletion(pathId: string, nodeId: string): Observable<ToggleNodeResponse>{
     return this.http.patch<ToggleNodeResponse>(
       `${this.baseUrl}/paths/${pathId}/nodes/${nodeId}/complete`,
+      {},
+      {withCredentials: true}
+    );
+  }
+
+  togglePathFavorite(pathId: string): Observable<ToggleFavoriteResponse> {
+    return this.http.patch<ToggleFavoriteResponse>(
+      `${this.baseUrl}/paths/${pathId}/favorite`,
       {},
       {withCredentials: true}
     );

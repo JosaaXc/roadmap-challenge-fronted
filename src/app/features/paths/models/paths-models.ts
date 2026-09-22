@@ -60,3 +60,14 @@ export interface ToggleNodeResponse {
     timestamp: string;
   }
 }
+
+export interface ToggleFavoriteResponse {
+  success: boolean;
+  data: {
+    id: string;
+    isFavorite: boolean;
+  };
+  meta: {
+    timestamp: string;
+  };
+}

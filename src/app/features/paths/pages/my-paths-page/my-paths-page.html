@@ -1,5 +1,6 @@
 <section class="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
 
+  <!-- Cabecera Principal -->
   <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
       <h1 class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
@@ -7,106 +8,147 @@
       </h1>
       <p class="mt-2 text-muted-foreground">Retoma tus estudios desde donde los dejaste.</p>
     </div>
-
     <a hlmBtn routerLink="/cuestionario">
       Generar Nueva Ruta
     </a>
   </header>
 
-  <!-- Estado: Cargando inicial -->
-  @if (isLoading()) {
-    <div class="flex justify-center py-20">
-      <div class="border-primary h-10 w-10 animate-spin rounded-full border-b-2"></div>
-    </div>
+  <!-- Empty State Global -->
+  @if (isCompletelyEmpty) {
+  <div
+    class="border-border bg-secondary/50 flex flex-col items-center justify-center rounded-xl border p-12 text-center">
+    <h3 class="text-xl font-bold text-foreground">Aún no tienes rutas</h3>
+    <p class="mt-2 text-muted-foreground max-w-md">
+      Completa nuestro breve cuestionario de habilidades para que te armemos un plan de estudio a medida.
+    </p>
+    <a hlmBtn routerLink="/cuestionario" class="mt-6">Ir al Cuestionario</a>
+  </div>
   }
 
-  <!-- Estado: Error -->
-  @if (error()) {
-    <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4 text-center">
-      <p>{{ error() }}</p>
-      <button hlmBtn variant="link" (click)="loadInitialPaths()" class="mt-2 h-auto p-0">Reintentar</button>
+  <!-- INYECCIÓN DE LAS 3 SECCIONES (Usando la plantilla de abajo) -->
+
+  <!-- 1. Favoritas -->
+  <ng-container
+    *ngTemplateOutlet="pathListSection; context: { list: favorites, title: 'Rutas Destacadas', isHighlighted: true }"></ng-container>
+
+  <!-- 2. Regulares -->
+  <ng-container
+    *ngTemplateOutlet="pathListSection; context: { list: regular, title: 'Tus Rutas', isHighlighted: false }"></ng-container>
+
+  <!-- 3. Compartidas -->
+  <ng-container
+    *ngTemplateOutlet="pathListSection; context: { list: published, title: 'Compartidas con la comunidad', isHighlighted: false }"></ng-container>
+</section>
+
+
+<!-- ====================================================================== -->
+<!-- PLANTILLA REUTILIZABLE (Define cómo se ve una sección y su grilla) -->
+<!-- ====================================================================== -->
+<ng-template #pathListSection let-list="list" let-title="title" let-isHighlighted="isHighlighted">
+
+  <!-- Solo se muestra si está cargando o si tiene al menos 1 ruta -->
+  @if (list.isLoading() || list.items().length > 0) {
+  <div class="mb-12">
+
+    <!-- Cabecera de la Sección (Título y Botón de Ordenar) -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
+        @if (isHighlighted) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+          class="text-yellow-500" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+          </polygon>
+        </svg>
+        }
+        {{ title }}
+      </h2>
+
+      <!-- Botón de Ordenamiento Individual -->
+      @if (list.items().length > 0 && !list.isLoading()) {
+      <button hlmBtn variant="ghost" size="sm" (click)="list.toggleOrder()"
+        class="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+
+        @if (list.currentOrder() === 'desc') {
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14"></path>
+          <path d="m19 12-7 7-7-7"></path>
+        </svg>
+        Más recientes
+        } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19V5"></path>
+          <path d="m5 12 7-7 7 7"></path>
+        </svg>
+        Más antiguas
+        }
+      </button>
+      }
     </div>
-  }
 
-  <!-- Estado: Éxito con datos -->
-  @if (!isLoading() && !error()) {
-
-    <!-- Empty State -->
-    @if (paths().length === 0) {
-      <div class="border-border bg-secondary/50 flex flex-col items-center justify-center rounded-xl border p-12 text-center">
-        <h3 class="text-xl font-bold text-foreground">Aún no tienes rutas</h3>
-        <p class="mt-2 text-muted-foreground max-w-md">
-          Completa nuestro breve cuestionario de habilidades para que te armemos un plan de estudio a medida.
-        </p>
-        <a hlmBtn routerLink="/cuestionario" class="mt-6">Ir al Cuestionario</a>
-      </div>
-    }
+    <!-- Estado: Cargando inicial -->
+    @if (list.isLoading() && list.items().length === 0) {
+    <div class="flex py-10">
+      <div class="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+    </div>
+    } @else {
 
     <!-- Grilla de Tarjetas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (path of paths(); track path.id) {
+    <!-- Agregamos opacity-50 y pointer-events-none cuando está recargando -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200"
+      [class.opacity-50]="list.isLoading()" [class.pointer-events-none]="list.isLoading()">
 
-        <a
-          [routerLink]="['/mis-rutas', path.id]"
-          hlmCard
-          class="border-border hover:border-primary/50 group flex flex-col justify-between rounded-xl border p-5 shadow-sm transition-all hover:shadow-md cursor-pointer block">
+      @for (path of list.items(); track path.id) {
+      <a [routerLink]="['/mis-rutas', path.id]" hlmCard
+        class="group flex flex-col justify-between rounded-xl border p-5 shadow-sm transition-all hover:shadow-md cursor-pointer block"
+        [class.border-yellow-500]="isHighlighted" [class.bg-yellow-500/5]="isHighlighted"
+        [class.border-border]="!isHighlighted">
 
-          <div>
-            <div class="flex items-start justify-between gap-4">
-              <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                {{ path.title }}
-              </h3>
-              <!-- Botón visual para favoritos (puedes aislarlo luego para que no lance la navegación) -->
-              @if (path.isFavorite) {
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500 shrink-0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              }
-            </div>
+        <!-- Contenido de la tarjeta (se queda exactamente igual) -->
+        <div>
+          <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+            {{ path.title }}
+          </h3>
+          <app-favorite-toggle
+            [pathId]="path.id"
+            [isFavorite]="path.isFavorite"
+            variant="icon"
+            (toggled)="ngOnInit()">
+            </app-favorite-toggle>
+          <p class="mt-2 text-sm text-muted-foreground line-clamp-2">{{ path.description }}</p>
 
-            <p class="mt-2 text-sm text-muted-foreground line-clamp-2">
-              {{ path.description }}
-            </p>
-
-            <div class="mt-6 mb-2 flex items-center justify-between text-xs">
-              <span class="label-mono text-muted-foreground">Progreso</span>
-              <span class="font-bold">{{ path.progress }}%</span>
-            </div>
-            <div class="bg-secondary h-1.5 w-full overflow-hidden rounded-full">
-              <div
-                class="bg-primary h-full rounded-full transition-all"
-                [style.width.%]="path.progress">
-              </div>
-            </div>
+          <div class="mt-6 mb-2 flex items-center justify-between text-xs">
+            <span class="label-mono text-muted-foreground">Progreso</span>
+            <span class="font-bold">{{ path.progress }}%</span>
           </div>
-
-          <!-- Pie de la tarjeta -->
-          <div class="mt-6 border-t border-border pt-4">
-            <p class="text-xs font-medium text-foreground line-clamp-1">
-              <span class="text-muted-foreground mr-1 font-normal">Siguiente:</span>
-              {{ path.nextStep }}
-            </p>
+          <div class="bg-secondary h-1.5 w-full overflow-hidden rounded-full">
+            <div class="bg-primary h-full rounded-full transition-all" [style.width.%]="path.progress"></div>
           </div>
-        </a>
+        </div>
+      </a>
       }
     </div>
 
     <!-- Botón Cargar Más -->
-    @if (hasNextPage()) {
-      <div class="mt-12 flex justify-center">
-        <button
-          hlmBtn
-          variant="outline"
-          (click)="loadMore()"
-          [disabled]="isLoadingMore()"
-          class="w-full sm:w-auto min-w-[200px]">
-          @if (isLoadingMore()) {
-            <span class="border-t-transparent mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current"></span>
-            Cargando...
-          } @else {
-            Cargar más rutas
-          }
-        </button>
-      </div>
-    }
-  }
+    @if (list.hasNextPage()) {
+    <div class="mt-8 flex justify-center">
+      <button hlmBtn variant="outline" (click)="list.loadMore()" [disabled]="list.isLoadingMore()"
+        class="w-full sm:w-auto min-w-[200px]">
 
-</section>
+        @if (list.isLoadingMore()) {
+        <span
+          class="border-t-transparent mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current"></span>
+        Cargando...
+        } @else {
+        Cargar más
+        }
+      </button>
+    </div>
+    }
+
+    }
+  </div>
+  }
+</ng-template>

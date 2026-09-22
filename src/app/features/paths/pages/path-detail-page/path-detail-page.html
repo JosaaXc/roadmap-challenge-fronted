@@ -33,6 +33,12 @@
         <span class="label-mono text-muted-foreground text-sm font-medium">
           {{ activePath.progress }}% completado
         </span>
+        <app-favorite-toggle
+        [pathId]="activePath.id"
+        [isFavorite]="activePath.isFavorite"
+        variant="text"
+        (toggled)="activePath.isFavorite = $event">
+        </app-favorite-toggle>
       </div>
     </header>
 

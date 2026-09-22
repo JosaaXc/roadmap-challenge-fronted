@@ -1,0 +1,27 @@
+<button hlmBtn [variant]="variant() === 'text' ? 'outline' : 'ghost'" [size]="variant() === 'text' ? 'default' : 'icon'"
+  (click)="toggle($event)" [disabled]="isToggling()" [class.border-yellow-500]="isFavorite() && variant() === 'text'"
+  [class.text-yellow-500]="isFavorite()" [class.hover:text-yellow-600]="isFavorite()"
+  [title]="isFavorite() ? 'Quitar de favoritos' : 'Añadir a favoritos'">
+
+  @if (isToggling()) {
+  <!-- Spinner -->
+  <span class="border-current inline-block animate-spin rounded-full border-2 border-t-transparent"
+    [class.h-4]="variant() === 'text'" [class.w-4]="variant() === 'text'" [class.mr-2]="variant() === 'text'"
+    [class.h-5]="variant() === 'icon'" [class.w-5]="variant() === 'icon'"></span>
+
+  @if (variant() === 'text') { Guardando... }
+  } @else {
+
+  @if (variant() === 'text') {
+  {{ isFavorite() ? 'Desmarcar favorito' : 'Marcar como favorito' }}
+  } @else {
+  <!-- Icono de Estrella -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+    [attr.fill]="isFavorite() ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+    </polygon>
+  </svg>
+  }
+  }
+</button>

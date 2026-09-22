@@ -5,9 +5,10 @@ import { LearningPath } from '../../models/paths-models';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCard } from '@spartan-ng/helm/card';
 import { CommonModule } from '@angular/common';
+import { FavoriteToggleComponent } from '../../components/favorite-toggle/favorite-toggle.component';
 
 @Component({
-  imports: [CommonModule,HlmButton, HlmCard],
+  imports: [CommonModule,HlmButton, HlmCard, FavoriteToggleComponent],
   standalone: true,
   selector: 'app-path-detail-page',
   templateUrl: './path-detail-page.html',
