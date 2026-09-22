@@ -1,0 +1,102 @@
+<section class="mx-auto w-full max-w-2xl px-4 py-12 sm:px-6 lg:py-20">
+  <div hlmCard class="border-border rounded-lg border px-6 py-10 ring-0 sm:px-10 sm:py-12 shadow-sm">
+
+    <!-- ESTADO: Cargando -->
+    @if (store.isLoading()) {
+      <div class="flex flex-col items-center justify-center py-12">
+        <div class="border-primary h-10 w-10 animate-spin rounded-full border-b-2 mb-4"></div>
+        <p class="text-muted-foreground text-sm leading-relaxed">Preparando tu cuestionario...</p>
+      </div>
+    }
+
+    <!-- ESTADO: Error -->
+    @if (store.error()) {
+      <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4 text-center text-sm">
+        <p>{{ store.error() }}</p>
+        <button hlmBtn variant="link" (click)="store.loadQuestions()" class="mt-2 h-auto p-0">
+          Reintentar
+        </button>
+      </div>
+    }
+
+    <!-- ESTADO: Cuestionario Activo -->
+    @if (!store.isLoading() && store.questions().length > 0) {
+
+      <!-- Barra de progreso -->
+      <div class="bg-secondary mb-8 h-2 w-full overflow-hidden rounded-full">
+        <div
+          class="bg-primary h-full rounded-full transition-all duration-300 ease-out"
+          [style.width.%]="store.progressPercentage()">
+        </div>
+      </div>
+
+      <!-- Indicador de Paso -->
+      <p class="label-mono text-muted-foreground">
+        Paso {{ store.currentStepIndex() + 1 }} de {{ store.totalSteps() }}
+      </p>
+
+      <!-- Usamos 'as question' para no repetir store.currentQuestion() -->
+      @if (store.currentQuestion(); as question) {
+
+        <!-- Título de la pregunta -->
+        <h2 class="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">
+          {{ question.text }}
+          @if (!question.isRequired) {
+            <span class="text-muted-foreground ml-2 text-sm font-normal tracking-normal">(Opcional)</span>
+          }
+        </h2>
+
+        <!-- Lista de Opciones -->
+        <div class="mt-8 space-y-3">
+          @for (option of question.options; track option.id) {
+            <button
+              type="button"
+              (click)="store.selectOption(question.id, option.id)"
+              class="hover:bg-accent hover:text-accent-foreground text-foreground w-full rounded-lg border px-5 py-4 text-left text-base transition-colors focus:outline-none"
+              [class.border-primary]="isOptionSelected(question.id, option.id)"
+              [class.bg-accent]="isOptionSelected(question.id, option.id)"
+              [class.text-accent-foreground]="isOptionSelected(question.id, option.id)"
+              [class.ring-1]="isOptionSelected(question.id, option.id)"
+              [class.ring-primary]="isOptionSelected(question.id, option.id)"
+              [class.border-border]="!isOptionSelected(question.id, option.id)">
+              {{ option.text }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Controles de Navegación -->
+      <div class="border-border mt-10 flex items-center justify-between border-t pt-8">
+
+        <!-- Botón Atrás (Se deshabilita en el paso 0) -->
+        <button
+          hlmBtn
+          variant="ghost"
+          (click)="store.previousStep()"
+          [disabled]="store.currentStepIndex() === 0"
+          class="bg-background p-2 rounded-sm hover:bg-accent cursor-pointer">
+          Atrás
+        </button>
+
+        <!-- Botones Siguiente / Finalizar (Reaccionan al Signal canGoNext) -->
+        @if (!store.isLastStep()) {
+          <button
+            hlmBtn
+            (click)="store.nextStep()"
+            [disabled]="!store.canGoNext()"
+            class="bg-background p-2 rounded-sm hover:bg-accent cursor-pointer">
+            Siguiente
+          </button>
+        } @else {
+          <button
+            hlmBtn
+            (click)="submitAssessment()"
+            [disabled]="!store.canGoNext()"
+            class="bg-background p-2 rounded-sm hover:bg-accent cursor-pointer">
+            Finalizar
+          </button>
+        }
+      </div>
+    }
+  </div>
+</section>
