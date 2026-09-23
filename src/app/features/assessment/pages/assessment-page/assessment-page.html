@@ -1,107 +1,129 @@
-<section class="mx-auto w-full max-w-2xl px-4 py-12 sm:px-6 lg:py-20">
-  <div hlmCard class="border-border rounded-lg border px-6 py-10 ring-0 sm:px-10 sm:py-12 shadow-sm">
+<!-- Questionnaire bar: the logo and the only way out, so nothing competes with the question -->
+<header
+  class="border-border bg-background sticky top-0 z-10 flex h-16 items-center justify-between border-b px-4 sm:px-6"
+>
+  <a routerLink="/mis-rutas" aria-label="CodeQuest, ir a mis rutas">
+    <app-brand-logo />
+  </a>
 
-    <!-- ESTADO: Cargando -->
-    @if (store.isLoading()) {
-      <div class="flex flex-col items-center justify-center py-12">
-        <div class="border-primary h-10 w-10 animate-spin rounded-full border-b-2 mb-4"></div>
-        <p class="text-muted-foreground text-sm leading-relaxed">Preparando tu cuestionario...</p>
-      </div>
-    }
+  <button hlmBtn variant="ghost" type="button" (click)="saveAndExit()">Guardar y salir</button>
+</header>
 
-    <!-- ESTADO: Error -->
-    @if (store.error()) {
-      <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4 text-center text-sm">
-        <p>{{ store.error() }}</p>
-        <button hlmBtn variant="link" (click)="store.loadQuestions()" class="mt-2 h-auto p-0">
-          Reintentar
-        </button>
-      </div>
-    }
+<section class="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6">
 
-    <!-- ESTADO: Cuestionario Activo -->
-    @if (!store.isLoading() && store.questions().length > 0) {
+  <!-- ESTADO: Cargando -->
+  @if (store.isLoading()) {
+    <div class="flex flex-col items-center justify-center py-12">
+      <div class="border-primary h-10 w-10 animate-spin rounded-full border-b-2 mb-4"></div>
+      <p class="text-muted-foreground text-sm leading-relaxed">Preparando tu cuestionario...</p>
+    </div>
+  }
 
-      <!-- Barra de progreso -->
-      <div class="bg-secondary mb-8 h-2 w-full overflow-hidden rounded-full">
-        <div
-          class="bg-primary h-full rounded-full transition-all duration-300 ease-out"
-          [style.width.%]="store.progressPercentage()">
-        </div>
-      </div>
+  <!-- ESTADO: Error -->
+  @if (store.error()) {
+    <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4 text-center text-sm">
+      <p>{{ store.error() }}</p>
+      <button hlmBtn variant="link" (click)="store.loadQuestions()" class="mt-2 h-auto p-0">
+        Reintentar
+      </button>
+    </div>
+  }
 
-      <!-- Indicador de Paso -->
-      <p class="label-mono text-muted-foreground">
+  <!-- ESTADO: Cuestionario Activo -->
+  @if (!store.isLoading() && store.questions().length > 0) {
+
+    <div class="flex items-center gap-4">
+      <!-- One segment per question. TODO: count only the visible ones once q3 branches -->
+      <ol class="flex flex-1 items-center gap-2" aria-hidden="true">
+        @for (segment of progressSegments(); track segment.id) {
+          <li class="h-1 flex-1 rounded-full" [class]="segment.reached ? 'bg-highlight' : 'bg-border'"></li>
+        }
+      </ol>
+
+      <p class="label-mono text-muted-foreground shrink-0">
         Paso {{ store.currentStepIndex() + 1 }} de {{ store.totalSteps() }}
       </p>
+    </div>
 
-      <!-- Usamos 'as question' para no repetir store.currentQuestion() -->
-      @if (store.currentQuestion(); as question) {
+    <!-- Usamos 'as question' para no repetir store.currentQuestion() -->
+    @if (store.currentQuestion(); as question) {
 
-        <!-- Título de la pregunta -->
-        <h2 class="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">
-          {{ question.text }}
-          @if (!question.isRequired) {
-            <span class="text-muted-foreground ml-2 text-sm font-normal tracking-normal">(Opcional)</span>
-          }
-        </h2>
+      <div class="mt-8 flex items-start gap-3">
+        <h2 class="text-2xl font-extrabold tracking-tight sm:text-3xl">{{ question.text }}</h2>
 
-        <!-- Lista de Opciones -->
-        <div class="mt-8 space-y-3">
-          @for (option of question.options; track option.id) {
-            <button
-              type="button"
-              (click)="store.selectOption(question.id, option.id)"
-              class="hover:bg-accent hover:text-accent-foreground text-foreground w-full rounded-lg border px-5 py-4 text-left text-base transition-colors focus:outline-none"
-              [class.border-primary]="isOptionSelected(question.id, option.id)"
-              [class.bg-accent]="isOptionSelected(question.id, option.id)"
-              [class.text-accent-foreground]="isOptionSelected(question.id, option.id)"
-              [class.ring-1]="isOptionSelected(question.id, option.id)"
-              [class.ring-primary]="isOptionSelected(question.id, option.id)"
-              [class.border-border]="!isOptionSelected(question.id, option.id)">
-              {{ option.text }}
-            </button>
-          }
-        </div>
-      }
+        @if (!question.isRequired) {
+          <span class="label-mono text-muted-foreground mt-2 shrink-0">Opcional</span>
+        }
+      </div>
 
-      <!-- Controles de Navegación -->
-      <div class="border-border mt-10 flex items-center justify-between border-t pt-8">
+      <p class="text-muted-foreground mt-3 text-sm leading-relaxed">
+        Elige una opción. Puedes cambiarla antes de generar la ruta.
+      </p>
 
-        <!-- Botón Atrás (Se deshabilita en el paso 0) -->
-        <button
-          hlmBtn
-          variant="ghost"
-          (click)="store.previousStep()"
-          [disabled]="store.currentStepIndex() === 0"
-          class="bg-background p-2 rounded-sm hover:bg-accent cursor-pointer">
+      <!-- Single choice, so it is a radio group -->
+      <div
+        hlmRadioGroup
+        class="mt-6 grid gap-3"
+        [value]="selectedOptionId(question.id)"
+        (valueChange)="onOptionSelected(question.id, $event)"
+      >
+        @for (option of question.options; track option.id) {
+          <label
+            class="bg-card border-border hover:border-muted-foreground has-checked:border-highlight has-checked:ring-highlight has-checked:bg-card-raised has-focus-visible:ring-ring has-focus-visible:ring-offset-background flex min-h-16 cursor-pointer items-center rounded-lg border px-5 py-4.5 transition-colors has-checked:ring-1 has-focus-visible:ring-2 has-focus-visible:ring-offset-2"
+          >
+            <hlm-radio
+              [value]="option.id"
+              class="flex w-full flex-row-reverse items-center justify-between gap-4"
+            >
+              <!-- Own indicator: the helm one paints its dot with `primary`, which is not the selection colour here -->
+              <span
+                indicator
+                class="border-border text-background group-data-[checked=true]:border-highlight group-data-[checked=true]:bg-highlight flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors"
+              >
+                <ng-icon
+                  name="lucideCheck"
+                  size="12px"
+                  class="opacity-0 transition-opacity group-data-[checked=true]:opacity-100"
+                  aria-hidden="true"
+                />
+              </span>
+
+              <span class="text-base font-medium">{{ option.text }}</span>
+            </hlm-radio>
+          </label>
+        }
+      </div>
+    }
+
+    <!-- Controles de Navegación -->
+    <div class="border-border mt-8 flex items-center justify-end gap-3 border-t pt-6">
+
+      <!-- Nothing to go back to on the first step, so the button is absent rather than dead -->
+      @if (store.currentStepIndex() > 0) {
+        <button hlmBtn variant="outline" type="button" (click)="store.previousStep()" class="mr-auto">
           Atrás
         </button>
+      }
 
-        <!-- Botones Siguiente / Finalizar (Reaccionan al Signal canGoNext) -->
-        @if (!store.isLastStep()) {
-          <button
-            hlmBtn
-            (click)="store.nextStep()"
-            [disabled]="!store.canGoNext()"
-            class="bg-background p-2 rounded-sm hover:bg-accent cursor-pointer">
-            Siguiente
-          </button>
-        } @else {
-          <button
-            hlmBtn
-            (click)="store.submitAssessment()"
-            [disabled]="!store.canGoNext() || store.isSubmitting()"
-            class="bg-background p-2 rounded-sm hover:bg-accent cursor-pointer">
-            @if (store.isSubmitting()) {
+      @if (!store.isLastStep()) {
+        <button hlmBtn type="button" (click)="store.nextStep()" [disabled]="!store.canGoNext()">
+          Siguiente
+        </button>
+      } @else {
+        <button
+          hlmBtn
+          type="button"
+          (click)="store.submitAssessment()"
+          [disabled]="!store.canGoNext() || store.isSubmitting()"
+        >
+          @if (store.isSubmitting()) {
             <span class="border-t-transparent mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current"></span>
             Generando...
           } @else {
             Finalizar
           }
-          </button>
-        }
-      </div>
-    }
-  </div>
+        </button>
+      }
+    </div>
+  }
 </section>
