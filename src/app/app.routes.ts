@@ -20,6 +20,16 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
 
+  // Cuestionario: sin layout, porque es un flujo enfocado con su propia barra de salida
+  {
+    path: 'cuestionario',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/assessment/pages/assessment-page/assessment-page').then(
+        (m) => m.AssessmentPage,
+      ),
+  },
+
   // Shell autenticado
   {
     path: '',
@@ -29,13 +39,6 @@ export const routes: Routes = [
       {
         path: 'mis-rutas',
         loadChildren: () => import('./features/paths/paths.routes').then((m) => m.pathsRoutes),
-      },
-      {
-        path: 'cuestionario',
-        loadComponent: () =>
-          import('./features/assessment/pages/assessment-page/assessment-page').then(
-            (m) => m.AssessmentPage,
-          ),
       },
       {
         path: 'admin',
