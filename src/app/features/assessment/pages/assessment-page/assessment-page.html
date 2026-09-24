@@ -10,33 +10,52 @@
 </header>
 
 <section class="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6">
-
   <!-- ESTADO: Cargando -->
   @if (store.isLoading()) {
-    <div class="flex flex-col items-center justify-center py-12">
-      <div class="border-primary h-10 w-10 animate-spin rounded-full border-b-2 mb-4"></div>
-      <p class="text-muted-foreground text-sm leading-relaxed">Preparando tu cuestionario...</p>
+    <!-- The skeleton holds the shape of the step, so the question lands without a jump -->
+    <div class="flex items-center gap-4">
+      <div class="flex flex-1 items-center gap-2">
+        @for (placeholder of skeletonSteps; track $index) {
+          <hlm-skeleton class="h-1 flex-1 rounded-full" />
+        }
+      </div>
+      <hlm-skeleton class="h-3 w-24" />
     </div>
-  }
 
-  <!-- ESTADO: Error -->
-  @if (store.error()) {
-    <div class="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-4 text-center text-sm">
-      <p>{{ store.error() }}</p>
-      <button hlmBtn variant="link" (click)="store.loadQuestions()" class="mt-2 h-auto p-0">
+    <hlm-skeleton class="mt-8 h-8 w-4/5" />
+    <hlm-skeleton class="mt-3 h-4 w-3/5" />
+
+    <div class="mt-6 grid gap-3">
+      @for (placeholder of skeletonOptions; track $index) {
+        <hlm-skeleton class="h-16 rounded-lg" />
+      }
+    </div>
+  } @else if (store.error() && store.questions().length === 0) {
+    <!-- Nothing loaded: the retry belongs here, because there is no other way forward -->
+    <div hlmAlert variant="destructive">
+      <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+      <h2 hlmAlertTitle>No pudimos preparar tu cuestionario</h2>
+      <p hlmAlertDescription>{{ store.error() }}</p>
+      <button
+        hlmBtn
+        variant="outline"
+        size="sm"
+        type="button"
+        hlmAlertAction
+        (click)="store.loadQuestions()"
+      >
         Reintentar
       </button>
     </div>
-  }
-
-  <!-- ESTADO: Cuestionario Activo -->
-  @if (!store.isLoading() && store.questions().length > 0) {
-
+  } @else if (store.questions().length > 0) {
     <div class="flex items-center gap-4">
       <!-- One segment per question. TODO: count only the visible ones once q3 branches -->
       <ol class="flex flex-1 items-center gap-2" aria-hidden="true">
         @for (segment of progressSegments(); track segment.id) {
-          <li class="h-1 flex-1 rounded-full" [class]="segment.reached ? 'bg-highlight' : 'bg-border'"></li>
+          <li
+            class="h-1 flex-1 rounded-full"
+            [class]="segment.reached ? 'bg-highlight' : 'bg-border'"
+          ></li>
         }
       </ol>
 
@@ -47,7 +66,6 @@
 
     <!-- Usamos 'as question' para no repetir store.currentQuestion() -->
     @if (store.currentQuestion(); as question) {
-
       <div class="mt-8 flex items-start gap-3">
         <h2 class="text-2xl font-extrabold tracking-tight sm:text-3xl">{{ question.text }}</h2>
 
@@ -95,12 +113,29 @@
       </div>
     }
 
+    @if (store.error()) {
+      <!--
+        Generating the path failed: the answers are still on screen and the retry
+        is the button below, so this one only carries the reason
+      -->
+      <div hlmAlert variant="destructive" class="mt-6">
+        <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+        <h2 hlmAlertTitle>No pudimos generar tu ruta</h2>
+        <p hlmAlertDescription>{{ store.error() }}</p>
+      </div>
+    }
+
     <!-- Controles de Navegación -->
     <div class="border-border mt-8 flex items-center justify-end gap-3 border-t pt-6">
-
       <!-- Nothing to go back to on the first step, so the button is absent rather than dead -->
       @if (store.currentStepIndex() > 0) {
-        <button hlmBtn variant="outline" type="button" (click)="store.previousStep()" class="mr-auto">
+        <button
+          hlmBtn
+          variant="outline"
+          type="button"
+          (click)="store.previousStep()"
+          class="mr-auto"
+        >
           Atrás
         </button>
       }
@@ -113,11 +148,12 @@
         <button
           hlmBtn
           type="button"
+          class="gap-2"
           (click)="store.submitAssessment()"
           [disabled]="!store.canGoNext() || store.isSubmitting()"
         >
           @if (store.isSubmitting()) {
-            <span class="border-t-transparent mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current"></span>
+            <hlm-spinner class="text-base" />
             Generando...
           } @else {
             Finalizar
