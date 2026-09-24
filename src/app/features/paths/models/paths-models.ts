@@ -1,19 +1,25 @@
-export interface PathEdge{
+// The API answers with PathResponseDto, which leaves out every soft-delete
+// column: deleted nodes and edges are already filtered by the query itself
+export interface PathEdge {
   id: string;
   isOptional: boolean;
   sourceNodeId: string;
   targetNodeId: string;
 }
 
+// Courses from the catalogue, or links the user added to their own path
+export type PathNodeType = 'DEVTALLES_COURSE' | 'EXTERNAL_LINK';
+
 export interface PathNode {
   id: string;
-  type: string;
+  type: PathNodeType;
   title: string;
   isCompleted: boolean;
   position: number;
   courseId?: any;
+  // Cover of the course behind the node, null on external links
+  imageUrl?: string | null;
   externalUrl?: string | null;
-  deletedAt: string;
 }
 
 export interface LearningPath {
@@ -21,14 +27,16 @@ export interface LearningPath {
   title: string;
   description: string;
   progress: number;
+  // Cover of the first course, kept as the path cover when it was generated
+  imageUrl?: string | null;
   isFavorite: boolean;
   isPublic: boolean;
   nodes: PathNode[];
   edges: PathEdge[];
-  nextStep: string;
+  // Title of the first unfinished node, null once the path is complete
+  nextStep: string | null;
   createdAt: string;
   updatedAt?: string;
-  deletedAt: string;
 }
 
 export interface ApiMeta {
