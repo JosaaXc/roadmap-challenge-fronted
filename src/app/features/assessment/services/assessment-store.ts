@@ -98,7 +98,7 @@ export class AssessmentStore {
         }else if (err.status === 409) {
           this._error.set('Tu solicitud ya se está procesando.');
         }else {
-          this._error.set('Hubo un problema la generar tu ruta. Por favor, intenta de nuevo.');
+          this._error.set('Hubo un problema al generar tu ruta. Por favor, intenta de nuevo.');
         }
       }
     })
