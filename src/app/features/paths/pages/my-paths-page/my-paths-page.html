@@ -1,144 +1,198 @@
-<section class="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
-
-  <!-- Cabecera Principal -->
-  <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<section class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
+  <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
     <div>
-      <h1 class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-        Mis Rutas de Aprendizaje
-      </h1>
-      <p class="mt-2 text-muted-foreground">Retoma tus estudios desde donde los dejaste.</p>
+      <h1 class="text-3xl font-extrabold tracking-tight">Mis rutas</h1>
+      <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+        Retoma tus estudios desde donde los dejaste.
+      </p>
     </div>
-    @if (!isCompletelyEmpty){
-      <a hlmBtn routerLink="/cuestionario">
-        Generar Nueva Ruta
-      </a>
-    }
 
+    <!-- With no paths the empty state already carries the action, and one screen holds one -->
+    @if (store.isLoading() || store.paths().length > 0) {
+      <a hlmBtn routerLink="/cuestionario" class="shrink-0">Generar nueva ruta</a>
+    }
   </header>
 
-  <!-- Empty State Global -->
-  @if (isCompletelyEmpty) {
-  <div
-    class="border-border bg-secondary/50 flex flex-col items-center justify-center rounded-xl border p-12 text-center">
-    <h3 class="text-xl font-bold text-foreground">Aún no tienes rutas</h3>
-    <p class="mt-2 text-muted-foreground max-w-md">
-      Completa nuestro breve cuestionario de habilidades para que te armemos un plan de estudio a medida.
-    </p>
-    <a hlmBtn routerLink="/cuestionario" class="mt-6">Ir al Cuestionario</a>
-  </div>
-  }
-
-  <!-- INYECCIÓN DE LAS 3 SECCIONES (Usando la plantilla de abajo) -->
-
-  <!-- 1. Favoritas -->
-  <ng-container
-    *ngTemplateOutlet="pathListSection; context: { list: favorites, title: 'Rutas Destacadas', isHighlighted: true }"></ng-container>
-
-  <!-- 2. Regulares -->
-  <ng-container
-    *ngTemplateOutlet="pathListSection; context: { list: regular, title: 'Tus Rutas', isHighlighted: false }"></ng-container>
-
-  <!-- 3. Compartidas -->
-  <ng-container
-    *ngTemplateOutlet="pathListSection; context: { list: published, title: 'Compartidas con la comunidad', isHighlighted: false }"></ng-container>
-</section>
-
-
-<!-- ====================================================================== -->
-<!-- PLANTILLA REUTILIZABLE (Define cómo se ve una sección y su grilla) -->
-<!-- ====================================================================== -->
-<ng-template #pathListSection let-list="list" let-title="title" let-isHighlighted="isHighlighted">
-
-  <!-- Solo se muestra si está cargando o si tiene al menos 1 ruta -->
-  @if (list.isLoading() || list.items().length > 0) {
-  <div class="mb-12">
-
-    <!-- Cabecera de la Sección (Título y Botón de Ordenar) -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-      <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
-        @if (isHighlighted) {
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
-          class="text-yellow-500" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon
-            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-          </polygon>
-        </svg>
-        }
-        {{ title }}
-      </h2>
-
-      <!-- Botón de Ordenamiento Individual -->
-      @if (list.items().length > 0 && !list.isLoading()) {
-      <button hlmBtn variant="ghost" size="sm" (click)="list.toggleOrder()">
-
-        {{ list.currentOrder() === 'desc' ? 'Más recientes' : 'Más antiguas' }}
-      </button>
-      }
-    </div>
-
-    <!-- Estado: Cargando inicial -->
-    @if (list.isLoading() && list.items().length === 0) {
-    <div class="flex py-10">
-      <div class="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
-    </div>
-    } @else {
-
-    <!-- Grilla de Tarjetas -->
-    <!-- Agregamos opacity-50 y pointer-events-none cuando está recargando -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200"
-      [class.opacity-50]="list.isLoading()" [class.pointer-events-none]="list.isLoading()">
-
-      @for (path of list.items(); track path.id) {
-      <a [routerLink]="['/mis-rutas', path.id]" hlmCard
-        class="group flex flex-col justify-between rounded-xl border p-5 shadow-sm transition-all hover:shadow-md cursor-pointer block"
-        [class.border-yellow-500]="isHighlighted" [class.bg-yellow-500/5]="isHighlighted"
-        [class.border-border]="!isHighlighted">
-
-        <!-- Contenido de la tarjeta (se queda exactamente igual) -->
-        <div>
-          <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-            {{ path.title }}
-          </h3>
-          <app-favorite-toggle
-            [pathId]="path.id"
-            [isFavorite]="path.isFavorite"
-            variant="icon"
-            (toggled)="ngOnInit()">
-            </app-favorite-toggle>
-          <p class="mt-2 text-sm text-muted-foreground line-clamp-2">{{ path.description }}</p>
-
-          <div class="mt-6 mb-2 flex items-center justify-between text-xs">
-            <span class="label-mono text-muted-foreground">Progreso</span>
-            <span class="font-bold">{{ path.progress }}%</span>
-          </div>
-          <div class="bg-secondary h-1.5 w-full overflow-hidden rounded-full">
-            <div class="bg-primary h-full rounded-full transition-all" [style.width.%]="path.progress"></div>
-          </div>
-          <p class="mt-2 text-sm text-muted-foreground line-clamp-2">Siguiente: {{ path.nextStep }}</p>
-
+  @if (store.isLoading()) {
+    <!-- The skeleton keeps the shape of the grid, so nothing jumps when the data lands -->
+    <div class="mt-8 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      @for (placeholder of skeletonCards; track $index) {
+        <div class="border-border flex flex-col gap-3 rounded-lg border p-5">
+          <hlm-skeleton class="h-5 w-3/4" />
+          <hlm-skeleton class="h-4 w-full" />
+          <hlm-skeleton class="h-3 w-1/3" />
+          <hlm-skeleton class="mt-4 h-1.5 w-full" />
         </div>
-      </a>
       }
     </div>
-
-    <!-- Botón Cargar Más -->
-    @if (list.hasNextPage()) {
-    <div class="mt-8 flex justify-center">
-      <button hlmBtn variant="outline" (click)="list.loadMore()" [disabled]="list.isLoadingMore()"
-        class="w-full sm:w-auto min-w-[200px]">
-
-        @if (list.isLoadingMore()) {
-        <span
-          class="border-t-transparent mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current"></span>
-        Cargando...
-        } @else {
-        Cargar más
-        }
+  } @else if (store.error()) {
+    <div hlmAlert variant="destructive" class="mt-8">
+      <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+      <h2 hlmAlertTitle>No pudimos cargar tus rutas</h2>
+      <p hlmAlertDescription>{{ store.error() }}</p>
+      <button
+        hlmBtn
+        variant="outline"
+        size="sm"
+        type="button"
+        hlmAlertAction
+        (click)="store.load()"
+      >
+        Reintentar
       </button>
     </div>
-    }
+  } @else if (store.paths().length === 0) {
+    <div hlmEmpty class="border-border mt-8 border">
+      <div hlmEmptyHeader>
+        <h2 hlmEmptyTitle class="text-base">Todavía no tienes ninguna ruta</h2>
+        <p hlmEmptyDescription>
+          Responde el cuestionario y armamos una secuencia de cursos que respeta los prerequisitos.
+        </p>
+      </div>
 
+      <div hlmEmptyContent>
+        <a hlmBtn routerLink="/cuestionario">Hacer el cuestionario</a>
+      </div>
+    </div>
+  } @else {
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+      <div
+        hlmToggleGroup
+        type="single"
+        variant="outline"
+        [value]="filter()"
+        [nullable]="false"
+        (valueChange)="onFilterChange($event)"
+      >
+        <!--
+          The helm on-state is bg-muted, which is the same value as the card surface:
+          against this background it reads as no state at all
+        -->
+        <button
+          hlmToggleGroupItem
+          value="all"
+          class="text-muted-foreground data-[state=on]:bg-card-raised data-[state=on]:text-foreground aria-pressed:bg-card-raised aria-pressed:text-foreground"
+        >
+          Todas
+        </button>
+        <button
+          hlmToggleGroupItem
+          value="favorites"
+          class="text-muted-foreground data-[state=on]:bg-card-raised data-[state=on]:text-foreground aria-pressed:bg-card-raised aria-pressed:text-foreground"
+        >
+          Favoritas
+        </button>
+      </div>
+
+      <button hlmBtn variant="ghost" size="sm" type="button" (click)="toggleOrder()">
+        {{ order() === 'desc' ? 'Más recientes' : 'Más antiguas' }}
+        <ng-icon
+          [name]="order() === 'desc' ? 'lucideChevronDown' : 'lucideChevronUp'"
+          size="14px"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+
+    @if (cards().length === 0) {
+      <!-- There are paths, just none under this filter, so the way out is the filter itself -->
+      <div hlmEmpty class="border-border mt-6 border">
+        <div hlmEmptyHeader>
+          <h2 hlmEmptyTitle class="text-base">No marcaste ninguna ruta como favorita</h2>
+          <p hlmEmptyDescription>Usa la estrella de una tarjeta para tenerla a mano.</p>
+        </div>
+
+        <div hlmEmptyContent>
+          <button hlmBtn variant="ghost" type="button" (click)="filter.set('all')">
+            Ver todas las rutas
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="mt-6 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @for (card of cards(); track card.id) {
+          <!--
+          One real link, stretched over the card with a pseudo-element: the star
+          stays clickable above it and there is no button nested inside an anchor
+        -->
+          <article
+            hlmCard
+            class="border-border hover:border-muted-foreground has-[a:focus-visible]:ring-ring relative flex flex-col gap-3 rounded-lg border px-5 ring-0 transition-colors has-[a:focus-visible]:ring-2 [--card-spacing:--spacing(5)]"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <h2 class="line-clamp-2 text-base leading-snug font-semibold">
+                <a
+                  [routerLink]="['/mis-rutas', card.id]"
+                  class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+                >
+                  {{ card.title }}
+                </a>
+              </h2>
+
+              <div class="relative z-10 -mt-1.5 -mr-2 shrink-0">
+                <app-favorite-toggle
+                  [pathId]="card.id"
+                  [isFavorite]="card.isFavorite"
+                  variant="icon"
+                  (toggled)="store.setFavorite(card.id, $event)"
+                />
+              </div>
+            </div>
+
+            <p class="text-muted-foreground truncate text-sm">{{ card.courses }}</p>
+
+            <p class="text-muted-foreground text-xs">
+              {{ card.courseCount }} curso{{ card.courseCount === 1 ? '' : 's' }} ·
+              {{ card.createdAtLabel }}
+            </p>
+
+            <!-- Progress sits at the bottom so every card lines up whatever its title -->
+            <div class="mt-auto pt-1">
+              <div class="flex items-center justify-between gap-3">
+                <span class="label-mono text-muted-foreground">Progreso</span>
+                <span
+                  class="text-xs font-medium tabular-nums"
+                  [class.text-highlight]="card.progress > 0"
+                  [class.text-muted-foreground]="card.progress === 0"
+                  >{{ card.progress }}%</span
+                >
+              </div>
+
+              <hlm-progress [value]="card.progress" class="mt-2 h-1.5">
+                <!-- At 0% the rounded corners of the fill still show as a dot -->
+                @if (card.progress > 0) {
+                  <hlm-progress-indicator class="bg-highlight" />
+                }
+              </hlm-progress>
+
+              @if (card.nextStep) {
+                <p class="text-muted-foreground mt-3 truncate text-xs">
+                  Siguiente: {{ card.nextStep }}
+                </p>
+              } @else {
+                <p class="text-highlight mt-3 flex items-center gap-1.5 text-xs">
+                  <ng-icon name="lucideCheck" size="14px" aria-hidden="true" />
+                  Ruta completada
+                </p>
+              }
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (store.hasNextPage()) {
+        <div class="mt-8 flex justify-center">
+          <button
+            hlmBtn
+            variant="outline"
+            type="button"
+            (click)="store.loadMore()"
+            [disabled]="store.isLoadingMore()"
+          >
+            {{ store.isLoadingMore() ? 'Cargando...' : 'Cargar más' }}
+          </button>
+        </div>
+      }
     }
-  </div>
   }
-</ng-template>
+</section>
