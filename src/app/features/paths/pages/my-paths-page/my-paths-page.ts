@@ -15,27 +15,11 @@ import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { HlmToggleGroupImports } from '@spartan-ng/helm/toggle-group';
 import { FavoriteToggleComponent } from '../../components/favorite-toggle/favorite-toggle.component';
 import { PathProgress } from '../../components/path-progress/path-progress';
-import { LearningPath } from '../../models/paths-models';
+import { PathCard, PathFilter, PathOrder } from '../../models/paths-models';
 import { PathTitlePipe } from '../../pipes/path-title.pipe';
 import { ShortDatePipe } from '../../pipes/short-date.pipe';
 import { PathsStore } from '../../services/paths-store';
-
-type PathFilter = 'all' | 'favorites';
-type PathOrder = 'desc' | 'asc';
-
-// What a card shows, derived from the graph the API returns
-interface PathCard {
-  id: string;
-  title: string;
-  courses: string;
-  courseCount: number;
-  createdAt: string;
-  progress: number;
-  nextStep: string | null;
-  isFavorite: boolean;
-}
-
-const PREVIEW_COURSES = 3;
+import { toPathCard } from '../../utils/path-card';
 
 @Component({
   selector: 'app-my-paths-page',
@@ -72,7 +56,7 @@ export class MyPathsPage implements OnInit {
 
     // The store already sorts newest first, so the other order is its reverse
     const ordered = this.order() === 'desc' ? visible : visible.reverse();
-    return ordered.map((path) => this.toCard(path));
+    return ordered.map(toPathCard);
   });
 
   ngOnInit() {
@@ -86,26 +70,5 @@ export class MyPathsPage implements OnInit {
 
   toggleOrder(): void {
     this.order.update((current) => (current === 'desc' ? 'asc' : 'desc'));
-  }
-
-  private toCard(path: LearningPath): PathCard {
-    // Only catalogue courses count: external links are resources the user added
-    const courses = path.nodes.filter((node) => node.type === 'DEVTALLES_COURSE');
-    const firstTitles = courses.slice(0, PREVIEW_COURSES).map((node) => node.title);
-    const remaining = courses.length - firstTitles.length;
-
-    return {
-      id: path.id,
-      title: path.title,
-      courses:
-        remaining > 0
-          ? `${firstTitles.join(', ')} y ${remaining} curso${remaining === 1 ? '' : 's'} más`
-          : firstTitles.join(', '),
-      courseCount: courses.length,
-      createdAt: path.createdAt,
-      progress: path.progress,
-      nextStep: path.nextStep,
-      isFavorite: path.isFavorite,
-    };
   }
 }
