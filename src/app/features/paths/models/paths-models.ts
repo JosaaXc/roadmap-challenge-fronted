@@ -16,12 +16,12 @@ export interface PathNode {
   title: string;
   isCompleted: boolean;
   position: number;
-  courseId?: any;
+  courseId?: string | null;
   // Cover of the course behind the node, null on external links
   imageUrl?: string | null;
-  // Page of the course on the academy. Not sent yet: the name is a proposal for the backend
-  courseUrl?: string | null;
-  externalUrl?: string | null;
+  // Where the node leads: its page on the academy, or the link the user added. The API
+  // also sends externalUrl, but only on the latter and with this same value
+  url?: string | null;
 }
 
 export interface LearningPath {
@@ -96,8 +96,10 @@ export interface PaginatedData<T> {
   items: T[];
 }
 
+// The progress, add and delete answers send the node as stored: without
+// the imageUrl and url that GET adds
 export interface NodeUpdateData {
-  node: PathNode;
+  node: Omit<PathNode, 'imageUrl' | 'url'>;
   progress: number;
 }
 

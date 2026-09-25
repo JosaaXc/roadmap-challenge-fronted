@@ -23,10 +23,9 @@
         {{ course().title }}
       </h2>
 
-      <!-- The course page is not sent yet: this lights up once the backend adds it -->
-      @if (course().courseUrl; as courseUrl) {
+      @if (course().url; as url) {
         <a
-          [href]="courseUrl"
+          [href]="url"
           target="_blank"
           rel="noopener noreferrer"
           class="text-muted-foreground hover:text-highlight mt-3 inline-flex items-center gap-1.5 text-sm transition-colors"

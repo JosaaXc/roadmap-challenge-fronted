@@ -10,7 +10,7 @@
         class="mt-1 text-sm leading-snug font-semibold"
         [class.text-muted-foreground]="resource().isCompleted"
       >
-        @if (resource().externalUrl; as url) {
+        @if (resource().url; as url) {
           <!--
             Underlined at rest, like every text link in the app. The underline sits on
             the title alone, so it never runs under the gap before the icon
@@ -39,7 +39,7 @@
       </h3>
 
       <!-- Where the link goes, so a video reads as a video before anyone opens it -->
-      @if (resource().externalUrl; as url) {
+      @if (resource().url; as url) {
         <p class="text-muted-foreground mt-1 truncate text-xs">{{ url | linkHost }}</p>
       }
     </div>
