@@ -7,7 +7,7 @@ export const SAMPLE_PATH_TOPIC = 'Backend';
 export const SAMPLE_PATH: readonly SuggestedCourse[] = [
   { title: 'JavaScript Moderno', status: 'completed' },
   { title: 'Node y Express', status: 'completed' },
-  { title: 'TypeScript: Tu guía completa', status: 'in-progress', progress: 40 },
+  { title: 'TypeScript: Tu guía completa', status: 'next' },
   {
     title: 'Nest: backend escalable',
     status: 'locked',

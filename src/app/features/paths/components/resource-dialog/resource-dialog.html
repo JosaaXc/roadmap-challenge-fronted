@@ -1,0 +1,58 @@
+<!-- Reopening starts clean: the form resets whenever the dialog closes -->
+<hlm-dialog (closed)="form.reset()">
+  <hlm-dialog-content
+    *hlmDialogPortal="let ctx"
+    class="border-border rounded-lg border ring-0 sm:max-w-md"
+  >
+    <hlm-dialog-header>
+      <h2 hlmDialogTitle>Agregar recurso</h2>
+      <p hlmDialogDescription>Se agrega debajo de «{{ parent()?.title }}».</p>
+    </hlm-dialog-header>
+
+    <form [formGroup]="form" (ngSubmit)="submit(ctx)">
+      <div hlmFieldGroup>
+        <hlm-field>
+          <label hlmFieldLabel for="resource-title">Título</label>
+          <input
+            hlmInput
+            id="resource-title"
+            class="h-10"
+            formControlName="title"
+            [attr.maxlength]="titleMaxLength"
+            placeholder="Ej: Documentación de Angular"
+            autocomplete="off"
+          />
+          <p hlmFieldDescription>Hasta {{ titleMaxLength }} caracteres.</p>
+          <hlm-field-error validator="required">Escribe un título.</hlm-field-error>
+        </hlm-field>
+
+        <hlm-field>
+          <label hlmFieldLabel for="resource-url">URL</label>
+          <input
+            hlmInput
+            id="resource-url"
+            type="url"
+            class="h-10"
+            formControlName="url"
+            placeholder="https://..."
+            autocomplete="off"
+          />
+          <hlm-field-error validator="required">Pega el enlace del recurso.</hlm-field-error>
+          <hlm-field-error validator="pattern">
+            Tiene que empezar con http:// o https://.
+          </hlm-field-error>
+        </hlm-field>
+      </div>
+
+      <hlm-dialog-footer class="mt-6">
+        <button hlmBtn variant="ghost" type="button" hlmDialogClose>Cancelar</button>
+        <button hlmBtn type="submit" class="gap-2" [disabled]="store.isAddingResource()">
+          @if (store.isAddingResource()) {
+            <hlm-spinner class="text-base" />
+          }
+          Agregar recurso
+        </button>
+      </hlm-dialog-footer>
+    </form>
+  </hlm-dialog-content>
+</hlm-dialog>

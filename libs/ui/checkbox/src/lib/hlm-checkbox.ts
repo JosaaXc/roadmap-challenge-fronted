@@ -69,9 +69,11 @@ export const HLM_CHECKBOX_VALUE_ACCESSOR = {
 export class HlmCheckbox implements ControlValueAccessor {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
+  // Checked uses highlight, not primary: the violet gives less than 3:1 against the card surfaces
+  // The pointer is ours too: helm ships cursor-default, which beats the base rule for buttons
   protected readonly _computedClass = computed(() =>
     hlm(
-      'border-input dark:bg-input/30 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary data-[matches-spartan-invalid=true]:aria-checked:border-primary data-[matches-spartan-invalid=true]:border-destructive dark:data-[matches-spartan-invalid=true]:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/50 data-[matches-spartan-invalid=true]:ring-destructive/20 dark:data-[matches-spartan-invalid=true]:ring-destructive/40 flex size-4 items-center justify-center rounded-[4px] border transition-colors group-has-disabled/field:opacity-50 focus-visible:ring-3 data-[matches-spartan-invalid=true]:ring-3 peer shrink-0 cursor-default outline-none disabled:cursor-not-allowed disabled:opacity-50',
+      'border-input dark:bg-input/30 data-checked:bg-highlight data-checked:text-background dark:data-checked:bg-highlight data-checked:border-highlight data-[matches-spartan-invalid=true]:aria-checked:border-highlight data-[matches-spartan-invalid=true]:border-destructive dark:data-[matches-spartan-invalid=true]:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/50 data-[matches-spartan-invalid=true]:ring-destructive/20 dark:data-[matches-spartan-invalid=true]:ring-destructive/40 flex size-4 items-center justify-center rounded-[4px] border transition-colors group-has-disabled/field:opacity-50 focus-visible:ring-3 data-[matches-spartan-invalid=true]:ring-3 peer shrink-0 cursor-pointer outline-none disabled:cursor-not-allowed disabled:opacity-50',
       this.userClass(),
       this._errorStateClass(),
     ),

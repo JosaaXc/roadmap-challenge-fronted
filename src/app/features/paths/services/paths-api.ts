@@ -65,7 +65,8 @@ export class PathsApi {
 
   deleteExternalNode(pathId: string, nodeId: string): Observable<DeleteNodeResponse>{
     return this.http.delete<DeleteNodeResponse>(
-      `${this.baseUrl}/paths/${pathId}/nodes/${nodeId}`
+      `${this.baseUrl}/paths/${pathId}/nodes/${nodeId}`,
+      { withCredentials: true }
     );
   }
 

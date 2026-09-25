@@ -125,7 +125,7 @@
                   [routerLink]="['/mis-rutas', card.id]"
                   class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
                 >
-                  {{ card.title }}
+                  {{ card.title | pathTitle }}
                 </a>
               </h2>
 
@@ -133,7 +133,6 @@
                 <app-favorite-toggle
                   [pathId]="card.id"
                   [isFavorite]="card.isFavorite"
-                  variant="icon"
                   (toggled)="store.setFavorite(card.id, $event)"
                 />
               </div>
@@ -143,27 +142,12 @@
 
             <p class="text-muted-foreground text-xs">
               {{ card.courseCount }} curso{{ card.courseCount === 1 ? '' : 's' }} ·
-              {{ card.createdAtLabel }}
+              {{ card.createdAt | shortDate }}
             </p>
 
             <!-- Progress sits at the bottom so every card lines up whatever its title -->
             <div class="mt-auto pt-1">
-              <div class="flex items-center justify-between gap-3">
-                <span class="label-mono text-muted-foreground">Progreso</span>
-                <span
-                  class="text-xs font-medium tabular-nums"
-                  [class.text-highlight]="card.progress > 0"
-                  [class.text-muted-foreground]="card.progress === 0"
-                  >{{ card.progress }}%</span
-                >
-              </div>
-
-              <hlm-progress [value]="card.progress" class="mt-2 h-1.5">
-                <!-- At 0% the rounded corners of the fill still show as a dot -->
-                @if (card.progress > 0) {
-                  <hlm-progress-indicator class="bg-highlight" />
-                }
-              </hlm-progress>
+              <app-path-progress [value]="card.progress" />
 
               @if (card.nextStep) {
                 <p class="text-muted-foreground mt-3 truncate text-xs">

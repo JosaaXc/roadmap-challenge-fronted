@@ -1,6 +1,7 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideStar } from '@ng-icons/lucide';
+import { toast } from '@spartan-ng/brain/sonner';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmSpinner } from '@spartan-ng/helm/spinner';
 import { PathsApi } from '../../services/paths-api';
@@ -16,8 +17,6 @@ export class FavoriteToggleComponent {
 
   pathId = input.required<string>();
   isFavorite = input.required<boolean>();
-
-  variant = input<'text' | 'icon'>('icon');
 
   toggled = output<boolean>();
 
@@ -37,7 +36,10 @@ export class FavoriteToggleComponent {
         this.isToggling.set(false);
         this.toggled.emit(response.data.isFavorite);
       },
-      error: () => this.isToggling.set(false),
+      error: () => {
+        this.isToggling.set(false);
+        toast.error('No pudimos actualizar tus favoritos. Intenta de nuevo.');
+      },
     });
   }
 }

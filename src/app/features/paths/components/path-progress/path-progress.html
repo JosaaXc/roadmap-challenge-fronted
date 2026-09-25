@@ -1,0 +1,17 @@
+<div class="flex items-center justify-between gap-3">
+  <span class="label-mono text-muted-foreground">Progreso</span>
+  <!-- Highlight only once there is progress to speak of -->
+  <span
+    class="text-xs font-semibold tabular-nums"
+    [class.text-highlight]="value() > 0"
+    [class.text-muted-foreground]="value() === 0"
+    >{{ value() }}%</span
+  >
+</div>
+
+<hlm-progress [value]="value()" class="mt-2 h-1.5">
+  <!-- At 0% the rounded corners of the fill still show as a dot -->
+  @if (value() > 0) {
+    <hlm-progress-indicator class="bg-highlight" />
+  }
+</hlm-progress>
