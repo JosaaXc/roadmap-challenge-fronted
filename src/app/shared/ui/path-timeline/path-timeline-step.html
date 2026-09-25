@@ -18,21 +18,21 @@
 @switch (state()) {
   @case ('completed') {
     <span
-      class="bg-highlight text-background relative mt-4 flex size-[22px] shrink-0 items-center justify-center rounded-full"
+      class="bg-highlight text-background relative mt-4 flex size-5.5 shrink-0 items-center justify-center rounded-full"
     >
       <ng-icon name="lucideCheck" size="14px" aria-hidden="true" />
     </span>
   }
   @case ('current') {
     <span
-      class="text-highlight bg-background relative mt-4 flex size-[22px] shrink-0 items-center justify-center rounded-full"
+      class="text-highlight bg-background relative mt-4 flex size-5.5 shrink-0 items-center justify-center rounded-full"
     >
       <ng-icon name="lucideCircleDot" size="22px" aria-hidden="true" />
     </span>
   }
   @case ('pending') {
     <span
-      class="border-border text-muted-foreground bg-background relative mt-4 flex size-[22px] shrink-0 items-center justify-center rounded-full border"
+      class="border-border text-muted-foreground bg-background relative mt-4 flex size-5.5 shrink-0 items-center justify-center rounded-full border"
     >
       @if (lockPending()) {
         <ng-icon name="lucideLock" size="11px" aria-hidden="true" />
