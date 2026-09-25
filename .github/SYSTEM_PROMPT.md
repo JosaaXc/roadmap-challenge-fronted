@@ -32,6 +32,7 @@ src/
  │    │    │    ├── constants/               # <feature>-constants.ts (static data, label maps)
  │    │    │    ├── components/              # Section components, feature-local
  │    │    │    ├── pipes/                   # <name>.pipe.ts, display transforms, feature-local
+ │    │    │    ├── utils/                   # Pure functions with their .spec.ts, no state or DI
  │    │    │    └── <feature>.routes.ts      # Lazy routes (multi-page features only)
  │    │
  │    ├── shared/               # Feature-agnostic reusable pieces

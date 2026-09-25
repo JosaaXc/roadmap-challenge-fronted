@@ -36,6 +36,7 @@ src/
  │    │         ├── constants/  # Static content: hardcoded data and label maps
  │    │         ├── components/ # Section components used by that feature's pages
  │    │         ├── pipes/      # Display transforms shared by that feature's pages
+ │    │         ├── utils/      # Pure functions, each tested by its own .spec.ts
  │    │         └── admin.routes.ts         # Lazy route definitions
  │    │
  │    ├── shared/               # Reusable, feature-agnostic pieces
