@@ -1,320 +1,138 @@
 <section class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:py-14">
-  @if (isLoading()) {
-    <!-- The skeleton keeps the shape of the page, so nothing jumps when the path lands -->
-    <hlm-skeleton class="h-8 w-28" />
-    <hlm-skeleton class="mt-6 h-8 w-3/4" />
-    <hlm-skeleton class="mt-3 h-4 w-48" />
-    <hlm-skeleton class="mt-8 h-3 w-full" />
-
-    <div class="mt-10 flex flex-col gap-3">
-      @for (placeholder of skeletonSteps; track $index) {
-        <div class="flex items-start gap-3">
-          <hlm-skeleton class="mt-4 size-[22px] shrink-0 rounded-full" />
-          <hlm-skeleton class="h-20 flex-1 rounded-lg" />
-        </div>
-      }
-    </div>
-  } @else if (notFound()) {
-    <div hlmEmpty class="border-border border">
-      <div hlmEmptyHeader>
-        <h1 hlmEmptyTitle class="text-base">Esta ruta no existe o no tienes acceso</h1>
-        <p hlmEmptyDescription>Puede que la hayas eliminado o que el enlace esté incompleto.</p>
-      </div>
-
-      <div hlmEmptyContent>
-        <a hlmBtn routerLink="/mis-rutas">Volver a Mis rutas</a>
-      </div>
-    </div>
-  } @else if (error()) {
-    <div hlmAlert variant="destructive">
-      <ng-icon name="lucideCircleAlert" aria-hidden="true" />
-      <h1 hlmAlertTitle>No pudimos cargar esta ruta</h1>
-      <p hlmAlertDescription>{{ error() }}</p>
-      <button hlmBtn variant="outline" size="sm" type="button" hlmAlertAction (click)="loadPath()">
-        Reintentar
-      </button>
-    </div>
-  } @else if (path(); as activePath) {
-    <a
-      hlmBtn
-      variant="ghost"
-      size="sm"
-      routerLink="/mis-rutas"
-      class="text-muted-foreground hover:text-foreground -ml-2.5 gap-1"
-    >
-      <ng-icon name="lucideChevronLeft" aria-hidden="true" />
-      Mis rutas
-    </a>
-
-    <header class="mt-6">
-      <div class="flex items-start justify-between gap-4">
-        <!-- One size under the Mis rutas title: path names are long and would take two lines -->
-        <h1 class="text-2xl leading-tight font-extrabold tracking-tight">
-          {{ activePath.title | pathTitle }}
-        </h1>
-
-        <div class="-mt-1 -mr-2 flex shrink-0 items-center">
-          <app-favorite-toggle
-            [pathId]="activePath.id"
-            [isFavorite]="activePath.isFavorite"
-            (toggled)="onFavoriteToggled($event)"
-          />
-
-          <button
-            hlmBtn
-            variant="ghost"
-            size="icon"
-            type="button"
-            class="text-muted-foreground"
-            aria-label="Más acciones de la ruta"
-            [hlmDropdownMenuTrigger]="pathMenu"
-            align="end"
-          >
-            <ng-icon name="lucideEllipsis" size="18px" aria-hidden="true" />
-          </button>
-
-          <ng-template #pathMenu>
-            <!-- "Renombrar" joins this menu once the endpoint exists -->
-            <hlm-dropdown-menu class="min-w-40 shadow-none">
-              <button
-                hlmDropdownMenuItem
-                variant="destructive"
-                [disabled]="isDeletingPath()"
-                (triggered)="deletePathDialog.open()"
-              >
-                <ng-icon name="lucideTrash2" aria-hidden="true" />
-                Eliminar ruta
-              </button>
-            </hlm-dropdown-menu>
-          </ng-template>
-        </div>
-      </div>
-
-      <p class="text-muted-foreground mt-2 text-sm">
-        {{ courseCount() }} curso{{ courseCount() === 1 ? '' : 's' }} · creada el
-        {{ activePath.createdAt | shortDate }}
-      </p>
-
-      <app-path-progress [value]="activePath.progress" class="mt-6" />
-    </header>
-
-    @if (isCompleted()) {
-      <section
-        class="bg-card border-border mt-10 flex flex-col items-center gap-5 rounded-lg border p-6 text-center sm:flex-row sm:text-left"
-      >
-        <app-devi-mascot pose="hello" class="h-24 shrink-0" />
-
-        <h2 class="flex-1 text-lg font-semibold">Completaste esta ruta</h2>
-
-        <a hlmBtn routerLink="/cuestionario" class="shrink-0">Generar una nueva ruta</a>
-      </section>
+  @switch (store.status()) {
+    @case ('loading') {
+      <app-path-detail-skeleton />
     }
 
-    <ol class="mt-10 flex flex-col gap-3" aria-label="Pasos de la ruta">
-      @for (node of nodes(); track node.id; let index = $index, last = $last) {
-        @let state = stepState(node);
+    @case ('not-found') {
+      <div hlmEmpty class="border-border border">
+        <div hlmEmptyHeader>
+          <h1 hlmEmptyTitle class="text-base">Esta ruta no existe o no tienes acceso</h1>
+          <p hlmEmptyDescription>Puede que la hayas eliminado o que el enlace esté incompleto.</p>
+        </div>
 
-        <li appPathTimelineStep [state]="state" [last]="last">
-          <div
-            hlmCard
-            class="rounded-lg border px-4 ring-0 transition-colors [--card-spacing:--spacing(4)] sm:px-5"
-            [class]="
-              state === 'current'
-                ? 'bg-card-raised border-highlight'
-                : 'bg-card border-border hover:border-muted-foreground'
-            "
-          >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-              <div class="min-w-0">
-                <!-- Numbered by order, not by position: positions keep gaps after a deletion -->
-                <p class="flex flex-wrap items-center gap-x-2">
-                  <span class="label-mono text-muted-foreground">Paso {{ index + 1 }}</span>
-                  @if (node.type === 'EXTERNAL_LINK') {
-                    <span class="label-mono text-muted-foreground">· Recurso</span>
-                  }
-                  @if (state === 'current') {
-                    <span class="label-mono text-highlight">· Siguiente</span>
-                  }
-                </p>
+        <div hlmEmptyContent>
+          <a hlmBtn routerLink="/mis-rutas">Volver a Mis rutas</a>
+        </div>
+      </div>
+    }
 
-                <h2
-                  class="mt-1.5 text-base leading-snug font-semibold"
-                  [class.text-muted-foreground]="state === 'completed'"
-                >
-                  @if (node.type === 'EXTERNAL_LINK' && node.externalUrl) {
-                    <a
-                      [href]="node.externalUrl"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="hover:text-highlight underline-offset-4 transition-colors hover:underline"
-                    >
-                      {{ node.title }}
-                      <span class="sr-only">(se abre en otra pestaña)</span>
-                    </a>
-                  } @else {
-                    {{ node.title }}
-                  }
-                </h2>
-
-                <!-- The course page is not sent yet: this lights up once the backend adds it -->
-                @if (node.courseUrl) {
-                  <a
-                    [href]="node.courseUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-muted-foreground hover:text-highlight mt-3 inline-flex items-center gap-1.5 text-sm transition-colors"
-                  >
-                    Ir al curso
-                    <ng-icon name="lucideExternalLink" size="14px" aria-hidden="true" />
-                    <span class="sr-only">(se abre en otra pestaña)</span>
-                  </a>
-                }
-              </div>
-
-              <div class="flex shrink-0 items-center gap-1">
-                <label class="text-muted-foreground flex cursor-pointer items-center gap-2 text-sm">
-                  <hlm-checkbox
-                    #box
-                    [checked]="node.isCompleted"
-                    (checkedChange)="onStepChecked(node, box)"
-                  />
-                  Completado
-                </label>
-
-                @if (node.type === 'EXTERNAL_LINK') {
-                  <button
-                    hlmBtn
-                    variant="ghost"
-                    size="icon-sm"
-                    type="button"
-                    class="text-muted-foreground hover:text-destructive ml-2"
-                    [attr.aria-label]="'Eliminar el recurso ' + node.title"
-                    [disabled]="deletingNodes().has(node.id)"
-                    (click)="pendingResource.set(node); deleteResourceDialog.open()"
-                  >
-                    <ng-icon name="lucideTrash2" aria-hidden="true" />
-                  </button>
-                }
-              </div>
-            </div>
-          </div>
-        </li>
-      }
-    </ol>
-
-    <!-- Lined up with the cards, past the markers: 22px marker plus the 12px gap -->
-    <div class="mt-4 ml-[34px]">
-      <!-- Reopening starts clean: the form resets whenever the dialog closes -->
-      <hlm-dialog (closed)="resourceForm.reset()">
-        <button hlmDialogTrigger hlmBtn variant="outline" type="button" class="gap-1.5">
-          <ng-icon name="lucidePlus" aria-hidden="true" />
-          Agregar recurso
-        </button>
-
-        <hlm-dialog-content
-          *hlmDialogPortal="let ctx"
-          class="border-border rounded-lg border ring-0 sm:max-w-md"
+    @case ('error') {
+      <div hlmAlert variant="destructive">
+        <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+        <h1 hlmAlertTitle>No pudimos cargar esta ruta</h1>
+        <p hlmAlertDescription>Revisa tu conexión e intenta de nuevo.</p>
+        <button
+          hlmBtn
+          variant="outline"
+          size="sm"
+          type="button"
+          hlmAlertAction
+          (click)="store.retry()"
         >
-          <hlm-dialog-header>
-            <h2 hlmDialogTitle>Agregar recurso</h2>
-            <p hlmDialogDescription>Se suma al final de la ruta, después del último paso.</p>
-          </hlm-dialog-header>
+          Reintentar
+        </button>
+      </div>
+    }
 
-          <form [formGroup]="resourceForm" (ngSubmit)="submitResource(ctx)">
-            <div hlmFieldGroup>
-              <hlm-field>
-                <label hlmFieldLabel for="resource-title">Título</label>
-                <input
-                  hlmInput
-                  id="resource-title"
-                  class="h-10"
-                  formControlName="title"
-                  maxlength="100"
-                  placeholder="Ej: Documentación de Angular"
-                  autocomplete="off"
-                />
-                <p hlmFieldDescription>Hasta 100 caracteres.</p>
-                <hlm-field-error validator="required">Escribe un título.</hlm-field-error>
-              </hlm-field>
+    @case ('ready') {
+      @if (store.path(); as path) {
+        <app-path-detail-header
+          [path]="path"
+          [courseCount]="store.courseCount()"
+          [deleting]="store.isDeletingPath()"
+          (favoriteToggled)="store.setFavorite($event)"
+          (deleteRequested)="deletePathDialog.open()"
+        />
 
-              <hlm-field>
-                <label hlmFieldLabel for="resource-url">URL</label>
-                <input
-                  hlmInput
-                  id="resource-url"
-                  type="url"
-                  class="h-10"
-                  formControlName="url"
-                  placeholder="https://..."
-                  autocomplete="off"
-                />
-                <hlm-field-error validator="required">Pega el enlace del recurso.</hlm-field-error>
-                <hlm-field-error validator="pattern">
-                  Tiene que empezar con http:// o https://.
-                </hlm-field-error>
-              </hlm-field>
-            </div>
-
-            <hlm-dialog-footer class="mt-6">
-              <button hlmBtn variant="ghost" type="button" hlmDialogClose>Cancelar</button>
-              <button hlmBtn type="submit" class="gap-2" [disabled]="isSubmittingNode()">
-                @if (isSubmittingNode()) {
-                  <hlm-spinner class="text-base" />
-                }
-                Agregar recurso
-              </button>
-            </hlm-dialog-footer>
-          </form>
-        </hlm-dialog-content>
-      </hlm-dialog>
-    </div>
-
-    <!-- Opened from the menu, which lives in an overlay and cannot hold the dialog itself -->
-    <hlm-alert-dialog #deletePathDialog>
-      <hlm-alert-dialog-content
-        *hlmAlertDialogPortal="let ctx"
-        class="border-border rounded-lg border ring-0"
-      >
-        <hlm-alert-dialog-header>
-          <h2 hlmAlertDialogTitle>¿Eliminar esta ruta?</h2>
-          <p hlmAlertDialogDescription>
-            Se pierde el progreso que marcaste. Esta acción no se puede deshacer.
-          </p>
-        </hlm-alert-dialog-header>
-
-        <hlm-alert-dialog-footer>
-          <button hlmAlertDialogCancel>Cancelar</button>
-          <button hlmAlertDialogAction variant="destructive" (click)="ctx.close(); deletePath()">
-            Eliminar ruta
-          </button>
-        </hlm-alert-dialog-footer>
-      </hlm-alert-dialog-content>
-    </hlm-alert-dialog>
-
-    <!-- One dialog for every resource: the trash button tells it which one first -->
-    <hlm-alert-dialog #deleteResourceDialog>
-      <hlm-alert-dialog-content
-        *hlmAlertDialogPortal="let ctx"
-        class="border-border rounded-lg border ring-0"
-      >
-        <hlm-alert-dialog-header>
-          <h2 hlmAlertDialogTitle>¿Eliminar este recurso?</h2>
-          <p hlmAlertDialogDescription>
-            Se quita de tu ruta y el progreso se recalcula. Esta acción no se puede deshacer.
-          </p>
-        </hlm-alert-dialog-header>
-
-        <hlm-alert-dialog-footer>
-          <button hlmAlertDialogCancel>Cancelar</button>
-          <button
-            hlmAlertDialogAction
-            variant="destructive"
-            (click)="ctx.close(); deletePendingResource()"
+        @if (store.isCompleted()) {
+          <section
+            class="bg-card border-border mt-10 flex flex-col items-center gap-5 rounded-lg border p-6 text-center sm:flex-row sm:text-left"
           >
-            Eliminar recurso
-          </button>
-        </hlm-alert-dialog-footer>
-      </hlm-alert-dialog-content>
-    </hlm-alert-dialog>
+            <app-devi-mascot pose="hello" class="h-24 shrink-0" />
+            <h2 class="flex-1 text-lg font-semibold">Completaste esta ruta</h2>
+            <a hlmBtn routerLink="/cuestionario" class="shrink-0">Generar una nueva ruta</a>
+          </section>
+        }
+
+        <ol class="mt-10 flex flex-col gap-3" aria-label="Pasos de la ruta">
+          @for (
+            entry of store.timeline().courses;
+            track entry.node.id;
+            let index = $index, last = $last
+          ) {
+            @let state = store.stepState(entry.node);
+
+            <li
+              appPathTimelineStep
+              [state]="state"
+              [last]="last && store.timeline().orphans.length === 0"
+            >
+              <app-course-step-card
+                [course]="entry.node"
+                [step]="index + 1"
+                [state]="state"
+                [busy]="store.isToggling(entry.node.id)"
+                (toggled)="store.toggleStep(entry.node.id)"
+                (resourceRequested)="resourceDialog.open(entry.node)"
+              />
+
+              @if (entry.resources.length > 0) {
+                <!-- A dashed branch: these steps are optional material, off the course line -->
+                <ol
+                  class="border-border mt-2 ml-4 flex flex-col gap-2 border-l border-dashed pl-4"
+                  [attr.aria-label]="'Recursos de ' + entry.node.title"
+                >
+                  @for (resource of entry.resources; track resource.id) {
+                    <li>
+                      <app-resource-card
+                        [resource]="resource"
+                        [busy]="store.isToggling(resource.id)"
+                        [deleting]="store.isDeleting(resource.id)"
+                        (toggled)="store.toggleStep(resource.id)"
+                        (deleteRequested)="confirmResourceDeletion(resource, deleteResourceDialog)"
+                      />
+                    </li>
+                  }
+                </ol>
+              }
+            </li>
+          }
+
+          <!-- Resources that lost their parent, after the last course as before -->
+          @for (resource of store.timeline().orphans; track resource.id; let last = $last) {
+            <li appPathTimelineStep [state]="store.stepState(resource)" [last]="last">
+              <app-resource-card
+                [resource]="resource"
+                [busy]="store.isToggling(resource.id)"
+                [deleting]="store.isDeleting(resource.id)"
+                (toggled)="store.toggleStep(resource.id)"
+                (deleteRequested)="confirmResourceDeletion(resource, deleteResourceDialog)"
+              />
+            </li>
+          }
+        </ol>
+
+        <app-resource-dialog #resourceDialog />
+
+        <!-- Opened from the menu, which lives in an overlay and cannot hold the dialog itself -->
+        <app-confirm-dialog
+          #deletePathDialog
+          heading="¿Eliminar esta ruta?"
+          description="Se pierde el progreso que marcaste. Esta acción no se puede deshacer."
+          confirmLabel="Eliminar ruta"
+          (confirmed)="store.deletePath()"
+        />
+
+        <!-- One dialog for every resource: the trash button tells it which one first -->
+        <app-confirm-dialog
+          #deleteResourceDialog
+          heading="¿Eliminar este recurso?"
+          description="Se quita de tu ruta y el progreso se recalcula. Esta acción no se puede deshacer."
+          confirmLabel="Eliminar recurso"
+          (confirmed)="deletePendingResource()"
+        />
+      }
+    }
   }
 </section>
