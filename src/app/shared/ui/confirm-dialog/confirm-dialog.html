@@ -1,0 +1,22 @@
+<hlm-alert-dialog>
+  <hlm-alert-dialog-content
+    *hlmAlertDialogPortal="let ctx"
+    class="border-border rounded-lg border ring-0"
+  >
+    <hlm-alert-dialog-header>
+      <h2 hlmAlertDialogTitle>{{ heading() }}</h2>
+      <p hlmAlertDialogDescription>{{ description() }}</p>
+    </hlm-alert-dialog-header>
+
+    <hlm-alert-dialog-footer>
+      <button hlmAlertDialogCancel>Cancelar</button>
+      <button
+        hlmAlertDialogAction
+        [variant]="destructive() ? 'destructive' : 'default'"
+        (click)="ctx.close(); confirmed.emit()"
+      >
+        {{ confirmLabel() }}
+      </button>
+    </hlm-alert-dialog-footer>
+  </hlm-alert-dialog-content>
+</hlm-alert-dialog>
