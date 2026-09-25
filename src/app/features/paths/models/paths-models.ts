@@ -19,6 +19,8 @@ export interface PathNode {
   courseId?: any;
   // Cover of the course behind the node, null on external links
   imageUrl?: string | null;
+  // Page of the course on the academy. Not sent yet: the name is a proposal for the backend
+  courseUrl?: string | null;
   externalUrl?: string | null;
 }
 
