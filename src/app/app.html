@@ -1,1 +1,9 @@
 <router-outlet />
+
+<!--
+  One toaster for the whole app, so any page can raise a toast without mounting its own.
+  Deferred to idle: sonner costs about 100 kB, and every toast comes after a user action
+-->
+@defer (on idle) {
+  <hlm-toaster theme="dark" />
+}
