@@ -1,0 +1,62 @@
+<a
+  hlmBtn
+  variant="ghost"
+  size="sm"
+  routerLink="/mis-rutas"
+  class="text-muted-foreground hover:text-foreground -ml-2.5 gap-1"
+>
+  <ng-icon name="lucideChevronLeft" aria-hidden="true" />
+  Mis rutas
+</a>
+
+<header class="mt-6">
+  <div class="flex items-start justify-between gap-4">
+    <!-- One size under the Mis rutas title: path names are long and would take two lines -->
+    <h1 class="text-2xl leading-tight font-extrabold tracking-tight">
+      {{ path().title | pathTitle }}
+    </h1>
+
+    <div class="-mt-1 -mr-2 flex shrink-0 items-center">
+      <app-favorite-toggle
+        [pathId]="path().id"
+        [isFavorite]="path().isFavorite"
+        (toggled)="favoriteToggled.emit($event)"
+      />
+
+      <button
+        hlmBtn
+        variant="ghost"
+        size="icon"
+        type="button"
+        class="text-muted-foreground"
+        aria-label="Más acciones de la ruta"
+        [hlmDropdownMenuTrigger]="pathMenu"
+        align="end"
+      >
+        <ng-icon name="lucideEllipsis" size="18px" aria-hidden="true" />
+      </button>
+
+      <ng-template #pathMenu>
+        <!-- "Renombrar" joins this menu once the endpoint exists -->
+        <hlm-dropdown-menu class="min-w-40 shadow-none">
+          <button
+            hlmDropdownMenuItem
+            variant="destructive"
+            [disabled]="deleting()"
+            (triggered)="deleteRequested.emit()"
+          >
+            <ng-icon name="lucideTrash2" aria-hidden="true" />
+            Eliminar ruta
+          </button>
+        </hlm-dropdown-menu>
+      </ng-template>
+    </div>
+  </div>
+
+  <p class="text-muted-foreground mt-2 text-sm">
+    {{ courseCount() }} curso{{ courseCount() === 1 ? '' : 's' }} · creada el
+    {{ path().createdAt | shortDate }}
+  </p>
+
+  <app-path-progress [value]="path().progress" class="mt-6" />
+</header>

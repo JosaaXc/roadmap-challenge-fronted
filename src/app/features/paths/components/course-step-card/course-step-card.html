@@ -1,0 +1,64 @@
+<div
+  hlmCard
+  class="rounded-lg border px-4 ring-0 transition-colors [--card-spacing:--spacing(4)] sm:px-5"
+  [class]="
+    state() === 'current'
+      ? 'bg-card-raised border-highlight'
+      : 'bg-card border-border hover:border-muted-foreground'
+  "
+>
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+    <div class="min-w-0">
+      <p class="flex flex-wrap items-center gap-x-2">
+        <span class="label-mono text-muted-foreground">Paso {{ step() }}</span>
+        @if (state() === 'current') {
+          <span class="label-mono text-highlight">· Siguiente</span>
+        }
+      </p>
+
+      <h2
+        class="mt-1.5 text-base leading-snug font-semibold"
+        [class.text-muted-foreground]="state() === 'completed'"
+      >
+        {{ course().title }}
+      </h2>
+
+      <!-- The course page is not sent yet: this lights up once the backend adds it -->
+      @if (course().courseUrl; as courseUrl) {
+        <a
+          [href]="courseUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-muted-foreground hover:text-highlight mt-3 inline-flex items-center gap-1.5 text-sm transition-colors"
+        >
+          Ir al curso
+          <ng-icon name="lucideExternalLink" size="14px" aria-hidden="true" />
+          <span class="sr-only">(se abre en otra pestaña)</span>
+        </a>
+      }
+    </div>
+
+    <app-step-checkbox
+      [checked]="course().isCompleted"
+      [busy]="busy()"
+      [stepTitle]="course().title"
+      (toggled)="toggled.emit()"
+    />
+  </div>
+
+  <!-- Inside the card, as the course it hangs from is the one the backend needs -->
+  <div>
+    <button
+      hlmBtn
+      variant="ghost"
+      size="sm"
+      type="button"
+      class="text-muted-foreground hover:text-foreground -ml-2.5 gap-1.5"
+      [attr.aria-label]="'Agregar un recurso a ' + course().title"
+      (click)="resourceRequested.emit()"
+    >
+      <ng-icon name="lucidePlus" aria-hidden="true" />
+      Agregar recurso
+    </button>
+  </div>
+</div>
