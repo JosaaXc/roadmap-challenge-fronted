@@ -6,24 +6,29 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideCheck, lucideCircleDot, lucideLock } from '@ng-icons/lucide';
 import { HlmCardImports } from '@spartan-ng/helm/card';
-import { HlmProgressImports } from '@spartan-ng/helm/progress';
+import { TimelineStepState } from '../path-timeline/path-timeline-models';
+import { PathTimelineStep } from '../path-timeline/path-timeline-step';
 import { CourseStatus, SuggestedCourse } from './suggested-path-models';
 
 const COURSE_STATUS_LABEL: Record<CourseStatus, string> = {
   completed: 'Completado',
-  'in-progress': 'En progreso',
+  next: 'Siguiente',
   locked: 'Bloqueado',
+};
+
+// The preview speaks of courses, the timeline of steps: the next course is the current step
+const TIMELINE_STATE: Record<CourseStatus, TimelineStepState> = {
+  completed: 'completed',
+  next: 'current',
+  locked: 'pending',
 };
 
 // A path as a timeline: the rail is cyan up to where the learner stands and grey after it
 @Component({
-  imports: [NgIcon, HlmCardImports, HlmProgressImports],
+  imports: [HlmCardImports, PathTimelineStep],
   selector: 'app-suggested-path-card',
   templateUrl: './suggested-path-card.html',
-  viewProviders: [provideIcons({ lucideCheck, lucideCircleDot, lucideLock })],
   host: { class: 'contents' },
 })
 export class SuggestedPathCard {
@@ -34,6 +39,7 @@ export class SuggestedPathCard {
   readonly compact = input(false, { transform: booleanAttribute });
 
   protected readonly statusLabel = COURSE_STATUS_LABEL;
+  protected readonly timelineState = TIMELINE_STATE;
 
   protected readonly headerLabel = computed(
     () => `${this.compact() ? 'Ruta' : 'Ruta sugerida'} · ${this.topic()}`,
@@ -45,8 +51,8 @@ export class SuggestedPathCard {
     return this.compact() ? `${completed} de ${total}` : `${completed} de ${total} completados`;
   });
 
-  // Holds the path unlit until the card has painted, so flipping it runs one
-  // sequence: the rail is drawn course by course and the bar fills last
+  // Holds the path unlit until the card has painted, so flipping it draws the
+  // rail course by course, as one sequence
   protected readonly pathRevealed = signal(false);
 
   constructor() {
