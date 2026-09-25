@@ -1,34 +1,22 @@
 <button
   hlmBtn
-  [variant]="variant() === 'text' ? 'outline' : 'ghost'"
-  [size]="variant() === 'text' ? 'default' : 'icon'"
+  variant="ghost"
+  size="icon"
   (click)="toggle($event)"
   [disabled]="isToggling()"
   [class]="isFavorite() ? 'text-highlight' : 'text-muted-foreground'"
   [attr.aria-pressed]="isFavorite()"
+  [attr.aria-label]="isFavorite() ? 'Quitar de favoritos' : 'Añadir a favoritos'"
   [title]="isFavorite() ? 'Quitar de favoritos' : 'Añadir a favoritos'"
 >
   @if (isToggling()) {
     <hlm-spinner class="text-base" />
-
-    @if (variant() === 'text') {
-      Guardando...
-    }
   } @else {
-    @if (variant() === 'text') {
-      {{ isFavorite() ? 'Desmarcar favorito' : 'Marcar como favorito' }}
-    } @else {
-      <!--
-        Solid while it is a favourite, outlined otherwise, so the state reads by shape
-        and not by colour alone. The fill goes on the inner svg, which carries its own
-        fill="none" attribute
-      -->
-      <ng-icon
-        name="lucideStar"
-        size="18px"
-        [class]="isFavorite() ? '[&>svg]:fill-current' : ''"
-        aria-hidden="true"
-      />
-    }
+    <ng-icon
+      name="lucideStar"
+      size="18px"
+      [class]="isFavorite() ? '[&>svg]:fill-current' : ''"
+      aria-hidden="true"
+    />
   }
 </button>
