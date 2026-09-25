@@ -106,6 +106,12 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+
+  /* Tailwind v4 dropped the pointer from buttons; this is the restore its upgrade guide gives */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 @layer components {
