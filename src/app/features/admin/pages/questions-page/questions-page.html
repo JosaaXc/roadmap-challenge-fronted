@@ -1,0 +1,190 @@
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+  <h2 class="text-2xl font-bold tracking-tight">Cuestionario</h2>
+
+  <!-- Botón Crear Pregunta -->
+  <button hlmBtn variant="outline" (click)="openCreateDialog()" class="gap-2 w-full sm:w-auto">
+    <ng-icon name="lucidePlus" class="size-5"></ng-icon>
+    Nueva Pregunta
+  </button>
+</div>
+
+<div hlmTableContainer>
+  <table hlmTable>
+    <thead hlmTableHeader>
+      <tr hlmTableRow>
+        <th hlmTableHead class="w-16">Orden</th>
+        <th hlmTableHead>Pregunta</th>
+        <th hlmTableHead>Obligatoria</th>
+        <th hlmTableHead class="text-right">Opciones</th>
+      </tr>
+    </thead>
+
+    <tbody hlmTableBody>
+      @if (store.isLoading()) {
+      <tr hlmTableRow>
+        <td hlmTableCell colspan="5" class="text-center">Cargando preguntas...</td>
+      </tr>
+      } @else {
+      @for (question of store.questions(); track question.id) {
+      <tr hlmTableRow>
+        <td hlmTableCell class="font-medium text-center">{{ question.order }}</td>
+        <td hlmTableCell class="font-medium">{{ question.text }}</td>
+        <td hlmTableCell>
+          <span class="px-2 py-1 rounded-full text-xs">
+            {{ question.isRequired ? 'Sí' : 'No' }}
+          </span>
+        </td>
+        <td hlmTableCell class="text-right">
+          <button hlmBtn variant="outline" size="icon" (click)="openEditDialog(question)" class="mr-2">
+            <ng-icon name="lucideEdit" class="size-4"></ng-icon>
+          </button>
+          <button hlmBtn variant="destructive" size="icon" (click)="deleteQuestion(question)">
+            <ng-icon name="lucideTrash" class="size-4"></ng-icon>
+          </button>
+        </td>
+      </tr>
+      }
+      }
+    </tbody>
+  </table>
+</div>
+
+<hlm-dialog>
+  <button #editDialogTrigger hlmDialogTrigger class="hidden"></button>
+
+  <hlm-dialog-content *hlmDialogPortal="let ctx"
+    class="!w-[95vw] !sm:w-[700px] !max-w-[700px] max-h-[90vh] overflow-y-auto">
+
+    <hlm-dialog-header>
+      <h3 hlmDialogTitle>
+        {{ selectedQuestion() ? 'Editar Pregunta' : 'Crear Nueva Pregunta' }}
+      </h3>
+      <p hlmDialogDescription>
+        Configura la pregunta y sus posibles respuestas para el cuestionario de perfilamiento.
+      </p>
+    </hlm-dialog-header>
+
+    @if (errorMessage()) {
+    <hlm-alert variant="destructive" class="mt-4">
+      <ng-icon name="lucideAlertCircle" hlmAlertIcon></ng-icon>
+      <h4 hlmAlertTitle>Error al guardar</h4>
+      <p hlmAlertDescription>{{ errorMessage() }}</p>
+    </hlm-alert>
+    }
+
+    <!-- FORMULARIO REACTIVO -->
+    <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()" class="space-y-6 my-4">
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <!-- Input de Orden (más pequeño) -->
+        <hlm-field-group class="sm:col-span-1">
+          <hlm-field>
+            <label hlmFieldLabel>Orden *</label>
+            <input hlmInput type="number" min="1" formControlName="order" placeholder="Ej: 1">
+          </hlm-field>
+        </hlm-field-group>
+
+        <!-- Input de Pregunta (ocupa el resto) -->
+        <hlm-field-group class="sm:col-span-3">
+          <hlm-field>
+            <label hlmFieldLabel>Pregunta *</label>
+            <input hlmInput formControlName="text" placeholder="Ej. ¿En qué área te gustaría especializarte?">
+          </hlm-field>
+        </hlm-field-group>
+      </div>
+
+      <div class="flex gap-6">
+        <hlm-field-group>
+          <hlm-field class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 pt-2">
+              <input type="checkbox" id="isRequired" formControlName="isRequired" class="rounded border-input w-4 h-4">
+              <label for="isRequired" class="text-sm font-medium leading-none cursor-pointer">
+                Pregunta Obligatoria
+              </label>
+            </div>
+          </hlm-field>
+        </hlm-field-group>
+
+        <!-- <hlm-field-group>
+          <hlm-field class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 pt-2">
+              <input type="checkbox" id="isActive" formControlName="isActive" class="rounded border-input w-4 h-4">
+              <label for="isActive" class="text-sm font-medium leading-none cursor-pointer">
+                Pregunta Activa
+              </label>
+            </div>
+          </hlm-field>
+        </hlm-field-group> -->
+      </div>
+
+      <hr class="border-border">
+
+      <!-- SECCIÓN DEL FORMARRAY PARA LAS OPCIONES -->
+      <div formArrayName="options" class="space-y-4">
+        <div class="flex justify-between items-center">
+          <h4 class="text-sm font-medium leading-none">Opciones de Respuesta</h4>
+          <button type="button" hlmBtn variant="secondary" size="sm" (click)="addOption()">
+            <ng-icon name="lucidePlus" class="mr-2 size-4"></ng-icon> Agregar Opción
+          </button>
+        </div>
+
+        @for (option of optionsFormArray.controls; track $index) {
+        <div [formGroupName]="$index" class="flex flex-col sm:flex-row gap-3 items-start border p-3 rounded-md bg-muted/30">
+
+          <div class="flex-1 w-full">
+            <label class="text-xs text-muted-foreground mb-1 block">Texto de la Opción</label>
+            <input hlmInput formControlName="text" class="w-full" placeholder="Ej. Frontend (Interfaces y Web)">
+          </div>
+
+          <div class="flex-1 w-full">
+            <label class="text-xs text-muted-foreground mb-1 block">Tags (separados por coma)</label>
+            <input hlmInput formControlName="tagsOutput" class="w-full" placeholder="react, frontend, css">
+          </div>
+
+          <!-- BOTONES DE ACCIÓN INDIVIDUAL -->
+          <div class="flex gap-2 mt-5">
+            <!-- Botón de Guardar Individual (SOLO VISIBLE EN MODO EDICIÓN) -->
+            @if (selectedQuestion()) {
+            <button type="button" hlmBtn variant="ghost" size="icon" (click)="saveSingleOption($index)"
+              [disabled]="processingOptionIndex() === $index || !optionsFormArray.at($index).get('text')?.value || !optionsFormArray.at($index).get('tagsOutput')?.value"
+              title="Guardar esta opción">
+              <ng-icon name="lucideSave" class="size-4"></ng-icon>
+            </button>
+            }
+
+            <!-- Botón de Eliminar -->
+            <button type="button" hlmBtn variant="ghost" size="icon" (click)="removeOption($index)"
+              [disabled]="processingOptionIndex() === $index" class="text-destructive hover:bg-destructive/10"
+              title="Eliminar esta opción">
+              <ng-icon name="lucideTrash" class="size-4"></ng-icon>
+            </button>
+          </div>
+
+        </div>
+        }
+
+        @if (optionsFormArray.length === 0) {
+        <p class="text-sm text-muted-foreground text-center py-4 border border-dashed rounded-md">
+          No hay opciones configuradas. Agrega al menos una.
+        </p>
+        }
+      </div>
+
+    </form>
+
+    <hlm-dialog-footer>
+      <button #closeDialogBtn hlmBtn variant="outline" hlmDialogClose>Cancelar</button>
+
+      <!-- Se deshabilita si el form es inválido, si está guardando, o si no hay opciones -->
+      <button hlmBtn (click)="saveQuestion()"
+        [disabled]="questionForm.invalid || isSaving() || optionsFormArray.length === 0">
+        @if (isSaving()) {
+        Guardando...
+        } @else {
+        {{ selectedQuestion() ? 'Actualizar Pregunta' : 'Crear Pregunta' }}
+        }
+      </button>
+    </hlm-dialog-footer>
+
+  </hlm-dialog-content>
+</hlm-dialog>
