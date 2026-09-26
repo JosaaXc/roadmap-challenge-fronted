@@ -1,0 +1,80 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h2 class="text-2xl font-bold tracking-tight">Rutas Públicas</h2>
+</div>
+
+<div hlmTableContainer>
+  <table hlmTable>
+    <thead hlmTableHeader>
+      <tr hlmTableRow>
+        <th hlmTableHead>Título</th>
+        <th hlmTableHead>Usuario (Creador)</th>
+        <th hlmTableHead class="text-center">Cursos</th>
+        <th hlmTableHead>
+          Fecha de creación
+          <app-sort-toggle [order]="store.currentOrder()" (toggle)="store.toggleOrder()">
+          </app-sort-toggle>
+        </th>
+        <th hlmTableHead class="text-right">Opciones</th>
+      </tr>
+    </thead>
+
+    <tbody hlmTableBody>
+      @if (store.isLoading()) {
+      <tr hlmTableRow>
+        <td hlmTableCell colspan="5" class="text-center py-8 text-muted-foreground">
+          Cargando rutas públicas...
+        </td>
+      </tr>
+      } @else if (store.paths().length === 0) {
+      <tr hlmTableRow>
+        <td hlmTableCell colspan="5" class="text-center py-8 text-muted-foreground">
+          No hay rutas públicas disponibles.
+        </td>
+      </tr>
+      } @else {
+      @for (path of store.paths(); track path.id) {
+      <tr hlmTableRow>
+        <td hlmTableCell class="font-medium">
+          <div class="flex items-center gap-3">
+            <!-- Miniatura de la ruta (opcional pero se ve genial) -->
+            <!-- <img [src]="path.imageUrl" alt="Cover" class="w-10 h-10 rounded object-cover hidden sm:block"> -->
+            <span class="truncate max-w-[200px] sm:max-w-xs" [title]="path.title">
+              {{ path.title }}
+            </span>
+          </div>
+        </td>
+
+        <td hlmTableCell class="text-muted-foreground">
+          @{{ path.owner.username }}
+        </td>
+
+        <td hlmTableCell class="text-center font-semibold">
+          {{ path.nodeCount }}
+        </td>
+
+        <td hlmTableCell>
+          {{ path.createdAt | date:'shortDate' }}
+        </td>
+
+        <td hlmTableCell class="text-right">
+          <!-- Botón Ver Detalle -->
+          <button hlmBtn variant="outline" size="icon" (click)="viewPathDetail(path)" class="mr-2" title="Ver Detalle">
+            <ng-icon name="lucideEye" class="size-4"></ng-icon>
+          </button>
+
+          <!-- Botón Eliminar -->
+          <button hlmBtn variant="destructive" size="icon" (click)="deletePath(path)" title="Eliminar Ruta">
+            <ng-icon name="lucideTrash" class="size-4"></ng-icon>
+          </button>
+        </td>
+      </tr>
+      }
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Paginación -->
+<app-load-more [hasNextPage]="store.hasNextPage()" [isLoadingMore]="store.isLoadingMore()"
+  (loadMore)="store.loadMore()">
+</app-load-more>

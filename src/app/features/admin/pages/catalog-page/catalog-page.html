@@ -1,0 +1,190 @@
+
+  <!-- Barra de búsqueda con icono -->
+
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+  <app-search (search)="store.setSearch($event)" class="w-full"></app-search>
+  <!-- Botón Crear Curso -->
+  <button hlmBtn variant="outline" (click)="openCreateDialog()" class="gap-2 w-full sm:w-auto ">
+    <ng-icon name="lucidePlus" class="size-5"></ng-icon>
+    Nuevo Curso
+  </button>
+</div>
+
+<div hlmTableContainer>
+  <table hlmTable>
+    <thead hlmTableHeader>
+      <tr hlmTableRow>
+        <th hlmTableHead>Título</th>
+        <th hlmTableHead>Nivel</th>
+        <th hlmTableHead>
+          Fecha de creación
+          <!-- Botón de Orden (Asc / Desc) -->
+        <app-sort-toggle [order]="store.currentOrder()" (toggle)="store.toggleOrder()">
+        </app-sort-toggle>
+      </th>
+        <th hlmTableHead class="text-right">Opciones</th>
+      </tr>
+    </thead>
+
+    <tbody hlmTableBody>
+      @if (store.isLoading()) {
+      <tr hlmTableRow>
+        <td hlmTableCell colspan="4" class="text-center">Cargando cursos...</td>
+      </tr>
+      } @else {
+      @for (course of store.courses(); track course.id) {
+      <tr hlmTableRow>
+        <td hlmTableCell class="font-medium">{{ course.title }}</td>
+        <td hlmTableCell>{{ course.level }}</td>
+        <td hlmTableCell>{{ course.createdAt | date:'shortDate' }}</td>
+        <td hlmTableCell class="text-right">
+          <button hlmBtn variant="outline" (click)="openEditDialog(course)" class="gap-2 w-full sm:w-auto">
+            <ng-icon name="lucideEdit" class="size-5"></ng-icon>
+          </button>
+          <button hlmBtn variant="destructive" (click)="deleteCourse(course)" class="gap-2 ml-2 w-full sm:w-auto">
+            <ng-icon name="lucideTrash" class="size-5"></ng-icon>
+          </button>
+        </td>
+      </tr>
+      }
+      }
+    </tbody>
+  </table>
+</div>
+
+<app-load-more
+  [hasNextPage]="store.hasNextPage()"
+  [isLoadingMore]="store.isLoadingMore()"
+  (loadMore)="store.loadMore()">
+</app-load-more>
+
+<hlm-dialog>
+  <button #editDialogTrigger hlmDialogTrigger class="hidden"></button>
+
+  <hlm-dialog-content *hlmDialogPortal="let ctx" class="!w-[95vw] !sm:w-[600px] !max-w-[600px] max-h-[90vh] overflow-y-auto">
+
+    <hlm-dialog-header>
+      <!-- Título Dinámico -->
+      <h3 hlmDialogTitle>
+        {{ selectedCourse() ? 'Editar Curso' : 'Crear Nuevo Curso' }}
+      </h3>
+      <p hlmDialogDescription>
+        {{ selectedCourse() ? 'Modifica los datos del curso.' : 'Completa la información para agregar un curso al catálogo.' }}
+      </p>
+    </hlm-dialog-header>
+
+    @if (errorMessage()) {
+    <hlm-alert variant="destructive" class="mt-4">
+      <ng-icon name="lucideAlertCircle" hlmAlertIcon></ng-icon>
+      <h4 hlmAlertTitle>Error al guardar</h4>
+      <p hlmAlertDescription>{{ errorMessage() }}</p>
+    </hlm-alert>
+    }
+
+    <!-- CONECTAMOS EL FORMULARIO REACTIVO AQUÍ -->
+    <form [formGroup]="courseForm" (ngSubmit)="saveCourse()" class="space-y-4 my-4">
+
+      <hlm-field-group>
+        <hlm-field>
+          <label hlmFieldLabel>Título *</label>
+          <input hlmInput formControlName="title" placeholder="Ej. NestJS: De cero a experto">
+        </hlm-field>
+      </hlm-field-group>
+
+      <hlm-field-group>
+        <hlm-field>
+          <label hlmFieldLabel>Slug</label>
+          <input hlmInput formControlName="slug" placeholder="nest-cero-experto" readonly>
+        </hlm-field>
+      </hlm-field-group>
+
+      <hlm-field-group>
+        <hlm-field>
+          <label hlmFieldLabel>Descripción *</label>
+          <textarea hlmInput formControlName="description" class="min-h-[80px]"
+            placeholder="Breve descripción del curso..."></textarea>
+        </hlm-field>
+      </hlm-field-group>
+
+      <div class="flex flex-col sm:flex-row gap-4">
+        <hlm-field-group>
+          <hlm-field>
+            <label hlmFieldLabel>Nivel *</label>
+
+            <!-- Conectamos el formControlName y el itemToString -->
+            <hlm-select formControlName="level" [itemToString]="levelToString">
+              <!-- El trigger es el botón que se ve en el formulario -->
+              <hlm-select-trigger class="w-full">
+                <hlm-select-value placeholder="Selecciona un nivel" />
+              </hlm-select-trigger>
+
+              <!-- El content es el menú desplegable (Portal lo dibuja encima de todo) -->
+              <hlm-select-content *hlmSelectPortal>
+                <hlm-select-group>
+                  <hlm-select-label>Dificultad del Curso</hlm-select-label>
+
+                  @for (level of levels; track level.value) {
+                  <hlm-select-item [value]="level.value">
+                    {{ level.label }}
+                  </hlm-select-item>
+                  }
+
+                </hlm-select-group>
+              </hlm-select-content>
+            </hlm-select>
+
+          </hlm-field>
+        </hlm-field-group>
+
+        <hlm-field-group>
+          <hlm-field>
+            <label hlmFieldLabel>Tags *</label>
+            <input hlmInput formControlName="tags" placeholder="react, node, docker">
+            <span class="text-xs text-muted-foreground mt-1">Separados por comas</span>
+          </hlm-field>
+        </hlm-field-group>
+      </div>
+
+      <hlm-field-group>
+        <hlm-field>
+          <label hlmFieldLabel>URL Oficial *</label>
+          <input hlmInput formControlName="url" placeholder="https://cursos.devtalles.com/...">
+        </hlm-field>
+      </hlm-field-group>
+
+      <hlm-field-group>
+        <hlm-field>
+          <label hlmFieldLabel>URL Imagen *</label>
+          <input hlmInput formControlName="imageUrl" placeholder="https://...">
+        </hlm-field>
+      </hlm-field-group>
+
+      <!-- <hlm-field-group>
+        <hlm-field>
+          <div class="flex items-center space-x-2 pt-2">
+          <label for="isActive" class="text-sm font-medium leading-none cursor-pointer">
+            Curso Activo (Visible en el catálogo)
+          </label>
+          <input type="checkbox" id="isActive" formControlName="isActive" class="rounded border-input">
+          </div>
+        </hlm-field>
+      </hlm-field-group> -->
+
+    </form>
+
+    <hlm-dialog-footer>
+      <!-- Referencia #closeDialogBtn para cerrarlo desde TS -->
+      <button #closeDialogBtn hlmBtn variant="outline" hlmDialogClose>Cancelar</button>
+
+      <!-- Botón de guardado dinámico -->
+      <button hlmBtn (click)="saveCourse()" [disabled]="courseForm.invalid || isSaving()">
+        @if (isSaving()) {
+        Guardando...
+        } @else {
+        {{ selectedCourse() ? 'Actualizar Curso' : 'Crear Curso' }}
+        }
+      </button>
+    </hlm-dialog-footer>
+
+  </hlm-dialog-content>
+</hlm-dialog>
