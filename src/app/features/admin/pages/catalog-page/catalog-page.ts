@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, DestroyRef, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideAlertCircle, lucideArrowDownAZ, lucideArrowUpAZ, lucideEdit, lucideMoreHorizontal, lucidePlus, lucideSearch, lucideTrash } from '@ng-icons/lucide';
+import { lucideAlertCircle, lucideArrowDownAZ, lucideArrowUpAZ, lucideChevronLeft, lucideEdit, lucideMoreHorizontal, lucidePlus, lucideSearch, lucideTrash } from '@ng-icons/lucide';
 import { CatalogApi } from '../../services/catalog/catalog-api';
 import { Course, CourseDto } from '../../models/catalog-model';
 import { finalize } from 'rxjs';
@@ -19,6 +19,7 @@ import { LoadMoreComponent } from '../../components/load-more/load-more.componen
 import { HlmAlertImports } from '@spartan-ng/helm/alert';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 
 @Component({
   imports: [
@@ -36,8 +37,9 @@ import { HlmSelectImports } from '@spartan-ng/helm/select';
     SearchComponent,
     SortToggleComponent,
     LoadMoreComponent,
-    DatePipe
-  ],
+    DatePipe,
+    BackButtonComponent
+],
   providers: [
     provideIcons({
       lucideMoreHorizontal,

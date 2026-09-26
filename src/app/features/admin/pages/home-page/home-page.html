@@ -2,36 +2,24 @@
 
   <!-- Encabezado de la vista -->
   <div>
-    <h1 class="text-3xl font-bold">Bienvenido al Panel</h1>
+    <h1 class="text-3xl font-bold">Bienvenido al Panel Administrador</h1>
     <p>Selecciona el módulo que deseas gestionar.</p>
   </div>
 
   <!-- Grid de Tarjetas (Cards) -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-    <!-- Tarjeta: Cursos -->
-    <a routerLink="catalog">
-      <h2 class="text-xl font-bold mb-2 text-foreground">Catálogo de Cursos</h2>
-      <p class="text-sm text-muted-foreground leading-relaxed">
-        Añade, edita, actualiza o elimina los cursos oficiales disponibles en la plataforma.
-      </p>
-    </a>
-
-    <!-- Tarjeta: Cuestionario -->
-    <a routerLink="questions">
-      <h2 class="text-xl font-bold">Cuestionario</h2>
-      <p class="text-sm text-muted-foreground leading-relaxed">
-        Gestiona las preguntas, opciones y reglas del Assessment Wizard para los nuevos usuarios.
-      </p>
-    </a>
-
-    <!-- Tarjeta: Rutas -->
-    <a routerLink="public-paths">
-      <h2 class="text-xl font-bold">Rutas Públicas</h2>
-      <p class="text-sm text-muted-foreground leading-relaxed">
-        Administra las rutas de aprendizaje creadas y modera el contenido de la comunidad.
-      </p>
-    </a>
+    @for (card of adminCards; track card.link) {
+    <div hlmCard
+      class="border-border hover:border-muted-foreground has-[a:focus-visible]:ring-ring relative flex flex-col gap-3 rounded-lg border px-5 ring-0 transition-colors has-[a:focus-visible]:ring-2 [--card-spacing:--spacing(5)]">
+      <a [routerLink]="card.link">
+        <h2 class="text-xl font-bold mb-2 text-foreground">{{ card.title }}</h2>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          {{ card.description }}
+        </p>
+      </a>
+    </div>
+    }
 
   </div>
 </div>

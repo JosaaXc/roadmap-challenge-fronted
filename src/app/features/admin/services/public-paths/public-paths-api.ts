@@ -21,7 +21,7 @@ export class PublicPathsApi {
       params = params.set('cursor', cursor);
     }
     return this.http.get<ApiResponse<AdminPathsResponse> & { meta: ApiMeta }>(
-      `${this.baseUrl}/paths/admin/all`,
+      `${this.baseUrl}/paths/community`,
       { params, withCredentials: true },
     );
   }

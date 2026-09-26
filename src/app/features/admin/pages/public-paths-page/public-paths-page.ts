@@ -1,16 +1,17 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Router } from '@angular/router'; // Para la redirección
+import { Router} from '@angular/router';
 import { PublicPathsStore } from '../../services/public-paths/public-paths-store';
 import { AdminPath } from '../../models/public-paths-model';
 
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideEye, lucideTrash, lucideArrowDownAZ, lucideArrowUpAZ } from '@ng-icons/lucide';
+import { lucideEye, lucideTrash, lucideArrowDownAZ, lucideArrowUpAZ, lucideChevronLeft } from '@ng-icons/lucide';
 
 import { SortToggleComponent } from '../../components/sort-toggle/sort-toggle.component';
 import { LoadMoreComponent } from '../../components/load-more/load-more.component';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 
 @Component({
   selector: 'app-public-paths-page',
@@ -22,13 +23,15 @@ import { LoadMoreComponent } from '../../components/load-more/load-more.componen
     SortToggleComponent,
     LoadMoreComponent,
     DatePipe,
-  ],
+    BackButtonComponent
+],
   providers: [
     provideIcons({
       lucideEye,
       lucideTrash,
       lucideArrowDownAZ,
       lucideArrowUpAZ,
+      lucideChevronLeft,
     }),
   ],
   templateUrl: './public-paths-page.html',
