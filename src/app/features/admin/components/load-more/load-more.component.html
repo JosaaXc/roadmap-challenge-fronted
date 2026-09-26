@@ -1,0 +1,12 @@
+@if (hasNextPage) {
+<div class="mt-8 flex justify-center">
+  <button
+    hlmBtn
+    variant="outline"
+    type="button"
+    (click)="loadMore.emit()"
+    [disabled]="isLoadingMore">
+    @if (isLoadingMore) { Cargando más... } @else { Cargar más }
+  </button>
+</div>
+}

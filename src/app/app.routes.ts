@@ -40,12 +40,13 @@ export const routes: Routes = [
         path: 'mis-rutas',
         loadChildren: () => import('./features/paths/paths.routes').then((m) => m.pathsRoutes),
       },
-      {
-        path: 'admin',
-        canActivate: [adminGuard],
-        loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoutes),
-      },
     ],
+  },
+
+  {
+    path: 'admin',
+    canActivate: [authGuard, adminGuard],
+    loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoutes),
   },
 
   {

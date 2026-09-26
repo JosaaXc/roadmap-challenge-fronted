@@ -1,0 +1,4 @@
+<button hlmBtn variant="ghost" size="sm"(click)="toggle.emit()" class="gap-2 w-full sm:w-auto">
+  {{ order === 'desc' ? 'Más recientes' : 'Más antiguas' }}
+  <ng-icon [name]="order === 'desc' ? 'lucideChevronDown' : 'lucideChevronUp'" size="14px" aria-hidden="true" />
+</button>
