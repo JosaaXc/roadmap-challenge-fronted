@@ -3,7 +3,7 @@ import { QuestionsStore } from '../../services/questions/questions-store';
 import { QuestionsApi } from '../../services/questions/questions-api';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Question, QuestionDto } from '../../models/questions-model';
-import { finalize } from 'rxjs'; // <-- Quitamos forkJoin
+import { finalize } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
 import { HlmTableImports } from '@spartan-ng/helm/table';
@@ -23,8 +23,9 @@ import {
   lucidePlus,
   lucideSearch,
   lucideTrash,
-  lucideSave, // <-- Agregamos lucideSave
+  lucideSave,
 } from '@ng-icons/lucide';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 
 @Component({
   selector: 'app-questions-page',
@@ -40,7 +41,8 @@ import {
     HlmAlertImports,
     HlmSelectImports,
     NgIcon,
-  ],
+    BackButtonComponent
+],
   providers: [
     provideIcons({
       lucideMoreHorizontal,
@@ -51,7 +53,7 @@ import {
       lucideEdit,
       lucideTrash,
       lucideAlertCircle,
-      lucideSave, // <-- Proveemos el icono
+      lucideSave,
     }),
   ],
   templateUrl: './questions-page.html',

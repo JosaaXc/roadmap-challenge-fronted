@@ -9,7 +9,9 @@ export class AuthApi {
   private readonly baseUrl = environment.apiUrl;
 
   login(credentials: { identifier: string; password: string}){
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials);
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials,
+      {withCredentials: true}
+    );
   }
 
   register(payload: RegisterPayload){
