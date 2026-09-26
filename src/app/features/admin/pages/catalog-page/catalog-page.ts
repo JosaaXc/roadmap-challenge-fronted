@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, DestroyRef, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideAlertCircle, lucideArrowDownAZ, lucideArrowUpAZ, lucideEdit, lucideMoreHorizontal, lucidePlus, lucideSearch, lucideTrash } from '@ng-icons/lucide';
@@ -36,6 +36,7 @@ import { HlmSelectImports } from '@spartan-ng/helm/select';
     SearchComponent,
     SortToggleComponent,
     LoadMoreComponent,
+    DatePipe
   ],
   providers: [
     provideIcons({

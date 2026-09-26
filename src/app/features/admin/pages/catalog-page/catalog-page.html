@@ -14,7 +14,7 @@
   <table hlmTable>
     <thead hlmTableHeader>
       <tr hlmTableRow>
-        <th hlmTableHead>Titulo</th>
+        <th hlmTableHead>Título</th>
         <th hlmTableHead>Nivel</th>
         <th hlmTableHead>
           Fecha de creación
@@ -36,7 +36,7 @@
       <tr hlmTableRow>
         <td hlmTableCell class="font-medium">{{ course.title }}</td>
         <td hlmTableCell>{{ course.level }}</td>
-        <td hlmTableCell>{{ course.createdAt }}</td>
+        <td hlmTableCell>{{ course.createdAt | date:'shortDate' }}</td>
         <td hlmTableCell class="text-right">
           <button hlmBtn variant="outline" (click)="openEditDialog(course)" class="gap-2 w-full sm:w-auto">
             <ng-icon name="lucideEdit" class="size-5"></ng-icon>
