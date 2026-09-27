@@ -32,14 +32,16 @@
     <hlm-field>
       <div class="flex items-center justify-between gap-3">
         <label hlmFieldLabel>Contraseña</label>
-        <!-- No password recovery page yet, so this stays inert instead of leading to a 404 -->
-        <button type="button" class="text-muted-foreground hover:text-foreground text-xs">
+        <!-- Takes the email already typed, so the first recovery step starts filled in -->
+        <a routerLink="/auth/forgot-password" [queryParams]="{ email: loginForm.controls.identifier.value || null }"
+          class="text-muted-foreground hover:text-foreground text-xs transition-colors">
           ¿Olvidaste tu contraseña?
-        </button>
+        </a>
       </div>
 
       <hlm-input-group class="h-11">
-        <input hlmInputGroupInput class="h-full" [type]="passwordVisible() ? 'text' : 'password'"
+        <!-- Edge adds its own reveal eye to password inputs; this field has one already -->
+        <input hlmInputGroupInput class="h-full [&::-ms-reveal]:hidden" [type]="passwordVisible() ? 'text' : 'password'"
           formControlName="password" placeholder="Tu contraseña" autocomplete="current-password" />
         <hlm-input-group-addon align="inline-end">
           <button hlmInputGroupButton type="button" (click)="togglePassword()"

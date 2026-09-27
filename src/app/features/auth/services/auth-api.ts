@@ -2,7 +2,15 @@ import { HttpClient, HttpContext, HttpHeaders } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { SKIP_SESSION_RECOVERY } from '../../../core/http/http-context-tokens';
-import { AuthResponse, RegisterPayload, UserProfileResponse } from '../models/auth-models';
+import {
+  AuthResponse,
+  ChangePasswordPayload,
+  ForgotPasswordResponse,
+  PasswordUpdatedResponse,
+  RegisterPayload,
+  ResetPasswordPayload,
+  UserProfileResponse,
+} from '../models/auth-models';
 
 @Service()
 export class AuthApi {
@@ -51,5 +59,24 @@ export class AuthApi {
       context: new HttpContext().set(SKIP_SESSION_RECOVERY, true),
       withCredentials: true,
     });
+  }
+
+  // Emails a one-time code. Public, and answers a 429 while the last code is still recent
+  requestPasswordReset(email: string) {
+    return this.http.post<ForgotPasswordResponse>(`${this.baseUrl}/auth/password/forgot`, {
+      email,
+    });
+  }
+
+  resetPassword(payload: ResetPasswordPayload) {
+    return this.http.post<PasswordUpdatedResponse>(`${this.baseUrl}/auth/password/reset`, payload);
+  }
+
+  // Needs the session. The backend then revokes every refresh token of the account
+  changePassword(payload: ChangePasswordPayload) {
+    return this.http.post<PasswordUpdatedResponse>(
+      `${this.baseUrl}/auth/password/change`,
+      payload,
+    );
   }
 }
