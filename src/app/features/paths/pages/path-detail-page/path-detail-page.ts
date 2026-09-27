@@ -1,5 +1,5 @@
 import { Component, inject, input, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleAlert } from '@ng-icons/lucide';
 import { HlmAlertImports } from '@spartan-ng/helm/alert';
@@ -39,9 +39,17 @@ import { PathDetailStore } from '../../services/path-detail-store';
 })
 export class PathDetailPage implements OnInit {
   protected readonly store = inject(PathDetailStore);
+  private readonly route = inject(ActivatedRoute);
 
   // Bound from the :id route parameter
   readonly id = input.required<string>();
+
+  readonly backLink = this.route.snapshot.queryParamMap.get('from') === 'admin-public-paths'
+    ? '/admin/public-paths'
+    : '/mis-rutas';
+  readonly backLabel = this.route.snapshot.queryParamMap.get('from') === 'admin-public-paths'
+    ? 'Volver a rutas públicas'
+    : 'Mis rutas';
 
   // The resource waiting on its confirmation dialog
   protected readonly pendingResource = signal<PathNode | null>(null);

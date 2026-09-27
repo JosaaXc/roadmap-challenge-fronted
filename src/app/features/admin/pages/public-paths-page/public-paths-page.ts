@@ -45,8 +45,9 @@ export class PublicPaths implements OnInit {
   }
 
   viewPathDetail(path: AdminPath) {
-    // Redirige a la vista de detalles. Falta ajustar a la ruta
-    this.router.navigate(['/mis-rutas/', path.id]);
+    this.router.navigate(['/mis-rutas', path.id], {
+      queryParams: { from: 'admin-public-paths' },
+    });
   }
 
   deletePath(path: AdminPath) {
