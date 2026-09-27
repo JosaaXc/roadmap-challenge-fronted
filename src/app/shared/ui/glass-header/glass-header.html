@@ -1,0 +1,17 @@
+<!--
+  Translucent rather than opaque, so the blur has something to show: what scrolls behind
+  stays readable as colour and shape, never as text competing with the bar
+-->
+<header
+  class="border-foreground/10 bg-card/55 pointer-events-auto mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-2 rounded-full border pr-2 pl-4 backdrop-blur-xl backdrop-saturate-150 sm:gap-6 sm:pr-3 sm:pl-7"
+>
+  <div class="flex items-center gap-5">
+    <a [routerLink]="homeLink()" [attr.aria-label]="homeLabel()">
+      <!-- Already inside the bar's outline, so the wordmark drops its own -->
+      <app-brand-logo class="border-0 px-0 sm:px-0" />
+    </a>
+    <span aria-hidden="true" class="bg-foreground/15 hidden h-7 w-px sm:block"></span>
+  </div>
+
+  <ng-content />
+</header>
