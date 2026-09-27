@@ -15,9 +15,8 @@ export class AssessmentApi {
     });
   }
 
-  generatePath(answers: UserAnswer[]): Observable<GeneratePathResponse> {
-    const idempotencyKey = crypto.randomUUID();
-
+  // The caller owns the key: one per attempt, sent again on every retry of that attempt
+  generatePath(answers: UserAnswer[], idempotencyKey: string): Observable<GeneratePathResponse> {
     const headers = new HttpHeaders({
       'Idempotency-Key': idempotencyKey
     });
