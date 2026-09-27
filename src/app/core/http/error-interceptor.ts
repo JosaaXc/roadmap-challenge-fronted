@@ -16,7 +16,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.context.get(SKIP_SESSION_RECOVERY)) {
+      // A wrong password or reset code also answers 401, but it is about what was typed, not
+      // the session: refreshing would end in a logout instead of the message the page shows
+      const isCredentialsAnswer = error.error?.error?.code === 'INVALID_CREDENTIALS';
+
+      if (error.status === 401 && !isCredentialsAnswer && !req.context.get(SKIP_SESSION_RECOVERY)) {
         if (req.url.includes('/auth/refresh')) {
           session.clear();
           void router.navigate(['/auth/login']);
