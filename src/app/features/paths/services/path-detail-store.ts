@@ -11,6 +11,7 @@ import {
   PathNode,
   PathTimeline,
 } from '../models/paths-models';
+import { buildCoverFan } from '../../../shared/ui/cover-fan/build-cover-fan';
 import { withStepFlipped } from '../utils/path-progress';
 import { buildTimeline } from '../utils/path-timeline';
 import { PathsApi } from './paths-api';
@@ -52,6 +53,19 @@ export class PathDetailStore {
 
   // Only catalogue courses count, as on the card: resources are the user's own additions
   readonly courseCount = computed(() => this.timeline().courses.length);
+
+  // The course covers in path order, which the header turns into the journey's colours
+  readonly courseCovers = computed(() =>
+    this.timeline().courses.flatMap((entry) => entry.node.imageUrl ?? []),
+  );
+
+  // The header's fan, which turns to the next course each time the one in front is completed
+  readonly coverFan = computed(() =>
+    buildCoverFan(
+      this.timeline().courses.map((entry) => entry.node),
+      this.currentNodeId(),
+    ),
+  );
 
   readonly isCompleted = computed(() => (this._path()?.progress ?? 0) >= 100);
 
