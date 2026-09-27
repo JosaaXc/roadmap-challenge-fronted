@@ -6,6 +6,8 @@ export type CourseStatus = 'completed' | 'next' | 'locked';
 export interface SuggestedCourse {
   readonly title: string;
   readonly status: CourseStatus;
-  // Course that has to be finished first, only meaningful while the course is locked
+  // Course that has to be finished first, recalled while this one is the one to take now
   readonly unlockAfter?: string;
+  // The catalog course it stands for, so a card can be dressed with its cover
+  readonly slug?: string;
 }
