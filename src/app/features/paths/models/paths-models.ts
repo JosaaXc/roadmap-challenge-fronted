@@ -60,6 +60,12 @@ export interface PathCard {
 // Where the detail page stands while it brings its path
 export type PathDetailStatus = 'loading' | 'ready' | 'not-found' | 'error';
 
+// What a navigation to the detail page can carry. The generation screen sets
+// justGenerated, and only then does the timeline play its entrance
+export interface PathDetailNavigationState {
+  readonly justGenerated?: boolean;
+}
+
 // A resource as the user types it, before the API gives it an id
 export interface NewResource {
   readonly title: string;

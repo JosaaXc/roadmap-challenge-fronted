@@ -1,0 +1,71 @@
+<!-- Fills everything under the questionnaire bar: while it runs there is nothing else to do -->
+<section class="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center px-4 py-10">
+  @switch (status()) {
+    @case ('running') {
+      <app-devi-mascot pose="thinking" class="h-36 sm:h-44" />
+
+      <h2 class="mt-6 text-center text-2xl font-extrabold tracking-tight">Armando tu ruta</h2>
+      <p class="text-muted-foreground mt-2 text-center text-sm">Esto toma unos segundos.</p>
+
+      <!-- The same marker as the path timeline, so the wait already reads like the result -->
+      <ol class="mt-8 flex flex-col gap-3" aria-hidden="true">
+        @for (step of steps; track step; let index = $index, last = $last) {
+          @let state = stepState(index);
+
+          <li appPathTimelineStep [state]="state" [last]="last">
+            <p
+              class="pt-4 text-sm leading-5.5 font-medium motion-safe:transition-colors motion-safe:duration-300"
+              [class]="state === 'pending' ? 'text-muted-foreground' : 'text-foreground'"
+            >
+              {{ step }}
+            </p>
+          </li>
+        }
+      </ol>
+
+      <p class="sr-only" role="status">{{ announcement() }}</p>
+    }
+
+    @case ('no-courses') {
+      <div hlmEmpty class="border-border w-full max-w-md border">
+        <div hlmEmptyHeader>
+          <h2 hlmEmptyTitle class="text-base">No encontramos cursos para esa combinación</h2>
+          <p hlmEmptyDescription>
+            Cambia alguna respuesta y armamos la ruta con lo que sí tiene el catálogo.
+          </p>
+        </div>
+
+        <div hlmEmptyContent>
+          <button #primaryAction hlmBtn type="button" (click)="reviewRequested.emit()">
+            Cambiar respuestas
+          </button>
+        </div>
+      </div>
+    }
+
+    @case ('failed') {
+      <div class="w-full max-w-md">
+        <div hlmAlert variant="destructive">
+          <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+          <h2 hlmAlertTitle>No pudimos generar tu ruta</h2>
+          <p hlmAlertDescription>
+            Se cortó la conexión o el servidor no respondió. Tus respuestas siguen guardadas.
+          </p>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end gap-3">
+          <button
+            hlmBtn
+            variant="outline"
+            type="button"
+            class="mr-auto"
+            (click)="reviewRequested.emit()"
+          >
+            Volver al resumen
+          </button>
+          <button #primaryAction hlmBtn type="button" (click)="retried.emit()">Reintentar</button>
+        </div>
+      </div>
+    }
+  }
+</section>

@@ -2,7 +2,15 @@ import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { classes } from '@spartan-ng/helm/utils';
 
 // Poses of Devi, the DevTalles mascot, each with its own artwork and ratio
-export type DeviPose = 'launch' | 'hello' | 'hello-border' | 'laptop' | 'normal';
+export type DeviPose =
+  | 'launch'
+  | 'hello'
+  | 'hello-border'
+  | 'laptop'
+  | 'normal'
+  | 'thinking'
+  | 'confused'
+  | 'celebrating';
 
 interface DeviArtwork {
   readonly src: string;
@@ -20,6 +28,10 @@ const DEVI_ARTWORK: Record<DeviPose, DeviArtwork> = {
   'hello-border': { src: '/assets/devi/devi-hello-border.svg', width: 293, height: 311 },
   laptop: { src: '/assets/devi/devi-laptop.svg', width: 247, height: 276 },
   normal: { src: '/assets/devi/devi-normal.svg', width: 247, height: 285 },
+  // Raster poses: their only sources were flat images, so they ship as transparent WebP
+  thinking: { src: '/assets/devi/devi-thinking.webp', width: 525, height: 560 },
+  confused: { src: '/assets/devi/devi-confused.webp', width: 525, height: 560 },
+  celebrating: { src: '/assets/devi/devi-celebrating.webp', width: 525, height: 560 },
 };
 
 // Devi, sized by the consumer: `<app-devi-mascot pose="hello" class="h-40" />`

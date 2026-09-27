@@ -13,6 +13,7 @@ import { HlmCard } from '@spartan-ng/helm/card';
 import { HlmEmptyImports } from '@spartan-ng/helm/empty';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { HlmToggleGroupImports } from '@spartan-ng/helm/toggle-group';
+import { DeviMascot } from '../../../../shared/ui/devi-mascot/devi-mascot';
 import { FavoriteToggleComponent } from '../../components/favorite-toggle/favorite-toggle.component';
 import { PathProgress } from '../../components/path-progress/path-progress';
 import { PathCard, PathFilter, PathOrder } from '../../models/paths-models';
@@ -32,6 +33,7 @@ import { toPathCard } from '../../utils/path-card';
     HlmEmptyImports,
     HlmSkeleton,
     HlmToggleGroupImports,
+    DeviMascot,
     FavoriteToggleComponent,
     PathProgress,
     PathTitlePipe,

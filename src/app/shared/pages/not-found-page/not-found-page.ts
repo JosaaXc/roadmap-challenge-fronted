@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { NotFoundState } from '../../ui/not-found-state/not-found-state';
 
 @Component({
-  imports: [RouterLink],
+  imports: [NotFoundState],
   selector: 'app-not-found-page',
   templateUrl: './not-found-page.html',
 })
