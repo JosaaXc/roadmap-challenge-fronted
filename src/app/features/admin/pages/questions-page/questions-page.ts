@@ -14,6 +14,8 @@ import { HlmFieldImports } from '@spartan-ng/helm/field';
 import { HlmInputImports } from '@spartan-ng/helm/input';
 import { HlmAlertImports } from '@spartan-ng/helm/alert';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
+import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
+import { HlmBadge } from '@spartan-ng/helm/badge';
 import {
   lucideAlertCircle,
   lucideArrowDownAZ,
@@ -22,10 +24,11 @@ import {
   lucideMoreHorizontal,
   lucidePlus,
   lucideSearch,
-  lucideTrash,
+  lucideTrash2,
   lucideSave,
 } from '@ng-icons/lucide';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
+import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-questions-page',
@@ -40,8 +43,11 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
     HlmInputImports,
     HlmAlertImports,
     HlmSelectImports,
+    HlmSkeleton,
+    HlmBadge,
     NgIcon,
-    BackButtonComponent
+    BackButtonComponent,
+    ConfirmDialog
 ],
   providers: [
     provideIcons({
@@ -51,7 +57,7 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
       lucideArrowUpAZ,
       lucidePlus,
       lucideEdit,
-      lucideTrash,
+      lucideTrash2,
       lucideAlertCircle,
       lucideSave,
     }),
@@ -65,10 +71,15 @@ export class QuestionsPage implements OnInit {
 
   @ViewChild('editDialogTrigger') editDialogTrigger!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeDialogBtn') closeDialogBtn!: ElementRef<HTMLButtonElement>;
+  @ViewChild('deleteQuestionDialog') deleteQuestionDialog!: ConfirmDialog;
+  @ViewChild('deleteOptionDialog') deleteOptionDialog!: ConfirmDialog;
 
   readonly errorMessage = signal<string | null>(null);
   readonly isSaving = signal<boolean>(false);
   readonly selectedQuestion = signal<Question | null>(null);
+  readonly questionToDelete = signal<Question | null>(null);
+    readonly optionToDelete = signal<{ index: number; questionId: string; optionId: string } | null>(null);
+  readonly skeletonRows = [0, 1, 2, 3, 4];
 
   // NUEVO: Señal para saber qué opción específica se está guardando/eliminando
   readonly processingOptionIndex = signal<number | null>(null);
@@ -131,7 +142,7 @@ export class QuestionsPage implements OnInit {
         this.store.load(); // Recargamos para que impacte la BD
       },
       error: (err) =>
-        this.errorMessage.set(err.error?.error?.message || 'Error al guardar la opción.'),
+        this.errorMessage.set(this.formatBackendError(err, 'Error al guardar la opción.')),
     });
   }
 
@@ -142,20 +153,8 @@ export class QuestionsPage implements OnInit {
 
     // Si es modo edición y la opción ya existe en la Base de Datos
     if (currentQ && optId) {
-      if (confirm('¿Estás seguro de eliminar esta opción permanentemente?')) {
-        this.processingOptionIndex.set(index);
-        this.questionsApi
-          .deleteQuestionOption(currentQ.id, optId)
-          .pipe(finalize(() => this.processingOptionIndex.set(null)))
-          .subscribe({
-            next: () => {
-              this.optionsFormArray.removeAt(index);
-              this.store.load(); // Recargamos
-            },
-            error: (err) =>
-              this.errorMessage.set(err.error?.error?.message || 'Error al eliminar la opción.'),
-          });
-      }
+      this.optionToDelete.set({ index, questionId: currentQ.id, optionId: optId });
+      this.deleteOptionDialog.open();
     } else {
       // Si estamos creando, o añadimos una nueva fila pero nos arrepentimos
       this.optionsFormArray.removeAt(index);
@@ -201,9 +200,35 @@ export class QuestionsPage implements OnInit {
   }
 
   deleteQuestion(question: Question) {
-    if (confirm(`¿Eliminar la pregunta:\n"${question.text}"?`)) {
+    this.questionToDelete.set(question);
+    this.deleteQuestionDialog.open();
+  }
+
+  confirmDeleteQuestion() {
+    const question = this.questionToDelete();
+    if (question) {
       this.store.deleteQuestion(question.id);
+      this.questionToDelete.set(null);
     }
+  }
+
+  confirmDeleteOption() {
+    const option = this.optionToDelete();
+    if (!option) return;
+
+    this.processingOptionIndex.set(option.index);
+    this.questionsApi
+      .deleteQuestionOption(option.questionId, option.optionId)
+      .pipe(finalize(() => this.processingOptionIndex.set(null)))
+      .subscribe({
+        next: () => {
+          this.optionsFormArray.removeAt(option.index);
+          this.optionToDelete.set(null);
+          this.store.load();
+        },
+        error: (err) =>
+          this.errorMessage.set(this.formatBackendError(err, 'Error al eliminar la opción.')),
+      });
   }
 
   saveQuestion() {
@@ -233,7 +258,9 @@ export class QuestionsPage implements OnInit {
             this.store.load();
           },
           error: (err) =>
-            this.errorMessage.set(err.error?.error?.message || 'Error al actualizar la pregunta.'),
+            this.errorMessage.set(
+              this.formatBackendError(err, 'Error al actualizar la pregunta.'),
+            ),
         });
     } else {
       // MODO CREACIÓN: Enviamos la pregunta con todas sus opciones (POST)
@@ -262,8 +289,18 @@ export class QuestionsPage implements OnInit {
             }
           },
           error: (err) =>
-            this.errorMessage.set(err.error?.error?.message || 'Error al guardar la pregunta.'),
+            this.errorMessage.set(this.formatBackendError(err, 'Error al guardar la pregunta.')),
         });
     }
+  }
+
+  private formatBackendError(error: any, fallback: string): string {
+    const backendError = error?.error?.error;
+    const message = backendError?.message || fallback;
+    const details = Array.isArray(backendError?.details)
+      ? backendError.details.filter((detail: unknown) => typeof detail === 'string')
+      : [];
+
+    return details.length > 0 ? `${message}: ${details.join('. ')}` : message;
   }
 }

@@ -4,52 +4,79 @@
   <h2 class="text-2xl font-bold tracking-tight">Cuestionario</h2>
 
   <!-- Botón Crear Pregunta -->
-  <button hlmBtn variant="outline" (click)="openCreateDialog()" class="gap-2 w-full sm:w-auto">
+  <button hlmBtn (click)="openCreateDialog()" class="gap-2 w-full sm:w-auto">
     <ng-icon name="lucidePlus" class="size-5"></ng-icon>
     Nueva Pregunta
   </button>
 </div>
 
-<div hlmTableContainer>
-  <table hlmTable>
-    <thead hlmTableHeader>
-      <tr hlmTableRow>
-        <th hlmTableHead class="w-16">Orden</th>
-        <th hlmTableHead>Pregunta</th>
-        <th hlmTableHead>Obligatoria</th>
-        <th hlmTableHead class="text-right">Opciones</th>
-      </tr>
-    </thead>
+<div hlmTableContainer class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+  <div class="overflow-x-auto">
+    <table hlmTable class="min-w-[720px]">
+      <thead hlmTableHeader>
+        <tr hlmTableRow class="bg-muted/40 hover:bg-muted/40">
+          <th hlmTableHead class="h-11 w-16 text-xs uppercase tracking-wider text-muted-foreground">Orden</th>
+          <th hlmTableHead class="h-11 text-xs uppercase tracking-wider text-muted-foreground">Pregunta</th>
+          <th hlmTableHead class="h-11 text-xs uppercase tracking-wider text-muted-foreground">Obligatoria</th>
+          <th hlmTableHead class="h-11 text-right text-xs uppercase tracking-wider text-muted-foreground">Opciones</th>
+        </tr>
+      </thead>
 
-    <tbody hlmTableBody>
-      @if (store.isLoading()) {
-      <tr hlmTableRow>
-        <td hlmTableCell colspan="5" class="text-center">Cargando preguntas...</td>
-      </tr>
-      } @else {
-      @for (question of store.questions(); track question.id) {
-      <tr hlmTableRow>
-        <td hlmTableCell class="font-medium text-center">{{ question.order }}</td>
-        <td hlmTableCell class="font-medium">{{ question.text }}</td>
-        <td hlmTableCell>
-          <span class="px-2 py-1 rounded-full text-xs">
-            {{ question.isRequired ? 'Sí' : 'No' }}
-          </span>
-        </td>
-        <td hlmTableCell class="text-right">
-          <button hlmBtn variant="outline" size="icon" (click)="openEditDialog(question)" class="mr-2">
-            <ng-icon name="lucideEdit" class="size-4"></ng-icon>
-          </button>
-          <button hlmBtn variant="destructive" size="icon" (click)="deleteQuestion(question)">
-            <ng-icon name="lucideTrash" class="size-4"></ng-icon>
-          </button>
-        </td>
-      </tr>
-      }
-      }
-    </tbody>
-  </table>
+      <tbody hlmTableBody>
+        @if (store.isLoading()) {
+          @for (row of skeletonRows; track row) {
+            <tr hlmTableRow>
+              <td hlmTableCell><hlm-skeleton class="mx-auto h-4 w-6" /></td>
+              <td hlmTableCell><hlm-skeleton class="h-4 w-3/4" /></td>
+              <td hlmTableCell><hlm-skeleton class="h-5 w-16 rounded-full" /></td>
+              <td hlmTableCell><div class="flex justify-end gap-2"><hlm-skeleton class="size-9" /><hlm-skeleton class="size-9" /></div></td>
+            </tr>
+          }
+        } @else if (store.questions().length === 0) {
+          <tr hlmTableRow>
+            <td hlmTableCell colspan="4" class="h-28 text-center text-muted-foreground">No hay preguntas configuradas.</td>
+          </tr>
+        } @else {
+          @for (question of store.questions(); track question.id) {
+            <tr hlmTableRow class="transition-colors hover:bg-muted/30">
+              <td hlmTableCell class="text-center font-mono text-sm text-muted-foreground">{{ question.order }}</td>
+              <td hlmTableCell class="max-w-[480px] truncate font-medium" [title]="question.text">{{ question.text }}</td>
+              <td hlmTableCell>
+                <span hlmBadge [variant]="question.isRequired ? 'default' : 'outline'">{{ question.isRequired ? 'Sí' : 'No' }}</span>
+              </td>
+              <td hlmTableCell>
+                <div class="flex justify-end gap-2">
+                  <button hlmBtn variant="outline" size="icon" (click)="openEditDialog(question)" aria-label="Editar pregunta" title="Editar pregunta">
+                    <ng-icon name="lucideEdit" class="size-4"></ng-icon>
+                  </button>
+                  <button hlmBtn variant="destructive" size="icon" (click)="deleteQuestion(question)" aria-label="Eliminar pregunta" title="Eliminar pregunta">
+                    <ng-icon name="lucideTrash2" class="size-4"></ng-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<app-confirm-dialog
+  #deleteQuestionDialog
+  heading="¿Eliminar esta pregunta?"
+  [description]="'Se eliminará ' + (questionToDelete()?.text || 'la pregunta seleccionada') + '. Esta acción no se puede deshacer.'"
+  confirmLabel="Eliminar pregunta"
+  (confirmed)="confirmDeleteQuestion()"
+/>
+
+<app-confirm-dialog
+  #deleteOptionDialog
+  heading="¿Eliminar esta opción?"
+  description="La opción se eliminará permanentemente del cuestionario. Esta acción no se puede deshacer."
+  confirmLabel="Eliminar opción"
+  (confirmed)="confirmDeleteOption()"
+/>
 
 <hlm-dialog>
   <button #editDialogTrigger hlmDialogTrigger class="hidden"></button>
@@ -158,7 +185,7 @@
             <button type="button" hlmBtn variant="ghost" size="icon" (click)="removeOption($index)"
               [disabled]="processingOptionIndex() === $index" class="text-destructive hover:bg-destructive/10"
               title="Eliminar esta opción">
-              <ng-icon name="lucideTrash" class="size-4"></ng-icon>
+              <ng-icon name="lucideTrash2" class="size-4"></ng-icon>
             </button>
           </div>
 
