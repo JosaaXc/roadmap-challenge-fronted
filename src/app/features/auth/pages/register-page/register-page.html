@@ -43,7 +43,8 @@
       <label hlmFieldLabel>Contraseña</label>
 
       <hlm-input-group class="h-11">
-        <input hlmInputGroupInput class="h-full" [type]="passwordVisible() ? 'text' : 'password'"
+        <!-- Edge adds its own reveal eye to password inputs; this field has one already -->
+        <input hlmInputGroupInput class="h-full [&::-ms-reveal]:hidden" [type]="passwordVisible() ? 'text' : 'password'"
           formControlName="password" placeholder="Tu contraseña" autocomplete="new-password" />
         <hlm-input-group-addon align="inline-end">
           <button hlmInputGroupButton type="button" (click)="togglePassword()"
