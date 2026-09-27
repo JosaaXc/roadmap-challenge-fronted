@@ -1,0 +1,12 @@
+<div class="flex size-full scale-125 opacity-45 blur-3xl saturate-150 motion-safe:animate-drift">
+  @for (cover of shown(); track $index) {
+    <img
+      [src]="cover"
+      alt=""
+      decoding="async"
+      class="h-full min-w-0 flex-1 object-cover"
+      (load)="loaded.set(true)"
+      (error)="drop(cover)"
+    />
+  }
+</div>

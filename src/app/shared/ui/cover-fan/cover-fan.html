@@ -1,0 +1,17 @@
+<!--
+  Tracked by course, so when the one in front changes every cover slides to its new place
+  instead of the fan being redrawn: the next one comes forward and a new one joins behind
+-->
+@for (card of shown(); track card.id) {
+  <img
+    [src]="card.cover"
+    alt=""
+    decoding="async"
+    class="ring-foreground/15 col-start-1 row-start-1 aspect-760/420 w-(--fan-cover-width,11rem) rounded-md object-cover ring-1 transition duration-500 ease-out motion-reduce:transition-none"
+    [class]="places[card.place]"
+    animate.enter="motion-safe:animate-fan-in"
+    animate.leave="motion-safe:animate-fan-out"
+    (load)="loaded.set(true)"
+    (error)="drop(card.cover)"
+  />
+}
