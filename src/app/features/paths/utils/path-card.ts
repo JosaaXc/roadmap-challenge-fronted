@@ -16,8 +16,15 @@ export function toPathCard(path: LearningPath): PathCard {
         : firstTitles.join(', '),
     courseCount: courses.length,
     createdAt: path.createdAt,
+    imageUrl: path.imageUrl,
     progress: path.progress,
     nextStep: path.nextStep,
     isFavorite: path.isFavorite,
+    isPublic: path.isPublic,
+    isFork: path.isFork,
+    hasLiked: path.hasLiked,
+    likesCount: path.likesCount,
+    forksCount: path.forksCount,
+    forkedFrom: path.forkedFrom,
   };
 }

@@ -11,7 +11,7 @@ export class QuestionsApi {
   private readonly baseUrl = environment.apiUrl;
 
   getQuestions(): Observable<ApiResponse<Question[]>> {
-    return this.http.get<ApiResponse<Question[]>>(`${this.baseUrl}/questions`, {
+    return this.http.get<ApiResponse<Question[]>>(`${this.baseUrl}/questions/admin/all`, {
       withCredentials: true,
     });
   }

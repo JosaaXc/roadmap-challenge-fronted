@@ -40,6 +40,10 @@ export const routes: Routes = [
         path: 'mis-rutas',
         loadChildren: () => import('./features/paths/paths.routes').then((m) => m.pathsRoutes),
       },
+      {
+        path: 'community',
+        loadChildren: () => import('./features/community-paths/community.routes').then((m) => m.communityRoutes),
+      }
     ],
   },
 

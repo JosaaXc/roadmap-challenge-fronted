@@ -5,9 +5,10 @@ import {
   SAMPLE_PATH_TOPIC,
 } from '../../../../shared/ui/suggested-path-card/sample-path';
 import { SuggestedPathCard } from '../../../../shared/ui/suggested-path-card/suggested-path-card';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [HlmButton, SuggestedPathCard],
+  imports: [HlmButton, SuggestedPathCard, RouterLink],
   selector: 'app-landing-hero',
   templateUrl: './landing-hero.html',
   host: { class: 'contents' },

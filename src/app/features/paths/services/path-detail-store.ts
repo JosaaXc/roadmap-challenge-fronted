@@ -148,6 +148,25 @@ export class PathDetailStore {
     }
   }
 
+  toggleVisibility(): void {
+    const currentPath = this._path();
+    if (!currentPath) return;
+
+    const previousState = currentPath.isPublic;
+
+    this._path.update((p) => (p ? { ...p, isPublic: !previousState } : null));
+
+    this.api.togglePathVisibility(currentPath.id).subscribe({
+      next: (response) => {
+        console.log('Visibilidad actualizada:', response.data.isPublic);
+      },
+      error: (error) => {
+        this._path.update((p) => (p ? { ...p, isPublic: previousState } : null));
+        console.error('Error al cambiar la visibilidad', error);
+      },
+    });
+  }
+
   deleteResource(nodeId: string): void {
     const path = this._path();
     if (!path || this.isDeleting(nodeId)) return;

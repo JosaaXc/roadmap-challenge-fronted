@@ -1,0 +1,85 @@
+<section class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
+  <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight">Comunidad</h1>
+      <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+        Descubre cómo estudian otros usuarios. Explora y guarda rutas públicas.
+      </p>
+    </div>
+  </header>
+
+  @if (store.isLoading()) {
+  <!-- Skeletons: Mantienen la forma del grid mientras carga -->
+  <div class="mt-8 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Asumimos un array temporal para iterar 6 veces, puedes usar un método en tu TS o un @for simple -->
+    @for (placeholder of [1,2,3,4,5,6]; track $index) {
+    <div class="border-border flex flex-col gap-3 rounded-lg border p-5">
+      <hlm-skeleton class="h-5 w-3/4" />
+      <hlm-skeleton class="h-4 w-1/4 mt-2" />
+      <hlm-skeleton class="h-3 w-full mt-3" />
+      <hlm-skeleton class="mt-auto h-1.5 w-full pt-4" />
+    </div>
+    }
+  </div>
+  } @else if (store.error()) {
+  <div hlmAlert variant="destructive" class="mt-8">
+    <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+    <h2 hlmAlertTitle>No pudimos cargar tus rutas</h2>
+    <p hlmAlertDescription>{{ store.error() }}</p>
+    <button hlmBtn variant="outline" size="sm" type="button" hlmAlertAction (click)="store.loadInitial()">
+      Reintentar
+    </button>
+  </div>
+
+  }@else if (store.paths().length === 0) {
+  <!-- Empty State de la comunidad -->
+  <div hlmEmpty class="border-border mt-8 border">
+    <div hlmEmptyHeader>
+      <h2 hlmEmptyTitle class="text-base">No hay rutas públicas disponibles</h2>
+      <p hlmEmptyDescription>
+        Parece que la comunidad aún no ha compartido ninguna ruta. ¡Sé el primero en hacer la tuya pública!
+      </p>
+    </div>
+    @if (router.url.includes('/community')) {
+    <div hlmEmptyContent>
+      <a hlmBtn routerLink="/mis-rutas">Ir a Mis Rutas</a>
+    </div>
+    }
+
+  </div>
+  } @else {
+  <!-- Controles superiores (Ordenamiento) -->
+  <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+    <app-search class="w-full sm:max-w-sm" (search)="onSearch($event)" />
+
+    <div class="flex items-center">
+      <button hlmBtn variant="ghost" size="sm" type="button" (click)="store.toggleSortBy()">
+        {{ store.sortBy() === 'popular' ? 'Más populares' : 'Recien añadidas' }}
+        <ng-icon [name]="store.sortBy() === 'popular' ? 'lucideChevronDown' : 'lucideChevronUp'" size="14px"
+          aria-hidden="true" />
+      </button>
+
+      <button hlmBtn variant="ghost" size="sm" type="button" (click)="toggleOrder()">
+        {{ order() === 'desc' ? 'Más recientes' : 'Más antiguas' }}
+        <ng-icon [name]="order() === 'desc' ? 'lucideChevronDown' : 'lucideChevronUp'" size="14px" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid de Tarjetas de la Comunidad -->
+  <div class="mt-6 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    @for (card of cards(); track card.id) {
+    <app-path-card [card]="card" linkPrefix="/community"></app-path-card>
+    }
+  </div>
+
+  <!-- Paginación: Cargar Más (Estos sí se quedan con store porque vienen del BasePaginationStore) -->
+  @if (store.hasNextPage()) {
+  <div class="mt-8 flex justify-center">
+    <button hlmBtn variant="outline" type="button" (click)="store.loadMore()" [disabled]="store.isLoadingMore()">
+      {{ store.isLoadingMore() ? 'Cargando...' : 'Cargar más' }}
+    </button>
+  </div>
+  }
+  }
+</section>

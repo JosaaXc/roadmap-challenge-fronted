@@ -9,17 +9,15 @@ import {
 } from '@ng-icons/lucide';
 import { HlmAlertImports } from '@spartan-ng/helm/alert';
 import { HlmButton } from '@spartan-ng/helm/button';
-import { HlmCard } from '@spartan-ng/helm/card';
 import { HlmEmptyImports } from '@spartan-ng/helm/empty';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { HlmToggleGroupImports } from '@spartan-ng/helm/toggle-group';
-import { FavoriteToggleComponent } from '../../components/favorite-toggle/favorite-toggle.component';
-import { PathProgress } from '../../components/path-progress/path-progress';
-import { PathCard, PathFilter, PathOrder } from '../../models/paths-models';
-import { PathTitlePipe } from '../../pipes/path-title.pipe';
-import { ShortDatePipe } from '../../pipes/short-date.pipe';
+import { PathFilter } from '../../models/paths-models';
 import { PathsStore } from '../../services/paths-store';
 import { toPathCard } from '../../utils/path-card';
+import { PathCardComponent } from '../../../../shared/ui/path-card/path-card';
+import { CommunityPathsPageComponent } from '../../../community-paths/pages/community-paths';
+import { useListOrder } from '../../../../shared/utils/use-list-order';
 
 @Component({
   selector: 'app-my-paths-page',
@@ -28,14 +26,11 @@ import { toPathCard } from '../../utils/path-card';
     NgIcon,
     HlmAlertImports,
     HlmButton,
-    HlmCard,
     HlmEmptyImports,
     HlmSkeleton,
     HlmToggleGroupImports,
-    FavoriteToggleComponent,
-    PathProgress,
-    PathTitlePipe,
-    ShortDatePipe,
+    PathCardComponent,
+    CommunityPathsPageComponent,
   ],
   templateUrl: './my-paths-page.html',
   viewProviders: [
@@ -46,29 +41,30 @@ export class MyPathsPage implements OnInit {
   readonly store = inject(PathsStore);
 
   readonly filter = signal<PathFilter>('all');
-  readonly order = signal<PathOrder>('desc');
-
-  // Enough placeholders to fill the first row on every breakpoint
   readonly skeletonCards = [0, 1, 2, 3, 4, 5];
 
-  readonly cards = computed<PathCard[]>(() => {
-    const visible = this.store.paths().filter((path) => this.filter() === 'all' || path.isFavorite);
-
-    // The store already sorts newest first, so the other order is its reverse
-    const ordered = this.order() === 'desc' ? visible : visible.reverse();
-    return ordered.map(toPathCard);
+  // PASO 1: Filtramos los datos crudos del store
+  private readonly filteredPaths = computed(() => {
+    const allPaths = this.store.paths();
+    return this.filter() === 'all' ? allPaths : allPaths.filter((path) => path.isFavorite);
   });
 
+  // PASO 2: Le pasamos la lista filtrada a nuestro hook para que la ordene
+  readonly listOrder = useListOrder(this.filteredPaths);
+
+  // Exponemos las variables del hook al HTML
+  readonly order = this.listOrder.order;
+  readonly toggleOrder = this.listOrder.toggleOrder;
+
+  // PASO 3: Mapeamos el resultado final a PathCard para renderizar
+  readonly cards = computed(() => this.listOrder.orderedList().map(toPathCard));
+
   ngOnInit() {
-    this.store.load();
+    // Cambio de store.load() a store.loadInitial()
+    this.store.loadInitial();
   }
 
-  // The toggle group hands back the value of the pressed item
   onFilterChange(value: unknown): void {
     if (value === 'all' || value === 'favorites') this.filter.set(value);
-  }
-
-  toggleOrder(): void {
-    this.order.update((current) => (current === 'desc' ? 'asc' : 'desc'));
   }
 }
