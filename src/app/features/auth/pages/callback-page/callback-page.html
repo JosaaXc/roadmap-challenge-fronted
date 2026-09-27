@@ -1,24 +1,43 @@
-<main class="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
-  <svg
-    class="animate-spin h-10 w-10 text-primary mb-4"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-  >
-    <circle
-      class="opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      stroke-width="4"
-    ></circle>
-    <path
-      class="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-    ></path>
-  </svg>
-  <h2 class="text-xl font-semibold">Conectando con Discord...</h2>
-  <p class="text-muted-foreground text-sm mt-2">Preparando tu entorno de aprendizaje</p>
-</main>
+@if (status() === 'processing') {
+  <div class="flex flex-col items-center text-center" role="status">
+    <span
+      class="border-border bg-card flex size-16 items-center justify-center rounded-2xl border motion-safe:animate-pulse"
+    >
+      <ng-icon name="discordIcon" size="32px" aria-hidden="true" />
+    </span>
+
+    <h1 class="mt-6 text-2xl font-semibold tracking-tight">Iniciando sesión con Discord</h1>
+    <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+      Estamos confirmando tu cuenta. Toma solo un momento.
+    </p>
+  </div>
+} @else {
+  <div class="flex flex-col items-center text-center">
+    <span
+      class="border-border bg-card text-muted-foreground flex size-16 items-center justify-center rounded-2xl border"
+    >
+      <ng-icon name="discordIcon" size="32px" aria-hidden="true" />
+    </span>
+
+    <h1 class="mt-6 text-2xl font-semibold tracking-tight">
+      No pudimos iniciar sesión con Discord
+    </h1>
+    <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+      @if (canceled()) {
+        Cancelaste la autorización en Discord. Puedes volver a intentarlo o entrar con tu correo.
+      } @else {
+        Discord no confirmó tu cuenta o el enlace ya venció. Puedes volver a intentarlo o entrar con
+        tu correo.
+      }
+    </p>
+
+    <div class="mt-8 flex w-full flex-col gap-3">
+      <!-- The page the login interrupted is still saved, so a retry returns to it as well -->
+      <app-discord-button label="Intentar de nuevo" />
+
+      <a hlmBtn variant="ghost" size="lg" routerLink="/auth/login" class="h-12 w-full text-base">
+        Usar mi correo
+      </a>
+    </div>
+  </div>
+}

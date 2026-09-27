@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { SessionStore } from '../auth/session-store';
 import { AuthApi } from '../../features/auth/services/auth-api';
+import { SKIP_SESSION_RECOVERY } from './http-context-tokens';
 
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
@@ -15,7 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      if (error.status === 401 && !req.context.get(SKIP_SESSION_RECOVERY)) {
         if (req.url.includes('/auth/refresh')) {
           session.clear();
           void router.navigate(['/auth/login']);

@@ -1,42 +1,62 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { AuthRedirect } from '../../../../core/auth/auth-redirect';
+import { SessionStore } from '../../../../core/auth/session-store';
+import { discordIcon } from '../../../../shared/icons/brand-icons';
+import { DiscordButton } from '../../../../shared/ui/discord-button/discord-button';
 import { AuthApi } from '../../services/auth-api';
-import { SessionStore, SessionUser } from '../../../../core/auth/session-store';
 
+// Where Discord sends the user back: ?token= on success, ?error= when they cancel or it fails
 @Component({
   selector: 'app-callback-page',
-  standalone: true,
+  imports: [RouterLink, NgIcon, HlmButton, DiscordButton],
   templateUrl: './callback-page.html',
+  viewProviders: [provideIcons({ discordIcon })],
 })
 export class CallbackPage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private authApi = inject(AuthApi);
   private sessionStore = inject(SessionStore);
+  private authRedirect = inject(AuthRedirect);
 
-  ngOnInit() {
-    const token = this.route.snapshot.queryParamMap.get('token');
+  protected readonly status = signal<'processing' | 'failed'>('processing');
 
-    if (token) {
-      this.authApi.refreshToken().subscribe({
-        next: (response) => {
-          const backendUser = response.data.user;
-          const mappedUser: SessionUser = {
-            id: backendUser.id,
-            email: backendUser.email,
-            name: backendUser.displayName,
-            roles: [backendUser.roleName.toLowerCase()],
-          };
+  // Pressing Cancel on Discord reads differently from a link that broke on the way back
+  protected readonly canceled = signal(false);
 
-          this.sessionStore.setSession(mappedUser, response.data.accessToken);
-          this.router.navigate(['/mis-rutas']);
-        },
-        error: () => {
-          this.router.navigate(['/auth/login']);
-        },
-      });
-    } else {
-      this.router.navigate(['/auth/login']);
+  async ngOnInit() {
+    const params = this.route.snapshot.queryParamMap;
+    const token = params.get('token');
+    const error = params.get('error');
+
+    // The token is a credential: out of the address bar and the history before anything else
+    await this.router.navigate([], { relativeTo: this.route, replaceUrl: true });
+
+    if (error || !token) {
+      this.canceled.set(error === 'access_denied');
+      this.status.set('failed');
+      return;
     }
+
+    // Asking for the profile with it is what proves the token is real
+    this.authApi.getProfile(token).subscribe({
+      next: ({ data }) => {
+        this.sessionStore.setSession(
+          {
+            id: data.id,
+            email: data.email,
+            name: data.displayName,
+            roles: [data.roleName.toLowerCase()],
+          },
+          token,
+        );
+        // Replaces this page in the history too, so going back never lands on it again
+        this.router.navigateByUrl(this.authRedirect.consume(), { replaceUrl: true });
+      },
+      error: () => this.status.set('failed'),
+    });
   }
 }

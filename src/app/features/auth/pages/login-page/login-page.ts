@@ -2,7 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthApi } from '../../services/auth-api';
 import { SessionStore, SessionUser } from '../../../../core/auth/session-store';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthRedirect } from '../../../../core/auth/auth-redirect';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEye, lucideEyeOff } from '@ng-icons/lucide';
@@ -38,6 +39,10 @@ export class LoginPage {
   private sessionStorage = inject(SessionStore);
   private router = inject(Router);
  private geolocationService = inject(GeolocationService);
+  private authRedirect = inject(AuthRedirect);
+
+  // Set by the auth guard when the login interrupted a visit to another page
+  readonly redirectTo = inject(ActivatedRoute).snapshot.queryParamMap.get('redirectTo');
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -71,7 +76,7 @@ export class LoginPage {
       next: (response) => {
         this.sessionStorage.handleAuthResponse(response);
         this.isLoading.set(false);
-        this.router.navigate(['/mis-rutas']);
+        this.router.navigateByUrl(this.authRedirect.consume(this.redirectTo));
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);

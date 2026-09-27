@@ -1,7 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHeaders } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { AuthResponse, RegisterPayload } from '../models/auth-models';
+import { SKIP_SESSION_RECOVERY } from '../../../core/http/http-context-tokens';
+import { AuthResponse, RegisterPayload, UserProfileResponse } from '../models/auth-models';
 
 @Service()
 export class AuthApi {
@@ -41,5 +42,14 @@ export class AuthApi {
       {},
       {withCredentials: true}
     );
+  }
+
+  // Checks a token this app did not issue itself, so a 401 is the answer, not a session to refresh
+  getProfile(accessToken: string) {
+    return this.http.get<UserProfileResponse>(`${this.baseUrl}/users/me`, {
+      headers: new HttpHeaders({ Authorization: `Bearer ${accessToken}` }),
+      context: new HttpContext().set(SKIP_SESSION_RECOVERY, true),
+      withCredentials: true,
+    });
   }
 }

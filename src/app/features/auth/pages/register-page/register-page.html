@@ -4,7 +4,7 @@
   Arma tu ruta y guárdala para seguir marcando tu avance.
 </p>
 
-<app-discord-button class="mt-6" />
+<app-discord-button class="mt-6" [redirectTo]="redirectTo" />
 
 <p class="text-muted-foreground mt-2 text-xs">Es la vía que usa la mayoría de la comunidad.</p>
 
@@ -84,7 +84,7 @@
 
 <p class="text-muted-foreground mt-6 text-center text-sm">
   ¿Ya tienes cuenta?
-  <a routerLink="/auth/login"
+  <a routerLink="/auth/login" queryParamsHandling="preserve"
     class="text-foreground hover:text-highlight font-medium underline underline-offset-4 transition-colors">
     Inicia sesión
   </a>
