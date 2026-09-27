@@ -11,13 +11,20 @@ export class CatalogApi {
   private readonly baseUrl = environment.apiUrl;
 
   getCatalog(
-    params: { take?: number; cursor?: string; order?: 'asc' | 'desc'; search?: string } = {},
+    params: {
+      take?: number;
+      cursor?: string;
+      order?: 'asc' | 'desc';
+      search?: string;
+      level?: string[];
+    } = {},
   ): Observable<ApiResponse<PaginatedData<Course>>> {
     let httpParams = new HttpParams();
     if (params.take) httpParams = httpParams.set('take', params.take);
     if (params.cursor) httpParams = httpParams.set('cursor', params.cursor);
     if (params.order) httpParams = httpParams.set('order', params.order);
     if (params.search) httpParams = httpParams.set('search', params.search);
+    if (params.level?.length) httpParams = httpParams.set('level', params.level.join(','));
 
     return this.http.get<ApiResponse<PaginatedData<Course>>>(`${this.baseUrl}/catalog/courses`, {
       params: httpParams,

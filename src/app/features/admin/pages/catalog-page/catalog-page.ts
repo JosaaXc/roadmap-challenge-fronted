@@ -1,7 +1,7 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideAlertCircle, lucideArrowDownAZ, lucideArrowUpAZ, lucideChevronLeft, lucideEdit, lucideMoreHorizontal, lucidePlus, lucideSearch, lucideTrash } from '@ng-icons/lucide';
+import { lucideAlertCircle, lucideArrowDownAZ, lucideArrowUpAZ, lucideChevronLeft, lucideEdit, lucideExternalLink, lucideMoreHorizontal, lucidePlus, lucideSearch, lucideTrash2 } from '@ng-icons/lucide';
 import { CatalogApi } from '../../services/catalog/catalog-api';
 import { Course, CourseDto } from '../../models/catalog-model';
 import { finalize } from 'rxjs';
@@ -20,6 +20,11 @@ import { HlmAlertImports } from '@spartan-ng/helm/alert';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
+import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
+import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
+import { HlmBadge } from '@spartan-ng/helm/badge';
+import { ShortDatePipe } from '../../../paths/pipes/short-date.pipe';
+import { CourseLevelPipe } from '../../pipes/course-level.pipe';
 
 @Component({
   imports: [
@@ -33,11 +38,15 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
     HlmInputImports,
     HlmAlertImports,
     HlmSelectImports,
+    HlmSkeleton,
+    HlmBadge,
     NgIcon,
     SearchComponent,
     SortToggleComponent,
     LoadMoreComponent,
-    DatePipe,
+    ShortDatePipe,
+    CourseLevelPipe,
+    ConfirmDialog,
     BackButtonComponent
 ],
   providers: [
@@ -48,7 +57,8 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
       lucideArrowUpAZ,
       lucidePlus,
       lucideEdit,
-      lucideTrash,
+      lucideTrash2,
+      lucideExternalLink,
       lucideAlertCircle,
     }),
   ],
@@ -76,9 +86,13 @@ export class CatalogPage implements OnInit {
 
   @ViewChild('editDialogTrigger') editDialogTrigger!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeDialogBtn') closeDialogBtn!: ElementRef<HTMLButtonElement>;
+  @ViewChild('deleteCourseDialog') deleteCourseDialog!: ConfirmDialog;
 
   readonly isSaving = signal<boolean>(false);
   readonly selectedCourse = signal<Course | null>(null);
+  readonly courseToDelete = signal<Course | null>(null);
+  readonly pendingLevels = signal<string[]>([]);
+  readonly skeletonRows = [0, 1, 2, 3, 4];
 
   readonly courseForm = this.fb.nonNullable.group({
     title: ['', Validators.required],
@@ -106,6 +120,20 @@ export class CatalogPage implements OnInit {
     this.store.load();
   }
 
+  toggleLevel(level: string): void {
+    this.pendingLevels.update((levels) =>
+      levels.includes(level) ? levels.filter((item) => item !== level) : [...levels, level],
+    );
+  }
+
+  isLevelPending(level: string): boolean {
+    return this.pendingLevels().includes(level);
+  }
+
+  applyLevelFilter(): void {
+    this.store.setLevels(this.pendingLevels());
+  }
+
   openCreateDialog() {
     this.selectedCourse.set(null); // Null indica que estamos creando
     this.errorMessage.set(null);
@@ -129,12 +157,15 @@ export class CatalogPage implements OnInit {
   }
 
   deleteCourse(course: Course) {
-    const isConfirmed = confirm(
-      `¿Estás seguro de que deseas eliminar el curso:\n"${course.title}"?`,
-    );
+    this.courseToDelete.set(course);
+    this.deleteCourseDialog.open();
+  }
 
-    if (isConfirmed) {
+  confirmDeleteCourse() {
+    const course = this.courseToDelete();
+    if (course) {
       this.store.deleteCourse(course.id);
+      this.courseToDelete.set(null);
     }
   }
 
@@ -172,12 +203,24 @@ export class CatalogPage implements OnInit {
       },
       error: (err) => {
         console.error('Error al guardar curso', err);
-        const backendMessage =
-          err.error?.error?.message ||
-          'Ocurrió un error inesperado al guardar el curso. Intenta nuevamente.';
-        this.errorMessage.set(backendMessage);
+        this.errorMessage.set(
+          this.formatBackendError(
+            err,
+            'Ocurrió un error inesperado al guardar el curso. Intenta nuevamente.',
+          ),
+        );
       },
     });
+  }
+
+  private formatBackendError(error: any, fallback: string): string {
+    const backendError = error?.error?.error;
+    const message = backendError?.message || fallback;
+    const details = Array.isArray(backendError?.details)
+      ? backendError.details.filter((detail: unknown) => typeof detail === 'string')
+      : [];
+
+    return details.length > 0 ? `${message}: ${details.join('. ')}` : message;
   }
 
   private slugify(text: string): string {

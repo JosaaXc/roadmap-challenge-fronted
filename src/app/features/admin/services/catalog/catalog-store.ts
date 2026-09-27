@@ -11,6 +11,7 @@ export class CatalogStore {
   // Estado interno
   private readonly _courses = signal<Course[]>([]);
   private readonly _isLoading = signal<boolean>(true);
+  private readonly _isRefreshing = signal<boolean>(false);
   private readonly _isLoadingMore = signal<boolean>(false);
   private readonly _nextCursor = signal<string | undefined>(undefined);
   private readonly _hasNextPage = signal<boolean>(false);
@@ -18,23 +19,29 @@ export class CatalogStore {
   // Estado de los filtros (Backend-driven)
   private readonly _currentOrder = signal<'desc' | 'asc'>('desc');
   private readonly _currentSearch = signal<string | undefined>(undefined);
+  private readonly _currentLevels = signal<string[]>([]);
 
   // Selectores públicos de solo lectura
   readonly courses = this._courses.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
+  readonly isRefreshing = this._isRefreshing.asReadonly();
   readonly isLoadingMore = this._isLoadingMore.asReadonly();
   readonly hasNextPage = this._hasNextPage.asReadonly();
   readonly currentOrder = this._currentOrder.asReadonly();
+  readonly selectedLevels = this._currentLevels.asReadonly();
 
   // Carga inicial o al cambiar filtros
   load(): void {
-    this._isLoading.set(true);
+    const hasCourses = this._courses().length > 0;
+    this._isLoading.set(!hasCourses);
+    this._isRefreshing.set(hasCourses);
 
     this.api
       .getCatalog({
         take: PAGE_SIZE,
         order: this._currentOrder(),
         search: this._currentSearch(),
+        level: this._currentLevels(),
       })
       .subscribe({
         next: (response) => {
@@ -42,10 +49,12 @@ export class CatalogStore {
           this._nextCursor.set(response.meta.nextCursor);
           this._hasNextPage.set(response.meta.hasNextPage);
           this._isLoading.set(false);
+          this._isRefreshing.set(false);
         },
         error: (err) => {
           console.error('Error cargando cursos', err);
           this._isLoading.set(false);
+          this._isRefreshing.set(false);
         },
       });
   }
@@ -62,6 +71,7 @@ export class CatalogStore {
         order: this._currentOrder(),
         cursor: this._nextCursor(),
         search: this._currentSearch(),
+        level: this._currentLevels(),
       })
       .subscribe({
         next: (response) => {
@@ -78,6 +88,11 @@ export class CatalogStore {
   setSearch(term: string | undefined): void {
     this._currentSearch.set(term);
     this.load(); // Recarga limpia
+  }
+
+  setLevels(levels: string[]): void {
+    this._currentLevels.set(levels);
+    this.load();
   }
 
   toggleOrder(): void {
