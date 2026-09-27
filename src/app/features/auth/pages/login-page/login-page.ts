@@ -6,7 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthRedirect } from '../../../../core/auth/auth-redirect';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideEye, lucideEyeOff } from '@ng-icons/lucide';
+import { lucideChevronLeft, lucideEye, lucideEyeOff } from '@ng-icons/lucide';
 import { HlmAlert } from '@spartan-ng/helm/alert';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmFieldImports } from '@spartan-ng/helm/field';
@@ -31,7 +31,7 @@ import { GeolocationService } from '../../../../core/services/geolocation.servic
     DiscordButton,
   ],
   templateUrl: './login-page.html',
-  viewProviders: [provideIcons({ lucideEye, lucideEyeOff })],
+  viewProviders: [provideIcons({ lucideChevronLeft, lucideEye, lucideEyeOff })],
 })
 export class LoginPage {
   private fb = inject(FormBuilder);
