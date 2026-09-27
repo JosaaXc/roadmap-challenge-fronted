@@ -41,6 +41,8 @@
           [path]="path"
           [courseCount]="store.courseCount()"
           [deleting]="store.isDeletingPath()"
+          [backLink]="backLink"
+          [backLabel]="backLabel"
           (favoriteToggled)="store.setFavorite($event)"
           (deleteRequested)="deletePathDialog.open()"
         />

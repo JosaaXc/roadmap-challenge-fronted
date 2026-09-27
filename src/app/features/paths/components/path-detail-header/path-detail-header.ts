@@ -31,6 +31,8 @@ export class PathDetailHeader {
   readonly path = input.required<LearningPath>();
   readonly courseCount = input.required<number>();
   readonly deleting = input(false);
+  readonly backLink = input('/mis-rutas');
+  readonly backLabel = input('Mis rutas');
 
   readonly favoriteToggled = output<boolean>();
   readonly deleteRequested = output<void>();

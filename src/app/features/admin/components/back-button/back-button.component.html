@@ -1,5 +1,5 @@
-<a hlmBtn variant="ghost" size="sm" routerLink="/admin"
+<a hlmBtn variant="ghost" size="sm" [routerLink]="route()"
   class="text-muted-foreground hover:text-foreground -ml-2.5 gap-1 mb-5">
   <ng-icon name="lucideChevronLeft" aria-hidden="true" />
-  Mis rutas
+  {{ label() }}
 </a>

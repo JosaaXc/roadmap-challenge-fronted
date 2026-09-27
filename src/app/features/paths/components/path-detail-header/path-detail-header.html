@@ -2,11 +2,11 @@
   hlmBtn
   variant="ghost"
   size="sm"
-  routerLink="/mis-rutas"
+  [routerLink]="backLink()"
   class="text-muted-foreground hover:text-foreground -ml-2.5 gap-1"
 >
   <ng-icon name="lucideChevronLeft" aria-hidden="true" />
-  Mis rutas
+  {{ backLabel() }}
 </a>
 
 <header class="mt-6">
