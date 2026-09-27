@@ -10,7 +10,11 @@ import { TimelineStepState } from './path-timeline-models';
   imports: [NgIcon],
   templateUrl: './path-timeline-step.html',
   viewProviders: [provideIcons({ lucideCheck, lucideCircleDot, lucideLock })],
-  host: { class: 'relative flex items-start gap-3' },
+  host: {
+    class: 'relative flex items-start gap-3 motion-safe:data-entering:animate-step-in',
+    '[attr.data-entering]': 'enterDelay() === null ? null : ""',
+    '[style.animation-delay.ms]': 'enterDelay()',
+  },
 })
 export class PathTimelineStep {
   readonly state = input.required<TimelineStepState>();
@@ -26,4 +30,8 @@ export class PathTimelineStep {
 
   // Pending steps show a lock, for previews where they cannot be taken yet
   readonly lockPending = input(false, { transform: booleanAttribute });
+
+  // Rises into place after this many milliseconds, for a path that was just generated.
+  // Null, the default, shows the step where it is with no entrance
+  readonly enterDelay = input<number | null>(null);
 }

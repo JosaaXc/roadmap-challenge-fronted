@@ -5,16 +5,10 @@
     }
 
     @case ('not-found') {
-      <div hlmEmpty class="border-border border">
-        <div hlmEmptyHeader>
-          <h1 hlmEmptyTitle class="text-base">Esta ruta no existe o no tienes acceso</h1>
-          <p hlmEmptyDescription>Puede que la hayas eliminado o que el enlace esté incompleto.</p>
-        </div>
-
-        <div hlmEmptyContent>
-          <a hlmBtn routerLink="/mis-rutas">Volver a Mis rutas</a>
-        </div>
-      </div>
+      <!-- The API answers 404 for a deleted path and for someone else's alike -->
+      <app-not-found-state
+        description="Puede que la ruta se haya eliminado o que el enlace esté incompleto."
+      />
     }
 
     @case ('error') {
@@ -40,6 +34,8 @@
         <app-path-detail-header
           [path]="path"
           [courseCount]="store.courseCount()"
+          [covers]="store.courseCovers()"
+          [fan]="store.coverFan()"
           [deleting]="store.isDeletingPath()"
           [backLink]="backLink"
           [backLabel]="backLabel"
@@ -51,7 +47,7 @@
           <section
             class="bg-card border-border mt-10 flex flex-col items-center gap-5 rounded-lg border p-6 text-center sm:flex-row sm:text-left"
           >
-            <app-devi-mascot pose="hello" class="h-24 shrink-0" />
+            <app-devi-mascot pose="celebrating" class="h-28 shrink-0" />
             <h2 class="flex-1 text-lg font-semibold">Completaste esta ruta</h2>
             <a hlmBtn routerLink="/cuestionario" class="shrink-0">Generar una nueva ruta</a>
           </section>
@@ -69,6 +65,7 @@
               appPathTimelineStep
               [state]="state"
               [last]="last && store.timeline().orphans.length === 0"
+              [enterDelay]="enterDelay(index)"
             >
               <app-course-step-card
                 [course]="entry.node"
