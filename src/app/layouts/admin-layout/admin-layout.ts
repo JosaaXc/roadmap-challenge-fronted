@@ -1,10 +1,10 @@
 import { Component, inject } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
-import { BrandLogo } from "../../shared/ui/brand-logo/brand-logo";
+import { GlassHeader } from "../../shared/ui/glass-header/glass-header";
 import { UserAvatarMenuComponent } from "../../shared/ui/user-avatar-menu/user-avatar-menu";
 
 @Component({
-  imports: [RouterModule, BrandLogo, UserAvatarMenuComponent],
+  imports: [RouterModule, GlassHeader, UserAvatarMenuComponent],
   selector: 'app-admin-layout',
   standalone: true,
   templateUrl: 'admin-layout.html',
