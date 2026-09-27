@@ -29,7 +29,7 @@ export class CallbackPage implements OnInit {
           };
 
           this.sessionStore.setSession(mappedUser, response.data.accessToken);
-          this.router.navigate(['/cuestionario']);
+          this.router.navigate(['/mis-rutas']);
         },
         error: () => {
           this.router.navigate(['/auth/login']);
