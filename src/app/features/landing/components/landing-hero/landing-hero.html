@@ -1,27 +1,64 @@
-<!-- Hero: pitch on the left, generated path preview on the right -->
-<section
-  class="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-14 lg:py-20"
->
-  <div>
-    <p class="label-mono text-muted-foreground">Generador de rutas de aprendizaje</p>
-
-    <h1 class="mt-5 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl">
-      <span class="block">Sabes qué quieres aprender.</span>
-      <span class="block">El problema es en qué orden.</span>
-    </h1>
-
-    <p class="text-muted-foreground mt-5 max-w-lg text-sm leading-relaxed">
-      Responde un par de preguntas y recibe una secuencia de cursos de DevTalles que respeta los
-      prerequisitos, sin repetir lo que ya sabes.
-    </p>
-
-    <div class="mt-8 flex flex-wrap items-center gap-3">
-      <button hlmBtn size="lg" type="button" class="h-10 px-5">Armar mi ruta</button>
-      <button hlmBtn variant="outline" size="lg" type="button" class="h-10 px-5">
-        Ver un ejemplo
-      </button>
-    </div>
+<!--
+  Hero over an ambient glow: the pitch on the left, a sample path that plays itself on the right.
+  It starts under the sticky bar's strip (h-16 plus its top gap), so the glow runs up behind the
+  glass instead of stopping in a straight line below it
+-->
+<div class="relative isolate -mt-20 overflow-hidden pt-20">
+  <!--
+    The brand's violet and the accent drifting slowly, with motes rising through them. It fades
+    out before the hero ends, so the next section starts on the plain background
+  -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 mask-b-from-60%">
+    <div
+      class="absolute -top-1/4 -left-1/5 h-[85%] w-3/5 bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-45 motion-safe:animate-drift"
+    ></div>
+    <div
+      class="absolute top-[5%] -right-1/5 h-[80%] w-1/2 bg-[radial-gradient(closest-side,var(--color-highlight),transparent)] opacity-15 motion-safe:animate-drift [animation-delay:-13s]"
+    ></div>
+    <app-particle-field />
   </div>
 
-  <app-suggested-path-card [courses]="samplePath" [topic]="samplePathTopic" />
-</section>
+  <section
+    class="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-14 lg:py-20"
+  >
+    <div>
+      <p class="label-mono text-muted-foreground">Generador de rutas de aprendizaje</p>
+
+      <h1 class="mt-5 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl">
+        <span class="block">Sabes qué quieres aprender.</span>
+        <span class="block">El problema es en qué orden.</span>
+      </h1>
+
+      <p class="text-muted-foreground mt-5 max-w-lg text-sm leading-relaxed">
+        Responde un par de preguntas y recibe una secuencia de cursos de DevTalles que respeta los
+        prerequisitos, sin repetir lo que ya sabes.
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <!-- A protected route: the guard walks a visitor through the login first -->
+        <a hlmBtn size="lg" routerLink="/cuestionario" class="h-10 px-5">Armar mi ruta</a>
+
+        <!-- The community page does not exist yet, so for now it shows how a path is built -->
+        <a
+          hlmBtn
+          variant="outline"
+          size="lg"
+          href="#como-funciona"
+          appSectionLink
+          class="h-10 px-5"
+        >
+          Ver rutas de la comunidad
+        </a>
+      </div>
+    </div>
+
+    <!-- A path as the app shows one, playing forward: each course done turns the fan of covers -->
+    <app-suggested-path-card
+      [courses]="samplePath"
+      [topic]="samplePathTopic"
+      [completed]="completed()"
+      [covers]="covers()"
+      [fan]="fan()"
+    />
+  </section>
+</div>
