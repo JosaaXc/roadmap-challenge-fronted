@@ -1,4 +1,4 @@
-import { CatalogStat, LandingStep } from '../models/landing-models';
+import { LandingStep } from '../models/landing-models';
 
 export const LANDING_STEPS: readonly LandingStep[] = [
   {
@@ -18,19 +18,4 @@ export const LANDING_STEPS: readonly LandingStep[] = [
     description:
       'Cierras un curso, se desbloquea el siguiente y la ruta queda guardada en tu cuenta.',
   },
-];
-
-export const CATALOG_STATS: readonly CatalogStat[] = [
-  { value: '+82', label: 'Cursos a elegir' },
-  { value: '6', label: 'Categorías' },
-  { value: '4', label: 'Instructores' },
-];
-
-export const CATALOG_CATEGORIES: readonly string[] = [
-  'Backend',
-  'Desarrollo Web',
-  'Base de datos',
-  'Móvil',
-  'Dart y Flutter',
-  'Más…',
 ];
