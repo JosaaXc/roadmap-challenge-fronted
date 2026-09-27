@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideEye, lucideEyeOff } from '@ng-icons/lucide';
+import { lucideChevronLeft, lucideEye, lucideEyeOff } from '@ng-icons/lucide';
 import { HlmAlert } from '@spartan-ng/helm/alert';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmFieldImports } from '@spartan-ng/helm/field';
@@ -31,7 +31,7 @@ import { DiscordButton } from '../../../../shared/ui/discord-button/discord-butt
     DiscordButton,
   ],
   templateUrl: './register-page.html',
-  viewProviders: [provideIcons({ lucideEye, lucideEyeOff })],
+  viewProviders: [provideIcons({ lucideChevronLeft, lucideEye, lucideEyeOff })],
 })
 export class RegisterPage {
   private fb = inject(FormBuilder);

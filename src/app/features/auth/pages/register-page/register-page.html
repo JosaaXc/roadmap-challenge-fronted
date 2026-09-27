@@ -1,3 +1,10 @@
+<!-- A way back that says where it leads: below lg the aside, logo included, is not shown -->
+<a hlmBtn variant="ghost" size="sm" routerLink="/"
+  class="text-muted-foreground hover:text-foreground mb-6 -ml-2.5 gap-1">
+  <ng-icon name="lucideChevronLeft" aria-hidden="true" />
+  Volver al inicio
+</a>
+
 <h1 class="text-2xl font-semibold tracking-tight">Crear cuenta</h1>
 
 <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
@@ -67,19 +74,6 @@
     }
     Crear cuenta
   </button>
-
-  <!-- No legal pages yet: inert buttons like the footer's, to become routerLinks once the pages exist -->
-  <p class="text-muted-foreground mt-4 text-xs leading-relaxed">
-    Al crear tu cuenta aceptas los
-    <button type="button" class="text-foreground hover:text-highlight font-medium transition-colors">
-      términos del servicio
-    </button>
-    y la
-    <button type="button" class="text-foreground hover:text-highlight font-medium transition-colors">
-      política de privacidad
-    </button>
-    de DevTalles.
-  </p>
 </form>
 
 <p class="text-muted-foreground mt-6 text-center text-sm">
