@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { buildCoverFan } from '../../../../shared/ui/cover-fan/build-cover-fan';
 import { ParticleField } from '../../../../shared/ui/particle-field/particle-field';
-import { SectionLink } from '../../../../shared/ui/section-link/section-link';
 import {
   SAMPLE_PATH,
   SAMPLE_PATH_TOPIC,
@@ -18,7 +17,7 @@ const STEP_MS = 2600;
 const DONE_REST_MS = 3200;
 
 @Component({
-  imports: [RouterLink, HlmButton, ParticleField, SectionLink, SuggestedPathCard],
+  imports: [RouterLink, HlmButton, ParticleField, SuggestedPathCard],
   selector: 'app-landing-hero',
   templateUrl: './landing-hero.html',
   host: { class: 'contents' },

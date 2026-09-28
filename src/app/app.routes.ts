@@ -13,6 +13,13 @@ export const routes: Routes = [
       import('./features/landing/pages/landing-page/landing-page').then((m) => m.LandingPage),
   },
 
+  // The whole catalog, open to anyone: the landing links to it before any sign in
+  {
+    path: 'cursos',
+    loadComponent: () =>
+      import('./features/landing/pages/catalog-page/catalog-page').then((m) => m.CatalogPage),
+  },
+
   // Shell público de autenticación
   {
     path: 'auth',
