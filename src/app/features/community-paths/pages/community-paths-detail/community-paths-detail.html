@@ -21,8 +21,13 @@
 
   @case ('ready') {
   @if (store.path(); as path) {
+  <!--
+    The author's progress stays private: no progress bar, and every step and resource reads as
+    not started, so the reader sees the path itself and not how far someone else got
+  -->
   <app-path-detail-header [path]="path" [courseCount]="store.courseCount()" [covers]="store.courseCovers()"
-    [fan]="store.coverFan()" [deleting]="false" [backLink]="backLink" [backLabel]="backLabel" />
+    [fan]="store.coverFan()" [deleting]="false" [backLink]="backLink" [backLabel]="backLabel"
+    [isReadOnly]="true" />
 
   <ol class="mt-10 flex flex-col gap-3" aria-label="Pasos de la ruta">
     @for (
@@ -30,10 +35,8 @@
     track entry.node.id;
     let index = $index, last = $last
     ) {
-    @let state = store.stepState(entry.node);
-
-    <li appPathTimelineStep [state]="state" [last]="last && store.timeline().orphans.length === 0">
-      <app-course-step-card [course]="entry.node" [step]="index + 1" [state]="state" [busy]="false"
+    <li appPathTimelineStep [state]="'pending'" [last]="last && store.timeline().orphans.length === 0">
+      <app-course-step-card [course]="entry.node" [step]="index + 1" [state]="'pending'" [busy]="false"
         [isReadOnly]="true" />
 
       @if (entry.resources.length > 0) {
@@ -41,7 +44,7 @@
         [attr.aria-label]="'Recursos de ' + entry.node.title">
         @for (resource of entry.resources; track resource.id) {
         <li>
-          <app-resource-card [resource]="resource" [busy]="false" [deleting]="false" />
+          <app-resource-card [resource]="resource" [isReadOnly]="true" />
         </li>
         }
       </ol>
@@ -50,8 +53,8 @@
     }
 
     @for (resource of store.timeline().orphans; track resource.id; let last = $last) {
-    <li appPathTimelineStep [state]="store.stepState(resource)" [last]="last">
-      <app-resource-card [resource]="resource" [busy]="false" [deleting]="false" />
+    <li appPathTimelineStep [state]="'pending'" [last]="last">
+      <app-resource-card [resource]="resource" [isReadOnly]="true" />
     </li>
     }
   </ol>

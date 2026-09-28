@@ -8,7 +8,7 @@
 
       <h3
         class="mt-1 text-sm leading-snug font-semibold"
-        [class.text-muted-foreground]="resource().isCompleted"
+        [class.text-muted-foreground]="resource().isCompleted && !isReadOnly()"
       >
         @if (resource().url; as url) {
           <!--
@@ -44,26 +44,28 @@
       }
     </div>
 
-    <div class="flex shrink-0 items-center gap-1">
-      <app-step-checkbox
-        [checked]="resource().isCompleted"
-        [busy]="busy()"
-        [stepTitle]="resource().title"
-        (toggled)="toggled.emit()"
-      />
+    @if (!isReadOnly()) {
+      <div class="flex shrink-0 items-center gap-1">
+        <app-step-checkbox
+          [checked]="resource().isCompleted"
+          [busy]="busy()"
+          [stepTitle]="resource().title"
+          (toggled)="toggled.emit()"
+        />
 
-      <button
-        hlmBtn
-        variant="ghost"
-        size="icon-sm"
-        type="button"
-        class="text-muted-foreground hover:text-destructive ml-2"
-        [attr.aria-label]="'Eliminar el recurso ' + resource().title"
-        [disabled]="deleting()"
-        (click)="deleteRequested.emit()"
-      >
-        <ng-icon name="lucideTrash2" aria-hidden="true" />
-      </button>
-    </div>
+        <button
+          hlmBtn
+          variant="ghost"
+          size="icon-sm"
+          type="button"
+          class="text-muted-foreground hover:text-destructive ml-2"
+          [attr.aria-label]="'Eliminar el recurso ' + resource().title"
+          [disabled]="deleting()"
+          (click)="deleteRequested.emit()"
+        >
+          <ng-icon name="lucideTrash2" aria-hidden="true" />
+        </button>
+      </div>
+    }
   </div>
 </div>

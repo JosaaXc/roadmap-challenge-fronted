@@ -42,17 +42,15 @@
         class="bg-background/55 border-foreground/10 -mt-1 -mr-1 flex shrink-0 items-center rounded-full border backdrop-blur-md [&_button]:rounded-full"
       >
 
-      @if(router.url.includes('community')){
+      <!-- Read-only, the reader can only save a copy; the owner publishes, stars and deletes -->
+      @if (isReadOnly()) {
         <app-fork-button [pathId]="path().id" [variant]="'community'" [initialCount]="path().forksCount || 0"
           (forkSuccess)="onPathForked($event)"></app-fork-button>
-      }@else{
+      } @else {
       <button hlmBtn variant="ghost" size="sm" class="flex items-center gap-2" (click)="store.toggleVisibility()">
         <ng-icon [name]="store.path()?.isPublic ? 'lucideLock' : 'lucideGlobe'" size="16px"></ng-icon>
         {{ store.path()?.isPublic ? 'Despublicar Ruta' : 'Publicar Ruta' }}
       </button>
-      }
-
-
 
         <app-favorite-toggle
           [pathId]="path().id"
@@ -87,6 +85,7 @@
             </button>
           </hlm-dropdown-menu>
         </ng-template>
+      }
       </div>
     </div>
 
@@ -95,6 +94,8 @@
       {{ path().createdAt | shortDate }}
     </p>
 
-    <app-path-progress [value]="path().progress" class="mt-6 md:max-w-[55%]" />
+    @if (!isReadOnly()) {
+      <app-path-progress [value]="path().progress" class="mt-6 md:max-w-[55%]" />
+    }
   </div>
 </header>

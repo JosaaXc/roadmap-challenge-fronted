@@ -40,13 +40,16 @@ import { ForkButtonComponent } from '../../../../shared/ui/fork-button/fork-butt
   host: { class: 'block' },
 })
 export class PathDetailHeader {
-  readonly router = inject(Router);
+  private readonly router = inject(Router);
   readonly store = inject(PathDetailStore);
   readonly path = input.required<LearningPath>();
   readonly courseCount = input.required<number>();
   readonly deleting = input(false);
   readonly backLink = input('/mis-rutas');
   readonly backLabel = input('Mis rutas');
+  // Someone else's path, seen from the community: it can be saved, but its progress, favourite
+  // and menu are the author's, so they stay out
+  readonly isReadOnly = input(false);
 
   // Covers of the path's courses, in path order, and the few of them dealt as the fan
   readonly covers = input<readonly string[]>([]);
