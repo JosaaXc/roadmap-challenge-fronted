@@ -30,15 +30,34 @@ export interface LearningPath {
   description: string;
   progress: number;
   // Cover of the first course, kept as the path cover when it was generated
-  imageUrl?: string | null;
+  imageUrl: string ;
   isFavorite: boolean;
   isPublic: boolean;
+  isFork: boolean;
+  nodeCount: number;
+  hasLiked: boolean;
+  likesCount: number;
+  forksCount: number;
+  forkedFrom: string;
   nodes: PathNode[];
   edges: PathEdge[];
   // Title of the first unfinished node, null once the path is complete
   nextStep: string | null;
   createdAt: string;
   updatedAt?: string;
+  owner?: {
+    username: string;
+  };
+}
+
+export interface PathQueryParams {
+  take?: number;
+  cursor?: string | null;
+  order?: 'asc' | 'desc';
+  sortBy?: 'popular' | 'recent';
+  search?: string;
+  isFavorite?: boolean;
+  isPublic?: boolean;
 }
 
 // Filter and order of the Mis rutas grid, both resolved in memory
@@ -52,9 +71,19 @@ export interface PathCard {
   readonly courses: string;
   readonly courseCount: number;
   readonly createdAt: string;
+  readonly imageUrl: string;
   readonly progress: number;
   readonly nextStep: string | null;
   readonly isFavorite: boolean;
+  readonly isFork: boolean;
+  readonly isPublic: boolean;
+  readonly hasLiked: boolean;
+  readonly likesCount: number;
+  readonly forksCount: number;
+  readonly forkedFrom: string;
+  readonly owner?: {
+    username: string;
+  };
 }
 
 // Where the detail page stands while it brings its path

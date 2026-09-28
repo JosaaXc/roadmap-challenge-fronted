@@ -1,0 +1,26 @@
+<div
+  class="inline-flex items-center border border-border rounded-full overflow-hidden bg-card transition-colors hover:border-muted-foreground/50">
+
+  <button hlmBtn variant="ghost" size="sm"
+    class="flex items-center gap-1.5 px-3 rounded-none hover:bg-muted/50 transition-colors h-8"
+    (click)="toggleLike($event)" [disabled]="isProcessing()" aria-label="Dar me gusta a la ruta">
+
+    <ng-icon name="lucideHeart" size="18px" class="transition-all duration-300" [class.fill-red-500]="hasLiked()"
+      [class.text-red-500]="hasLiked()" [class.text-muted-foreground]="!hasLiked()" [class.scale-110]="hasLiked()">
+    </ng-icon>
+
+    <span class="text-xs font-medium" [class.text-foreground]="hasLiked()" [class.text-muted-foreground]="!hasLiked()">
+      {{ hasLiked() ? 'Liked' : 'Like' }}
+    </span>
+  </button>
+
+  <div class="flex items-center gap-1.5 px-3 h-8 border-l border-border bg-muted/20">
+    <ng-icon name="lucideHeart" size="14px" class="text-muted-foreground">
+    </ng-icon>
+
+    <span class="text-xs text-muted-foreground font-medium tabular-nums">
+      {{ likesCount() }}
+    </span>
+  </div>
+
+</div>

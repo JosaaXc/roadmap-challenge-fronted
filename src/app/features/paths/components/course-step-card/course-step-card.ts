@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { booleanAttribute, Component, computed, Input, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideExternalLink, lucideGraduationCap, lucidePlus } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -17,6 +17,7 @@ import { StepCheckbox } from '../step-checkbox/step-checkbox';
   host: { class: 'block' },
 })
 export class CourseStepCard {
+
   readonly course = input.required<PathNode>();
 
   // Numbered among courses only: resources are optional branches off them

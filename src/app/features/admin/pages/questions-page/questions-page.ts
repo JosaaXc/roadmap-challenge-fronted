@@ -191,7 +191,7 @@ export class QuestionsPage implements OnInit {
         this.fb.group({
           id: [opt.id],
           text: [opt.text, Validators.required],
-          tagsOutput: [''], // Vacío, obligando a rellenarlo
+          tagsOutput: [opt.tagsOutput ? opt.tagsOutput.join(', ') : ''],
         }),
       );
     });

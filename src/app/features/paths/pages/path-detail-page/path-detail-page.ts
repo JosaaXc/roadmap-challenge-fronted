@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { afterNextRender, Component, inject, input, OnInit, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleAlert } from '@ng-icons/lucide';
@@ -16,6 +16,9 @@ import { ResourceCard } from '../../components/resource-card/resource-card';
 import { ResourceDialog } from '../../components/resource-dialog/resource-dialog';
 import { PathDetailNavigationState, PathNode } from '../../models/paths-models';
 import { PathDetailStore } from '../../services/path-detail-store';
+import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
+import { PathCardComponent } from '../../../../shared/ui/path-card/path-card';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 // Gap between the entrances of two consecutive steps of a new path
 const ENTRANCE_STAGGER_MS = 90;
@@ -27,6 +30,7 @@ const ENTRANCE_STAGGER_MS = 90;
     NgIcon,
     HlmAlertImports,
     HlmButton,
+    HlmSkeletonImports,
     ConfirmDialog,
     DeviMascot,
     NotFoundState,
@@ -36,15 +40,17 @@ const ENTRANCE_STAGGER_MS = 90;
     PathDetailSkeleton,
     ResourceCard,
     ResourceDialog,
-  ],
+    PathCardComponent
+],
   templateUrl: './path-detail-page.html',
   providers: [PathDetailStore],
   viewProviders: [provideIcons({ lucideCircleAlert })],
 })
 export class PathDetailPage implements OnInit {
-  protected readonly store = inject(PathDetailStore);
+  readonly store = inject(PathDetailStore);
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  private readonly destroyRed = inject(DestroyRef);
 
   // Set by the generation screen: only a path built a moment ago plays its entrance
   private readonly justGenerated =
@@ -76,7 +82,14 @@ export class PathDetailPage implements OnInit {
   }
 
   ngOnInit() {
-    this.store.load(this.id());
+    this.route.paramMap
+    .pipe(takeUntilDestroyed(this.destroyRed))
+    .subscribe((params) => {
+      const id = params.get('id');
+      if (id) {
+        this.store.load(this.id());
+      }
+    });
   }
 
   protected enterDelay(index: number): number | null {

@@ -15,6 +15,7 @@ import { buildCoverFan } from '../../../shared/ui/cover-fan/build-cover-fan';
 import { withStepFlipped } from '../utils/path-progress';
 import { buildTimeline } from '../utils/path-timeline';
 import { PathsApi } from './paths-api';
+import { toPathCard } from '../utils/path-card';
 
 const EMPTY_TIMELINE: PathTimeline = { courses: [], orphans: [] };
 
@@ -34,11 +35,16 @@ export class PathDetailStore {
   private readonly _deleting = signal<ReadonlySet<string>>(new Set());
   private readonly _isAddingResource = signal(false);
   private readonly _isDeletingPath = signal(false);
+  private readonly _relatedPaths = signal<LearningPath[]>([]);
+  private readonly _isLoadingRelated = signal<boolean>(false);
 
   readonly path = this._path.asReadonly();
   readonly status = this._status.asReadonly();
+  readonly isLoadingRelated = this._isLoadingRelated.asReadonly();
   readonly isAddingResource = this._isAddingResource.asReadonly();
   readonly isDeletingPath = this._isDeletingPath.asReadonly();
+
+  readonly relatedCards = computed(() => this._relatedPaths().map(toPathCard));
 
   readonly timeline = computed(() => {
     const path = this._path();
@@ -81,6 +87,22 @@ export class PathDetailStore {
       // Any 404 here means the same to the visitor: there is no path behind this link
       error: (err: HttpErrorResponse) =>
         this._status.set(err.status === 404 ? 'not-found' : 'error'),
+    });
+
+    this.loadRelatedPaths(pathId);
+  }
+
+  private loadRelatedPaths(pathId: string): void {
+    this._isLoadingRelated.set(true);
+    this.api.getRelatedPaths(pathId).subscribe({
+      next: (response) => {
+        this._relatedPaths.set(response.data);
+        this._isLoadingRelated.set(false);
+      },
+      error: () => {
+        console.error('No se pudieron cargar las rutas relacionadas');
+        this._isLoadingRelated.set(false);
+      },
     });
   }
 
@@ -160,6 +182,25 @@ export class PathDetailStore {
     } finally {
       this._isAddingResource.set(false);
     }
+  }
+
+  toggleVisibility(): void {
+    const currentPath = this._path();
+    if (!currentPath) return;
+
+    const previousState = currentPath.isPublic;
+
+    this._path.update((p) => (p ? { ...p, isPublic: !previousState } : null));
+
+    this.api.togglePathVisibility(currentPath.id).subscribe({
+      next: (response) => {
+        console.log('Visibilidad actualizada:', response.data.isPublic);
+      },
+      error: (error) => {
+        this._path.update((p) => (p ? { ...p, isPublic: previousState } : null));
+        console.error('Error al cambiar la visibilidad', error);
+      },
+    });
   }
 
   deleteResource(nodeId: string): void {

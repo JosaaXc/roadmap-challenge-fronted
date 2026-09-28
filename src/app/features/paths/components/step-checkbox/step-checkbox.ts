@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { booleanAttribute, Component, Input, input, output } from '@angular/core';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 
 // The "Completado" box of a step. While its call is in flight it refuses new clicks,

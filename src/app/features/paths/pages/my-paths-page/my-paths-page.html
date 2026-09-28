@@ -36,7 +36,7 @@
         size="sm"
         type="button"
         hlmAlertAction
-        (click)="store.load()"
+        (click)="store.loadInitial()"
       >
         Reintentar
       </button>
@@ -116,56 +116,7 @@
     } @else {
       <div class="mt-6 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @for (card of cards(); track card.id) {
-          <!--
-          One real link, stretched over the card with a pseudo-element: the star
-          stays clickable above it and there is no button nested inside an anchor
-        -->
-          <article
-            hlmCard
-            class="border-border hover:border-muted-foreground has-[a:focus-visible]:ring-ring relative flex flex-col gap-3 rounded-lg border px-5 ring-0 transition-colors has-[a:focus-visible]:ring-2 [--card-spacing:--spacing(5)]"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <h2 class="line-clamp-2 text-base leading-snug font-semibold">
-                <a
-                  [routerLink]="['/mis-rutas', card.id]"
-                  class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
-                >
-                  {{ card.title | pathTitle }}
-                </a>
-              </h2>
-
-              <div class="relative z-10 -mt-1.5 -mr-2 shrink-0">
-                <app-favorite-toggle
-                  [pathId]="card.id"
-                  [isFavorite]="card.isFavorite"
-                  (toggled)="store.setFavorite(card.id, $event)"
-                />
-              </div>
-            </div>
-
-            <p class="text-muted-foreground truncate text-sm">{{ card.courses }}</p>
-
-            <p class="text-muted-foreground text-xs">
-              {{ card.courseCount }} curso{{ card.courseCount === 1 ? '' : 's' }} ·
-              {{ card.createdAt | shortDate }}
-            </p>
-
-            <!-- Progress sits at the bottom so every card lines up whatever its title -->
-            <div class="mt-auto pt-1">
-              <app-path-progress [value]="card.progress" />
-
-              @if (card.nextStep) {
-                <p class="text-muted-foreground mt-3 truncate text-xs">
-                  Siguiente: {{ card.nextStep }}
-                </p>
-              } @else {
-                <p class="text-highlight mt-3 flex items-center gap-1.5 text-xs">
-                  <ng-icon name="lucideCheck" size="14px" aria-hidden="true" />
-                  Ruta completada
-                </p>
-              }
-            </div>
-          </article>
+          <app-path-card [card]="card" [isOwner]="true" [showLike]="true"></app-path-card>
         }
       </div>
 
@@ -185,3 +136,5 @@
     }
   }
 </section>
+
+<app-community-paths-page/>
