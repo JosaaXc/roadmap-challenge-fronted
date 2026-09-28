@@ -1,0 +1,15 @@
+@for (mote of motes; track $index) {
+  <!--
+    Each mote rides a column as tall as the field: climbing the column's own height
+    carries it from the bottom edge to the top one, whatever the box measures
+  -->
+  <span
+    class="animate-particle absolute inset-y-0"
+    [style.left.%]="mote.left"
+    [style.animation-duration.s]="mote.duration"
+    [style.animation-delay.s]="mote.delay"
+    [style.--particle-drift]="mote.drift + 'px'"
+  >
+    <span class="absolute bottom-0 block rounded-full" [class]="looks[mote.look]"></span>
+  </span>
+}

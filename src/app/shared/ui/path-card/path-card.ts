@@ -33,11 +33,12 @@ import { ForkButtonComponent } from "../fork-button/fork-button";
   host: { class: 'block h-full' },
 })
 export class PathCardComponent {
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
   readonly store = inject(PathsStore);
   readonly card = input.required<any>();
   readonly linkPrefix = input<string>('/mis-rutas');
   readonly isOwner = input<boolean>(false);
+  readonly showLike = input<boolean>(true);
 
   onPathForked(newPath: any) {
     this.router.navigate(['/mis-rutas', newPath.id]);

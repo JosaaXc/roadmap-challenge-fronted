@@ -1,16 +1,16 @@
 <div class="bg-background text-foreground min-h-screen">
-  <header class="flex h-14 justify-between border-border border-b items-center gap-6 px-6">
-    <a routerLink="/mis-rutas" aria-label="CodeQuest, ir a mis rutas">
-      <app-brand-logo />
-    </a>
-    <nav class="text-muted-foreground items-center flex gap-4 text-sm">
-
-      <a routerLink="/mis-rutas" routerLinkActive="text-foreground">Volver a la App</a>
-      <app-user-avatar-menu/>
-
+  <app-glass-header homeLink="/mis-rutas" homeLabel="CodeQuest, ir a mis rutas">
+    <nav class="text-muted-foreground flex items-center gap-4">
+      <a
+        routerLink="/mis-rutas"
+        routerLinkActive="text-foreground"
+        class="hover:text-foreground px-2 py-2 text-xs font-semibold tracking-widest uppercase transition-colors"
+      >
+        Volver a la App
+      </a>
+      <app-user-avatar-menu />
     </nav>
-  </header>
-
+  </app-glass-header>
 
   <main class="mx-auto w-full max-w-6xl px-6 py-8">
     <router-outlet />

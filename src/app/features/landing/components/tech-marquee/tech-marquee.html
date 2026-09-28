@@ -1,0 +1,25 @@
+<!--
+  Two copies back to back: as the first slides out, its twin takes the same place and the loop
+  starts over unseen. The twin is only there for the eye
+-->
+<div
+  class="animate-marquee flex w-max group-hover/marquee:paused data-paused:paused data-reverse:direction-reverse motion-reduce:w-full motion-reduce:animate-none"
+  [attr.data-paused]="paused() ? '' : null"
+  [attr.data-reverse]="reverse() ? '' : null"
+  [style.animation-duration.s]="duration()"
+>
+  <ul
+    class="flex shrink-0 gap-3 pr-3 motion-reduce:shrink motion-reduce:flex-wrap motion-reduce:pr-0"
+    [attr.aria-label]="label()"
+  >
+    @for (badge of badges(); track badge.tag) {
+      <li appTechPill [badge]="badge"></li>
+    }
+  </ul>
+
+  <ul aria-hidden="true" class="flex shrink-0 gap-3 pr-3 motion-reduce:hidden">
+    @for (badge of badges(); track badge.tag) {
+      <li appTechPill [badge]="badge"></li>
+    }
+  </ul>
+</div>

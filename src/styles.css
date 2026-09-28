@@ -38,6 +38,67 @@
     }
   }
 
+  /* A path that was just generated: each step rises into place after the one above. */
+  --animate-step-in: step-in 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  @keyframes step-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Motes over the step to take now: each climbs its column, swaying, and fades at both ends. */
+  --animate-particle: particle 9s linear infinite;
+
+  @keyframes particle {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 0, 0);
+    }
+    20%,
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(var(--particle-drift, 0), -100%, 0);
+    }
+  }
+
+  /* The catalog marquee: a row slides by one copy of its list, where its twin takes over. The
+     duration is set per row, from how many pills it holds. */
+  --animate-marquee: marquee 60s linear infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  /* A cover joining or leaving the header's fan. Opacity and transform only, so the grey and the
+     dimming of its place carry on untouched while it settles. */
+  --animate-fan-in: fan-in 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-fan-out: fan-out 350ms ease-in both;
+
+  @keyframes fan-in {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
+  @keyframes fan-out {
+    to {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
   /* Thruster flicker: short, shallow, anchored at the nozzle. */
   --animate-flame: flame 360ms ease-in-out infinite;
 

@@ -34,6 +34,7 @@ export interface LearningPath {
   isFavorite: boolean;
   isPublic: boolean;
   isFork: boolean;
+  nodeCount: number;
   hasLiked: boolean;
   likesCount: number;
   forksCount: number;
@@ -44,6 +45,9 @@ export interface LearningPath {
   nextStep: string | null;
   createdAt: string;
   updatedAt?: string;
+  owner?: {
+    username: string;
+  };
 }
 
 export interface PathQueryParams {
@@ -77,11 +81,19 @@ export interface PathCard {
   readonly likesCount: number;
   readonly forksCount: number;
   readonly forkedFrom: string;
-
+  readonly owner?: {
+    username: string;
+  };
 }
 
 // Where the detail page stands while it brings its path
 export type PathDetailStatus = 'loading' | 'ready' | 'not-found' | 'error';
+
+// What a navigation to the detail page can carry. The generation screen sets
+// justGenerated, and only then does the timeline play its entrance
+export interface PathDetailNavigationState {
+  readonly justGenerated?: boolean;
+}
 
 // A resource as the user types it, before the API gives it an id
 export interface NewResource {

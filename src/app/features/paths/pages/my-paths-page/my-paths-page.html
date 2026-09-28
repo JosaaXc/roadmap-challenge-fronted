@@ -44,6 +44,11 @@
   } @else if (store.paths().length === 0) {
     <div hlmEmpty class="border-border mt-8 border">
       <div hlmEmptyHeader>
+        <!-- The first visit, so Devi says hello; the favourites filter below gets words only -->
+        <div hlmEmptyMedia>
+          <app-devi-mascot pose="hello" class="h-28" />
+        </div>
+
         <h2 hlmEmptyTitle class="text-base">Todavía no tienes ninguna ruta</h2>
         <p hlmEmptyDescription>
           Responde el cuestionario y armamos una secuencia de cursos que respeta los prerequisitos.
@@ -111,7 +116,7 @@
     } @else {
       <div class="mt-6 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @for (card of cards(); track card.id) {
-          <app-path-card [card]="card" [isOwner]="true"></app-path-card>
+          <app-path-card [card]="card" [isOwner]="true" [showLike]="true"></app-path-card>
         }
       </div>
 

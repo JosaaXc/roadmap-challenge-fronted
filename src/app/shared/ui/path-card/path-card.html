@@ -91,9 +91,10 @@
     @if (!isOwner()) {
     <div class="flex items-center justify-center border-t border-border bg-muted/20 px-3 py-3">
       <div class="flex items-center space-x-2 z-20">
-        <app-like-button [pathId]="card().id" [initialLiked]="card().hasLiked || false"
-          [initialCount]="card().likesCount || 0">
-        </app-like-button>
+        @if(showLike()){
+          <app-like-button [pathId]="card().id" [initialLiked]="card().hasLiked || false" [initialCount]="card().likesCount || 0">
+          </app-like-button>
+        }
         <app-fork-button [pathId]="card().id" [initialCount]="card().forksCount || 0"
           (forkSuccess)="onPathForked($event)">
         </app-fork-button>

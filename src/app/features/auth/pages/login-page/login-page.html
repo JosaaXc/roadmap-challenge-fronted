@@ -4,7 +4,7 @@
   Entra para retomar tu ruta y marcar los cursos que ya cerraste.
 </p>
 
-<app-discord-button class="mt-6" />
+<app-discord-button class="mt-6" [redirectTo]="redirectTo" />
 
 <p class="text-muted-foreground mt-2 text-xs">Es la vía que usa la mayoría de la comunidad.</p>
 
@@ -63,7 +63,8 @@
 
 <p class="text-muted-foreground mt-6 text-center text-sm">
   ¿No tienes cuenta?
-  <a routerLink="/auth/register"
+  <!-- Keeps redirectTo, so signing up instead still returns to the page that was asked for -->
+  <a routerLink="/auth/register" queryParamsHandling="preserve"
     class="text-foreground hover:text-highlight font-medium underline underline-offset-4 transition-colors">
     Crear cuenta
   </a>

@@ -11,9 +11,11 @@ import {
   PathNode,
   PathTimeline,
 } from '../models/paths-models';
+import { buildCoverFan } from '../../../shared/ui/cover-fan/build-cover-fan';
 import { withStepFlipped } from '../utils/path-progress';
 import { buildTimeline } from '../utils/path-timeline';
 import { PathsApi } from './paths-api';
+import { toPathCard } from '../utils/path-card';
 
 const EMPTY_TIMELINE: PathTimeline = { courses: [], orphans: [] };
 
@@ -33,11 +35,16 @@ export class PathDetailStore {
   private readonly _deleting = signal<ReadonlySet<string>>(new Set());
   private readonly _isAddingResource = signal(false);
   private readonly _isDeletingPath = signal(false);
+  private readonly _relatedPaths = signal<LearningPath[]>([]);
+  private readonly _isLoadingRelated = signal<boolean>(false);
 
   readonly path = this._path.asReadonly();
   readonly status = this._status.asReadonly();
+  readonly isLoadingRelated = this._isLoadingRelated.asReadonly();
   readonly isAddingResource = this._isAddingResource.asReadonly();
   readonly isDeletingPath = this._isDeletingPath.asReadonly();
+
+  readonly relatedCards = computed(() => this._relatedPaths().map(toPathCard));
 
   readonly timeline = computed(() => {
     const path = this._path();
@@ -53,6 +60,19 @@ export class PathDetailStore {
   // Only catalogue courses count, as on the card: resources are the user's own additions
   readonly courseCount = computed(() => this.timeline().courses.length);
 
+  // The course covers in path order, which the header turns into the journey's colours
+  readonly courseCovers = computed(() =>
+    this.timeline().courses.flatMap((entry) => entry.node.imageUrl ?? []),
+  );
+
+  // The header's fan, which turns to the next course each time the one in front is completed
+  readonly coverFan = computed(() =>
+    buildCoverFan(
+      this.timeline().courses.map((entry) => entry.node),
+      this.currentNodeId(),
+    ),
+  );
+
   readonly isCompleted = computed(() => (this._path()?.progress ?? 0) >= 100);
 
   load(pathId: string): void {
@@ -67,6 +87,22 @@ export class PathDetailStore {
       // Any 404 here means the same to the visitor: there is no path behind this link
       error: (err: HttpErrorResponse) =>
         this._status.set(err.status === 404 ? 'not-found' : 'error'),
+    });
+
+    this.loadRelatedPaths(pathId);
+  }
+
+  private loadRelatedPaths(pathId: string): void {
+    this._isLoadingRelated.set(true);
+    this.api.getRelatedPaths(pathId).subscribe({
+      next: (response) => {
+        this._relatedPaths.set(response.data);
+        this._isLoadingRelated.set(false);
+      },
+      error: () => {
+        console.error('No se pudieron cargar las rutas relacionadas');
+        this._isLoadingRelated.set(false);
+      },
     });
   }
 

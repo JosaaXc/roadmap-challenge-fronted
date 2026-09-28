@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEye, lucideEyeOff } from '@ng-icons/lucide';
 import { HlmAlert } from '@spartan-ng/helm/alert';
@@ -10,6 +10,7 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmSpinner } from '@spartan-ng/helm/spinner';
 import { AuthApi } from '../../services/auth-api';
+import { AuthRedirect } from '../../../../core/auth/auth-redirect';
 import { SessionStore } from '../../../../core/auth/session-store';
 import { GeolocationService } from '../../../../core/services/geolocation.service';
 import { injectOAuthError } from '../../../../core/auth/utils/oauth-error.utils';
@@ -38,6 +39,10 @@ export class RegisterPage {
   private sessionStore = inject(SessionStore);
   private router = inject(Router);
   private geolocationService = inject(GeolocationService);
+  private authRedirect = inject(AuthRedirect);
+
+  // Carried over from the login when the auth guard sent the visitor there
+  readonly redirectTo = inject(ActivatedRoute).snapshot.queryParamMap.get('redirectTo');
 
   isLoading = signal(false);
   errorMessage = injectOAuthError();
@@ -85,7 +90,8 @@ export class RegisterPage {
       next: (response) => {
         this.sessionStore.handleAuthResponse(response);
         this.isLoading.set(false);
-        this.router.navigate(['/cuestionario']);
+        // A new account has no path yet, so without a target it starts with the questionnaire
+        this.router.navigateByUrl(this.authRedirect.consume(this.redirectTo, '/cuestionario'));
       },
       error: (err) => {
         this.isLoading.set(false);

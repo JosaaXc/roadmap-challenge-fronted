@@ -51,7 +51,7 @@ export class PathsApi {
     });
   }
 
-  getRelatedPaths(pathId: string) {
+  getRelatedPaths(pathId: string): Observable<ApiResponse<LearningPath[]>> {
     return this.http.get<ApiResponse<LearningPath[]>>(`${this.baseUrl}/paths/${pathId}/related`, {
       withCredentials: true,
     });

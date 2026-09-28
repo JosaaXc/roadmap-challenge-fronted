@@ -4,6 +4,10 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideEllipsis, lucideGlobe, lucideLock, lucideTrash2 } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmDropdownMenuImports } from '@spartan-ng/helm/dropdown-menu';
+import { CoverFan } from '../../../../shared/ui/cover-fan/cover-fan';
+import { FanCover } from '../../../../shared/ui/cover-fan/cover-fan-models';
+import { CoverWash } from '../../../../shared/ui/cover-wash/cover-wash';
+import { ParticleField } from '../../../../shared/ui/particle-field/particle-field';
 import { LearningPath } from '../../models/paths-models';
 import { PathTitlePipe } from '../../pipes/path-title.pipe';
 import { ShortDatePipe } from '../../pipes/short-date.pipe';
@@ -19,7 +23,10 @@ import { PathDetailStore } from '../../services/path-detail-store';
     NgIcon,
     HlmButton,
     HlmDropdownMenuImports,
+    CoverFan,
+    CoverWash,
     FavoriteToggleComponent,
+    ParticleField,
     PathProgress,
     PathTitlePipe,
     ShortDatePipe,
@@ -37,6 +44,10 @@ export class PathDetailHeader {
   readonly deleting = input(false);
   readonly backLink = input('/mis-rutas');
   readonly backLabel = input('Mis rutas');
+
+  // Covers of the path's courses, in path order, and the few of them dealt as the fan
+  readonly covers = input<readonly string[]>([]);
+  readonly fan = input<readonly FanCover[]>([]);
 
   readonly favoriteToggled = output<boolean>();
   readonly deleteRequested = output<void>();

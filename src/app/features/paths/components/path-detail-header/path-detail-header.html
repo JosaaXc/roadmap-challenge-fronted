@@ -9,63 +9,86 @@
   {{ backLabel() }}
 </a>
 
-<header class="mt-6">
-  <div class="flex items-start justify-between gap-4">
-    <!-- One size under the Mis rutas title: path names are long and would take two lines -->
-    <h1 class="text-2xl leading-tight font-extrabold tracking-tight">
-      {{ path().title | pathTitle }}
-    </h1>
+<!--
+  Dressed like the course cards, but for the whole path: every cover in order, blurred into
+  one wash of the journey's colours, and a fan at the far end around the course to take now
+-->
+<header
+  class="group/fan border-border bg-card relative isolate mt-6 overflow-hidden rounded-lg border px-5 py-6 sm:px-7 sm:py-7 md:min-h-52"
+>
+  <app-cover-wash [covers]="covers()" />
 
-    <div class="-mt-1 -mr-2 flex shrink-0 items-center">
-      <button
-      hlmBtn
-      [variant]="store.path()?.isPublic ? 'outline': 'ghost'"
-      size="sm"
-      class="flex items-center gap-2"
-      (click)="store.toggleVisibility()">
+  <!--
+    Below md the wash goes alone, as the title needs the width. The top padding keeps
+    the fan clear of the actions in the corner
+  -->
+  <app-cover-fan [fan]="fan()" class="absolute inset-y-0 right-2 w-[46%] pt-10 max-md:hidden" />
+
+  <app-particle-field />
+
+  <div class="relative">
+    <div class="flex items-start justify-between gap-4">
+      <!-- One size under the Mis rutas title: path names are long and would take two lines -->
+      <h1 class="text-2xl leading-tight font-extrabold tracking-tight md:max-w-[55%]">
+        {{ path().title | pathTitle }}
+      </h1>
+
+      <!--
+        In glass, like each course's checkbox, over whatever the covers put behind it. Its two
+        buttons go round, the star's included, so their hover fills each end of the pill
+        instead of cutting square corners into it
+      -->
+      <div
+        class="bg-background/55 border-foreground/10 -mt-1 -mr-1 flex shrink-0 items-center rounded-full border backdrop-blur-md [&_button]:rounded-full"
+      >
+
+      <button hlmBtn variant="ghost" size="sm" class="flex items-center gap-2"
+        (click)="store.toggleVisibility()">
         <ng-icon [name]="store.path()?.isPublic ? 'lucideLock' : 'lucideGlobe'" size="16px"></ng-icon>
         {{ store.path()?.isPublic ? 'Despublicar Ruta' : 'Publicar Ruta' }}
       </button>
-      <app-favorite-toggle
-        [pathId]="path().id"
-        [isFavorite]="path().isFavorite"
-        (toggled)="favoriteToggled.emit($event)"
-      />
 
-      <button
-        hlmBtn
-        variant="ghost"
-        size="icon"
-        type="button"
-        class="text-muted-foreground"
-        aria-label="Más acciones de la ruta"
-        [hlmDropdownMenuTrigger]="pathMenu"
-        align="end"
-      >
-        <ng-icon name="lucideEllipsis" size="18px" aria-hidden="true" />
-      </button>
+        <app-favorite-toggle
+          [pathId]="path().id"
+          [isFavorite]="path().isFavorite"
+          (toggled)="favoriteToggled.emit($event)"
+        />
 
-      <ng-template #pathMenu>
-        <!-- "Renombrar" joins this menu once the endpoint exists -->
-        <hlm-dropdown-menu class="min-w-40 shadow-none">
-          <button
-            hlmDropdownMenuItem
-            variant="destructive"
-            [disabled]="deleting()"
-            (triggered)="deleteRequested.emit()"
-          >
-            <ng-icon name="lucideTrash2" aria-hidden="true" />
-            Eliminar ruta
-          </button>
-        </hlm-dropdown-menu>
-      </ng-template>
+        <button
+          hlmBtn
+          variant="ghost"
+          size="icon"
+          type="button"
+          class="text-muted-foreground"
+          aria-label="Más acciones de la ruta"
+          [hlmDropdownMenuTrigger]="pathMenu"
+          align="end"
+        >
+          <ng-icon name="lucideEllipsis" size="18px" aria-hidden="true" />
+        </button>
+
+        <ng-template #pathMenu>
+          <!-- "Renombrar" joins this menu once the endpoint exists -->
+          <hlm-dropdown-menu class="min-w-40 shadow-none">
+            <button
+              hlmDropdownMenuItem
+              variant="destructive"
+              [disabled]="deleting()"
+              (triggered)="deleteRequested.emit()"
+            >
+              <ng-icon name="lucideTrash2" aria-hidden="true" />
+              Eliminar ruta
+            </button>
+          </hlm-dropdown-menu>
+        </ng-template>
+      </div>
     </div>
+
+    <p class="text-muted-foreground mt-2 text-sm">
+      {{ courseCount() }} curso{{ courseCount() === 1 ? '' : 's' }} · creada el
+      {{ path().createdAt | shortDate }}
+    </p>
+
+    <app-path-progress [value]="path().progress" class="mt-6 md:max-w-[55%]" />
   </div>
-
-  <p class="text-muted-foreground mt-2 text-sm">
-    {{ courseCount() }} curso{{ courseCount() === 1 ? '' : 's' }} · creada el
-    {{ path().createdAt | shortDate }}
-  </p>
-
-  <app-path-progress [value]="path().progress" class="mt-6" />
 </header>

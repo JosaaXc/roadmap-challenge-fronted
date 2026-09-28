@@ -13,6 +13,7 @@ import { HlmEmptyImports } from '@spartan-ng/helm/empty';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { HlmToggleGroupImports } from '@spartan-ng/helm/toggle-group';
 import { PathFilter } from '../../models/paths-models';
+import { DeviMascot } from '../../../../shared/ui/devi-mascot/devi-mascot';
 import { PathsStore } from '../../services/paths-store';
 import { toPathCard } from '../../utils/path-card';
 import { PathCardComponent } from '../../../../shared/ui/path-card/path-card';
@@ -31,6 +32,7 @@ import { useListOrder } from '../../../../shared/utils/use-list-order';
     HlmToggleGroupImports,
     PathCardComponent,
     CommunityPathsPageComponent,
+    DeviMascot,
   ],
   templateUrl: './my-paths-page.html',
   viewProviders: [
