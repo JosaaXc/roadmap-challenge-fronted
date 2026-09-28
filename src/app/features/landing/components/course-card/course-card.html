@@ -1,0 +1,95 @@
+<div class="group relative grid h-full">
+  <!-- The hover glow is the cover itself, blurred, so each course lights up in its own colours -->
+  @if (cover(); as src) {
+    <img
+      [src]="src"
+      alt=""
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 size-full scale-105 rounded-xl object-cover opacity-0 blur-2xl saturate-200 transition duration-300 group-hover:-translate-y-1 group-hover:opacity-100 motion-reduce:transition-none"
+    />
+  }
+
+  <article
+    hlmCard
+    class="border-border group-hover:border-muted-foreground has-[a:focus-visible]:ring-ring bg-card text-card-foreground relative isolate flex flex-col gap-0 overflow-hidden rounded-lg border p-0 ring-0 transition duration-300 ease-out group-hover:-translate-y-1 has-[a:focus-visible]:ring-2 motion-reduce:transition-none"
+  >
+    <!-- A blurred copy of the cover tints the whole card, as on the cards of Mis rutas -->
+    @if (cover(); as src) {
+      <div aria-hidden="true" class="absolute inset-0 -z-10 overflow-hidden">
+        <img
+          [src]="src"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          class="size-full scale-150 object-cover opacity-35 blur-2xl saturate-150"
+        />
+      </div>
+    }
+
+    <!-- The covers' own ratio, so the grid keeps its shape while they load -->
+    <div class="relative aspect-760/420 w-full">
+      @if (cover(); as src) {
+        <!-- Its foot melts into the tint, which carries the same colours on down the card -->
+        <img
+          [src]="src"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          class="size-full object-cover mask-b-from-70%"
+          (error)="coverFailed.set(true)"
+        />
+      } @else {
+        <div
+          aria-hidden="true"
+          class="bg-primary/15 text-foreground/40 flex size-full items-center justify-center"
+        >
+          <ng-icon name="lucideGraduationCap" size="32px" />
+        </div>
+      }
+    </div>
+
+    <div class="flex flex-1 flex-col gap-3 p-5">
+      <h3 class="line-clamp-2 text-base leading-snug font-semibold">
+        <!-- Stretched over the card, so the whole of it is one link and one tab stop -->
+        <a
+          [href]="course().url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+        >
+          {{ course().title }}<span class="sr-only"> (se abre en DevTalles)</span>
+        </a>
+      </h3>
+
+      <p class="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
+        {{ course().description }}
+      </p>
+
+      <div class="mt-auto flex items-end justify-between gap-3 pt-2">
+        @if (badges().length > 0) {
+          <ul class="flex flex-wrap gap-1.5" aria-label="Tecnologías">
+            @for (badge of badges(); track badge.tag) {
+              <li
+                class="border-foreground/10 bg-background/40 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs"
+                [style.--tech]="badge.color"
+              >
+                <ng-icon [name]="badge.icon" size="12px" class="text-(--tech)" aria-hidden="true" />
+                {{ badge.label }}
+              </li>
+            }
+          </ul>
+        }
+
+        <!-- The same words as on a path's steps; the link itself is the title -->
+        <span
+          aria-hidden="true"
+          class="text-muted-foreground group-hover:text-foreground ml-auto inline-flex shrink-0 items-center gap-1.5 text-sm transition-colors"
+        >
+          Ir al curso
+          <ng-icon name="lucideExternalLink" size="14px" />
+        </span>
+      </div>
+    </div>
+  </article>
+</div>

@@ -8,7 +8,12 @@ export class LandingStore {
   private readonly api = inject(LandingApi);
 
   private readonly _courses = signal<readonly CatalogCourse[] | null>(null);
+  private readonly _catalogFailed = signal(false);
   private catalogRequested = false;
+
+  // Every active course, null until the catalog answers
+  readonly courses = this._courses.asReadonly();
+  readonly catalogFailed = this._catalogFailed.asReadonly();
 
   // The marquee's rows, from the tags of the courses themselves: /catalog/tags also carries the
   // questionnaire's, which no course has. Empty until the catalog answers
@@ -33,15 +38,19 @@ export class LandingStore {
     () => new Map((this._courses() ?? []).map((course) => [course.slug, course.imageUrl])),
   );
 
-  // Once per visit to the app, as the catalog rarely changes. Every part of the page reads well
-  // without it, so a failure only leaves out what it feeds, and a later visit tries again
+  // Once per visit to the app, as the catalog rarely changes. The landing reads well without it,
+  // so a failure only leaves out what it feeds; the catalog page says so and offers a retry
   loadCatalog(): void {
     if (this.catalogRequested) return;
     this.catalogRequested = true;
+    this._catalogFailed.set(false);
 
     this.api.getCatalogCourses().subscribe({
       next: (courses) => this._courses.set(courses),
-      error: () => (this.catalogRequested = false),
+      error: () => {
+        this.catalogRequested = false;
+        this._catalogFailed.set(true);
+      },
     });
   }
 }

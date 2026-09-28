@@ -17,9 +17,32 @@ export interface CatalogCourse {
   readonly id: string;
   readonly slug: string;
   readonly title: string;
+  readonly description: string;
   readonly level: string;
   readonly tags: readonly string[];
+  // Its page on the academy
+  readonly url: string;
   readonly imageUrl: string | null;
+}
+
+// A level of the catalog page, which lays the courses out from the first level to the last
+export interface CatalogLevel {
+  // As the API names it, like BEGINNER
+  readonly value: string;
+  readonly label: string;
+  readonly description: string;
+}
+
+// A level as the page shows it: its place in the order and the courses the filters leave in it
+export interface CatalogBand extends CatalogLevel {
+  readonly ordinal: number;
+  readonly courses: readonly CatalogCourse[];
+}
+
+// A technology or field the catalog page filters by, and how many courses carry it
+export interface TechFilter {
+  readonly badge: TechBadge;
+  readonly count: number;
 }
 
 // GET /catalog/courses: one page of courses and the cursor to the next one
