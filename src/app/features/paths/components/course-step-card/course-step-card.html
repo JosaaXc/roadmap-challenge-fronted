@@ -68,12 +68,15 @@
       </a>
       }
 
-      <!-- Inside the card, as the course it hangs from is the one the backend needs -->
+      <!-- Inside the card, as the course it hangs from is the one the backend needs. Only the
+        owner adds resources, so a read-only path leaves it out -->
+      @if (!isReadOnly()) {
       <button hlmBtn variant="ghost" size="sm" type="button" class="text-muted-foreground hover:text-foreground gap-1.5"
         [attr.aria-label]="'Agregar un recurso a ' + course().title" (click)="resourceRequested.emit()">
         <ng-icon name="lucidePlus" aria-hidden="true" />
         Agregar recurso
       </button>
+      }
     </div>
   </div>
   <!-- In glass over the cover, and last so it paints above everything it floats on -->

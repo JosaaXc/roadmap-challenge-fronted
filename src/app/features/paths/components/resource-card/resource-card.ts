@@ -19,6 +19,8 @@ export class ResourceCard {
   readonly resource = input.required<PathNode>();
   readonly busy = input(false);
   readonly deleting = input(false);
+  // On someone else's path: no checkbox or delete, and nothing shows what the author completed
+  readonly isReadOnly = input(false);
 
   readonly toggled = output<void>();
   readonly deleteRequested = output<void>();
