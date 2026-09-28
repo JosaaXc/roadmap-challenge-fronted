@@ -47,6 +47,7 @@ export interface LearningPath {
   updatedAt?: string;
   owner?: {
     username: string;
+    avatarUrl?: string | null;
   };
 }
 
@@ -84,6 +85,7 @@ export interface PathCard {
   readonly forkedFrom: string;
   readonly owner?: {
     username: string;
+    avatarUrl?: string | null;
   };
 }
 

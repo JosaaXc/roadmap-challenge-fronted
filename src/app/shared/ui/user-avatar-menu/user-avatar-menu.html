@@ -7,7 +7,7 @@
   [hlmDropdownMenuTrigger]="menu"
 >
   <!-- The avatar shows the photo once it has loaded, and the initial until then or if it fails -->
-  <hlm-avatar size="lg">
+  <hlm-avatar size="lg" class="translate-y-1">
     @if (profileStore.avatarUrl(); as avatarUrl) {
       <img hlmAvatarImage [src]="avatarUrl" alt="" referrerpolicy="no-referrer" />
     }
