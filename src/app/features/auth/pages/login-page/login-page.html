@@ -1,0 +1,80 @@
+<!-- A way back that says where it leads: below lg the aside, logo included, is not shown -->
+<a hlmBtn variant="ghost" size="sm" routerLink="/"
+  class="text-muted-foreground hover:text-foreground mb-6 -ml-2.5 gap-1">
+  <ng-icon name="lucideChevronLeft" aria-hidden="true" />
+  Volver al inicio
+</a>
+
+<h1 class="text-2xl font-semibold tracking-tight">Inicio de sesión</h1>
+
+<p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+  Entra para retomar tu ruta y marcar los cursos que ya cerraste.
+</p>
+
+<app-discord-button class="mt-6" [redirectTo]="redirectTo" />
+
+<p class="text-muted-foreground mt-2 text-xs">Es la vía que usa la mayoría de la comunidad.</p>
+
+<hlm-field-separator class="my-7">
+  <span class="label-mono">o con tu correo</span>
+</hlm-field-separator>
+
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <div hlmFieldGroup>
+    <hlm-field>
+      <label hlmFieldLabel>Correo</label>
+      <input hlmInput class="h-11" type="email" formControlName="identifier" placeholder="tu@correo.com"
+        autocomplete="email" />
+      <hlm-field-error validator="required">Escribe tu correo.</hlm-field-error>
+      <hlm-field-error validator="email">Ese correo no tiene un formato válido.</hlm-field-error>
+    </hlm-field>
+
+    <hlm-field>
+      <div class="flex items-center justify-between gap-3">
+        <label hlmFieldLabel>Contraseña</label>
+        <!-- Takes the email already typed, so the first recovery step starts filled in -->
+        <a routerLink="/auth/forgot-password" [queryParams]="{ email: loginForm.controls.identifier.value || null }"
+          class="text-muted-foreground hover:text-foreground text-xs transition-colors">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+
+      <hlm-input-group class="h-11">
+        <!-- Edge adds its own reveal eye to password inputs; this field has one already -->
+        <input hlmInputGroupInput class="h-full [&::-ms-reveal]:hidden" [type]="passwordVisible() ? 'text' : 'password'"
+          formControlName="password" placeholder="Tu contraseña" autocomplete="current-password" />
+        <hlm-input-group-addon align="inline-end">
+          <button hlmInputGroupButton type="button" (click)="togglePassword()"
+            [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <ng-icon [name]="passwordVisible() ? 'lucideEyeOff' : 'lucideEye'" aria-hidden="true" />
+          </button>
+        </hlm-input-group-addon>
+      </hlm-input-group>
+
+      <hlm-field-error validator="required">Escribe tu contraseña.</hlm-field-error>
+      <hlm-field-error validator="minlength">
+        La contraseña necesita al menos 6 caracteres.
+      </hlm-field-error>
+    </hlm-field>
+  </div>
+
+  @if (errorMessage()) {
+  <div hlmAlert variant="destructive" class="mt-5">{{ errorMessage() }}</div>
+  }
+
+  <button hlmBtn type="submit" size="lg" class="mt-7 h-11 w-full gap-2 text-base" [disabled]="isLoading()">
+    @if (isLoading()) {
+    <hlm-spinner class="text-base" />
+    }
+    Iniciar sesión
+  </button>
+</form>
+
+<p class="text-muted-foreground mt-6 text-center text-sm">
+  ¿No tienes cuenta?
+  <!-- Keeps redirectTo, so signing up instead still returns to the page that was asked for -->
+  <a routerLink="/auth/register" queryParamsHandling="preserve"
+    class="text-foreground hover:text-highlight font-medium underline underline-offset-4 transition-colors">
+    Crear cuenta
+  </a>
+</p>

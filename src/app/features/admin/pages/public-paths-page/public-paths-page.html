@@ -1,0 +1,74 @@
+<app-admin-back-button/>
+
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h2 class="text-2xl font-bold tracking-tight">Rutas Públicas</h2>
+</div>
+
+<div hlmTableContainer class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+  <div class="overflow-x-auto">
+    <table hlmTable class="min-w-[820px]">
+      <thead hlmTableHeader>
+        <tr hlmTableRow class="bg-muted/40 hover:bg-muted/40">
+          <th hlmTableHead class="h-11 text-xs uppercase tracking-wider text-muted-foreground">Título</th>
+          <th hlmTableHead class="h-11 text-xs uppercase tracking-wider text-muted-foreground">Usuario (Creador)</th>
+          <th hlmTableHead class="h-11 text-center text-xs uppercase tracking-wider text-muted-foreground">Cursos</th>
+          <th hlmTableHead class="h-11 text-xs uppercase tracking-wider text-muted-foreground">
+          Fecha de creación
+            <app-sort-toggle [order]="store.currentOrder()" (toggle)="store.toggleOrder()" />
+          </th>
+          <th hlmTableHead class="h-11 text-right text-xs uppercase tracking-wider text-muted-foreground">Opciones</th>
+        </tr>
+      </thead>
+
+      <tbody hlmTableBody>
+        @if (store.isLoading()) {
+          @for (row of skeletonRows; track row) {
+            <tr hlmTableRow>
+              <td hlmTableCell><hlm-skeleton class="h-4 w-48" /></td>
+              <td hlmTableCell><hlm-skeleton class="h-4 w-32" /></td>
+              <td hlmTableCell><hlm-skeleton class="mx-auto h-5 w-10 rounded-full" /></td>
+              <td hlmTableCell><hlm-skeleton class="h-4 w-24" /></td>
+              <td hlmTableCell><div class="flex justify-end gap-2"><hlm-skeleton class="size-9" /><hlm-skeleton class="size-9" /></div></td>
+            </tr>
+          }
+        } @else if (store.paths().length === 0) {
+          <tr hlmTableRow>
+            <td hlmTableCell colspan="5" class="h-28 text-center text-muted-foreground">No hay rutas públicas disponibles.</td>
+          </tr>
+        } @else {
+          @for (path of store.paths(); track path.id) {
+            <tr hlmTableRow class="transition-colors hover:bg-muted/30">
+              <td hlmTableCell class="max-w-[280px] truncate font-medium" [title]="path.title">{{ path.title }}</td>
+              <td hlmTableCell class="text-muted-foreground">@{{ path.owner.username }}</td>
+              <td hlmTableCell class="text-center"><span hlmBadge variant="secondary">{{ path.nodeCount }}</span></td>
+              <td hlmTableCell class="text-muted-foreground">{{ path.createdAt | shortDate }}</td>
+              <td hlmTableCell>
+                <div class="flex justify-end gap-2">
+                  <button hlmBtn variant="outline" size="icon" (click)="viewPathDetail(path)" aria-label="Ver detalle de la ruta" title="Ver detalle">
+                    <ng-icon name="lucideEye" class="size-4"></ng-icon>
+                  </button>
+                  <button hlmBtn variant="destructive" size="icon" (click)="deletePath(path)" aria-label="Eliminar ruta" title="Eliminar ruta">
+                    <ng-icon name="lucideTrash2" class="size-4"></ng-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<app-confirm-dialog
+  #deletePathDialog
+  heading="¿Eliminar esta ruta pública?"
+  [description]="'Se eliminará ' + (pathToDelete()?.title || 'la ruta seleccionada') + '. Esta acción no se puede deshacer.'"
+  confirmLabel="Eliminar ruta"
+  (confirmed)="confirmDeletePath()"
+/>
+
+<!-- Paginación -->
+<app-load-more [hasNextPage]="store.hasNextPage()" [isLoadingMore]="store.isLoadingMore()"
+  (loadMore)="store.loadMore()">
+</app-load-more>

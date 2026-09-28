@@ -1,0 +1,165 @@
+<section class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
+  @if (resumePath(); as path) {
+    <app-resume-hero [path]="path" class="mb-16 lg:mb-20" />
+  }
+
+  <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight">Mis rutas</h1>
+      <!-- The hero above already does what this line promises -->
+      @if (!resumePath()) {
+        <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+          Retoma tus estudios desde donde los dejaste.
+        </p>
+      }
+    </div>
+
+    <!--
+      With no paths the empty state already carries the action, and one screen holds one:
+      under the hero, whose button is the one to press, this one steps back to an outline
+    -->
+    @if (store.isLoading() || store.paths().length > 0) {
+      <a
+        hlmBtn
+        routerLink="/cuestionario"
+        [variant]="resumePath() ? 'outline' : 'default'"
+        class="shrink-0"
+      >
+        Generar nueva ruta
+      </a>
+    }
+  </header>
+
+  @if (store.isLoading()) {
+    <!-- The skeleton keeps the shape of the grid, so nothing jumps when the data lands -->
+    <div class="mt-8 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      @for (placeholder of skeletonCards; track $index) {
+        <div class="border-border flex flex-col gap-3 rounded-lg border p-5">
+          <hlm-skeleton class="h-5 w-3/4" />
+          <hlm-skeleton class="h-4 w-full" />
+          <hlm-skeleton class="h-3 w-1/3" />
+          <hlm-skeleton class="mt-4 h-1.5 w-full" />
+        </div>
+      }
+    </div>
+  } @else if (store.error()) {
+    <div hlmAlert variant="destructive" class="mt-8">
+      <ng-icon name="lucideCircleAlert" aria-hidden="true" />
+      <h2 hlmAlertTitle>No pudimos cargar tus rutas</h2>
+      <p hlmAlertDescription>{{ store.error() }}</p>
+      <button
+        hlmBtn
+        variant="outline"
+        size="sm"
+        type="button"
+        hlmAlertAction
+        (click)="store.loadInitial()"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else if (store.paths().length === 0) {
+    <div hlmEmpty class="border-border mt-8 border">
+      <div hlmEmptyHeader>
+        <!-- The first visit, so Devi says hello; the favourites filter below gets words only -->
+        <div hlmEmptyMedia>
+          <app-devi-mascot pose="hello" class="h-28" />
+        </div>
+
+        <h2 hlmEmptyTitle class="text-base">Todavía no tienes ninguna ruta</h2>
+        <p hlmEmptyDescription>
+          Responde el cuestionario y armamos una secuencia de cursos que respeta los prerequisitos.
+        </p>
+      </div>
+
+      <div hlmEmptyContent>
+        <a hlmBtn routerLink="/cuestionario">Hacer el cuestionario</a>
+      </div>
+    </div>
+  } @else {
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+      <div
+        hlmToggleGroup
+        type="single"
+        variant="outline"
+        [value]="filter()"
+        [nullable]="false"
+        (valueChange)="onFilterChange($event)"
+      >
+        <!--
+          The helm on-state is bg-muted, which is the same value as the card surface:
+          against this background it reads as no state at all
+        -->
+        <button
+          hlmToggleGroupItem
+          value="all"
+          class="text-muted-foreground data-[state=on]:bg-card-raised data-[state=on]:text-foreground aria-pressed:bg-card-raised aria-pressed:text-foreground"
+        >
+          Todas
+        </button>
+        <button
+          hlmToggleGroupItem
+          value="favorites"
+          class="text-muted-foreground data-[state=on]:bg-card-raised data-[state=on]:text-foreground aria-pressed:bg-card-raised aria-pressed:text-foreground"
+        >
+          Favoritas
+        </button>
+      </div>
+
+      <button hlmBtn variant="ghost" size="sm" type="button" (click)="toggleOrder()">
+        {{ order() === 'desc' ? 'Más recientes' : 'Más antiguas' }}
+        <ng-icon
+          [name]="order() === 'desc' ? 'lucideChevronDown' : 'lucideChevronUp'"
+          size="14px"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+
+    @if (cards().length === 0) {
+      <!-- There are paths, just none under this filter, so the way out is the filter itself -->
+      <div hlmEmpty class="border-border mt-6 border">
+        <div hlmEmptyHeader>
+          <h2 hlmEmptyTitle class="text-base">No marcaste ninguna ruta como favorita</h2>
+          <p hlmEmptyDescription>Usa la estrella de una tarjeta para tenerla a mano.</p>
+        </div>
+
+        <div hlmEmptyContent>
+          <button hlmBtn variant="ghost" type="button" (click)="filter.set('all')">
+            Ver todas las rutas
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="mt-6 grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @for (card of cards(); track card.id) {
+          <app-path-card [card]="card" [isOwner]="true" [showLike]="true"></app-path-card>
+        }
+      </div>
+
+      @if (store.hasNextPage()) {
+        <div class="mt-8 flex justify-center">
+          <button
+            hlmBtn
+            variant="outline"
+            type="button"
+            (click)="store.loadMore()"
+            [disabled]="store.isLoadingMore()"
+          >
+            {{ store.isLoadingMore() ? 'Cargando...' : 'Cargar más' }}
+          </button>
+        </div>
+      }
+    }
+  }
+</section>
+
+<!-- A line of light where your paths end and everyone else's begin -->
+<div aria-hidden="true" class="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
+  <div class="via-foreground/30 h-px bg-linear-to-r from-transparent to-transparent"></div>
+  <div
+    class="absolute inset-x-1/4 top-0 h-20 -translate-y-1/2 bg-[radial-gradient(closest-side,color-mix(in_oklch,var(--color-foreground)_12%,transparent),transparent)]"
+  ></div>
+</div>
+
+<app-community-paths-page/>

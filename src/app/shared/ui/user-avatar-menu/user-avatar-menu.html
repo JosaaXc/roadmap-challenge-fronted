@@ -1,0 +1,40 @@
+<button
+  hlmBtn
+  variant="ghost"
+  size="icon"
+  class="rounded-full"
+  aria-label="Abrir el menú de tu cuenta"
+  [hlmDropdownMenuTrigger]="menu"
+>
+  <!-- The avatar shows the photo once it has loaded, and the initial until then or if it fails -->
+  <hlm-avatar size="lg" class="translate-y-1">
+    @if (profileStore.avatarUrl(); as avatarUrl) {
+      <img hlmAvatarImage [src]="avatarUrl" alt="" referrerpolicy="no-referrer" />
+    }
+    <span hlmAvatarFallback>{{ userInitial() }}</span>
+  </hlm-avatar>
+</button>
+
+<ng-template #menu>
+  <hlm-dropdown-menu class="mr-5 mt-2">
+    <hlm-dropdown-menu-group>
+      <div class="flex flex-col p-3 space-y-2">
+        <span class="font-bold text-center leading-none capitalize">{{ sessionStore.user()?.name }}</span>
+        <span class="text-xs text-center text-muted-foreground font-normal">{{
+          sessionStore.user()?.email}}</span>
+      </div>
+      <button hlmDropdownMenuItem class="justify-center whitespace-nowrap" type="button"
+        (triggered)="changePasswordDialog.open()">
+        <ng-icon name="lucideKeyRound" aria-hidden="true" />
+        Cambiar contraseña
+      </button>
+      <button hlmDropdownMenuItem variant="destructive" class="justify-around mb-2" type="button"
+        (click)="authStore.executeLogout()">
+        Cerrar Sesión
+      </button>
+    </hlm-dropdown-menu-group>
+  </hlm-dropdown-menu>
+</ng-template>
+
+<!-- Opened from the menu, which lives in an overlay and cannot hold the dialog itself -->
+<app-change-password-dialog #changePasswordDialog />

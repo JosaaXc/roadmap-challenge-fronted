@@ -1,1 +1,173 @@
-export {};
+// The API answers with PathResponseDto, which leaves out every soft-delete
+// column: deleted nodes and edges are already filtered by the query itself
+export interface PathEdge {
+  id: string;
+  isOptional: boolean;
+  sourceNodeId: string;
+  targetNodeId: string;
+}
+
+// Courses from the catalogue, or links the user added to their own path
+export type PathNodeType = 'DEVTALLES_COURSE' | 'EXTERNAL_LINK';
+
+export interface PathNode {
+  id: string;
+  type: PathNodeType;
+  title: string;
+  isCompleted: boolean;
+  position: number;
+  courseId?: string | null;
+  // Cover of the course behind the node, null on external links
+  imageUrl?: string | null;
+  // Where the node leads: its page on the academy, or the link the user added. The API
+  // also sends externalUrl, but only on the latter and with this same value
+  url?: string | null;
+}
+
+export interface LearningPath {
+  id: string;
+  title: string;
+  description: string;
+  progress: number;
+  // Cover of the first course, kept as the path cover when it was generated
+  imageUrl: string ;
+  isFavorite: boolean;
+  isPublic: boolean;
+  isFork: boolean;
+  hasForked: boolean;
+  nodeCount: number;
+  hasLiked: boolean;
+  likesCount: number;
+  forksCount: number;
+  forkedFrom: string;
+  nodes: PathNode[];
+  edges: PathEdge[];
+  // Title of the first unfinished node, null once the path is complete
+  nextStep: string | null;
+  createdAt: string;
+  updatedAt?: string;
+  owner?: {
+    username: string;
+    avatarUrl?: string | null;
+  };
+}
+
+export interface PathQueryParams {
+  take?: number;
+  cursor?: string | null;
+  order?: 'asc' | 'desc';
+  sortBy?: 'popular' | 'recent';
+  search?: string;
+  isFavorite?: boolean;
+  isPublic?: boolean;
+}
+
+// Filter and order of the Mis rutas grid, both resolved in memory
+export type PathFilter = 'all' | 'favorites';
+export type PathOrder = 'desc' | 'asc';
+
+// What a Mis rutas card shows, derived from the graph the API returns
+export interface PathCard {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly courses: string;
+  readonly courseCount: number;
+  readonly createdAt: string;
+  readonly imageUrl: string;
+  readonly progress: number;
+  readonly nextStep: string | null;
+  readonly isFavorite: boolean;
+  readonly isFork: boolean;
+  readonly hasForked: boolean;
+  readonly isPublic: boolean;
+  readonly hasLiked: boolean;
+  readonly likesCount: number;
+  readonly forksCount: number;
+  readonly forkedFrom: string;
+  readonly owner?: {
+    username: string;
+    avatarUrl?: string | null;
+  };
+}
+
+// Where the detail page stands while it brings its path
+export type PathDetailStatus = 'loading' | 'ready' | 'not-found' | 'error';
+
+// What a navigation to the detail page can carry. The generation screen sets
+// justGenerated, and only then does the timeline play its entrance
+export interface PathDetailNavigationState {
+  readonly justGenerated?: boolean;
+}
+
+// A resource as the user types it, before the API gives it an id
+export interface NewResource {
+  readonly title: string;
+  readonly url: string;
+}
+
+// A course of the path with the resources that hang from it, in display order
+export interface TimelineCourse {
+  readonly node: PathNode;
+  readonly resources: readonly PathNode[];
+}
+
+// The path as the detail page shows it: courses in order, each with its branch of resources
+export interface PathTimeline {
+  readonly courses: readonly TimelineCourse[];
+  // Resources that lost their parent or never had one, shown after the last course
+  readonly orphans: readonly PathNode[];
+}
+
+export interface ApiMeta {
+  timestamp: string;
+  nextCursor?: string;
+  hasNextPage: boolean;
+  take?: number;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  meta: ApiMeta;
+}
+
+export interface PaginatedData<T> {
+  items: T[];
+}
+
+// The progress, add and delete answers send the node as stored: without
+// the imageUrl and url that GET adds
+export interface NodeUpdateData {
+  node: Omit<PathNode, 'imageUrl' | 'url'>;
+  progress: number;
+}
+
+export interface FavoriteUpdateData {
+  id: string;
+  isFavorite: boolean;
+}
+
+export interface AddExternalNodeRequest {
+  title: string;
+  url: string;
+  previousNodeId: string;
+}
+
+// GET /paths/:id
+export type SinglePathResponse = ApiResponse<LearningPath>;
+
+// GET /paths (Listado de rutas)
+export type PaginatedPathsResponse = ApiResponse<PaginatedData<LearningPath>>;
+
+// PATCH /paths/:id/favorite
+export type ToggleFavoriteResponse = ApiResponse<FavoriteUpdateData>;
+
+// PATCH /paths/:id/nodes
+export type ToggleNodeResponse = ApiResponse<NodeUpdateData>;
+
+// POST /paths/:id/nodes
+export type AddNodeResponse = ApiResponse<NodeUpdateData>;
+
+// DELETE /paths/:id/nodes/:nodeID
+export type DeleteNodeResponse = ApiResponse<NodeUpdateData>;

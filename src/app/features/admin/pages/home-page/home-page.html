@@ -1,0 +1,25 @@
+<div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+  <!-- Encabezado de la vista -->
+  <div>
+    <h1 class="text-3xl font-bold">Bienvenido al Panel Administrador</h1>
+    <p>Selecciona el módulo que deseas gestionar.</p>
+  </div>
+
+  <!-- Grid de Tarjetas (Cards) -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    @for (card of adminCards; track card.link) {
+    <div hlmCard
+      class="border-border hover:border-muted-foreground has-[a:focus-visible]:ring-ring relative flex flex-col gap-3 rounded-lg border px-5 ring-0 transition-colors has-[a:focus-visible]:ring-2 [--card-spacing:--spacing(5)]">
+      <a [routerLink]="card.link">
+        <h2 class="text-xl font-bold mb-2 text-foreground">{{ card.title }}</h2>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          {{ card.description }}
+        </p>
+      </a>
+    </div>
+    }
+
+  </div>
+</div>

@@ -1,15 +1,26 @@
-<div class="bg-background text-foreground min-h-screen">
-  <header class="border-border flex h-14 items-center gap-6 border-b px-6">
-    <a routerLink="/mis-rutas" class="font-semibold">CodeQuest</a>
+<!-- A column, so the footer stays at the foot of the window however short the page is -->
+<div class="bg-background text-foreground relative isolate flex min-h-screen flex-col">
+  <!-- Each page lights it with its own covers, so the violet is never the only colour -->
+  <app-page-light />
 
-    <nav class="text-muted-foreground flex gap-4 text-sm">
-      <a routerLink="/mis-rutas" routerLinkActive="text-foreground">Mis rutas</a>
-      <a routerLink="/cuestionario" routerLinkActive="text-foreground">Cuestionario</a>
-      <a routerLink="/admin" routerLinkActive="text-foreground">Admin</a>
+  <app-glass-header homeLink="/mis-rutas" homeLabel="CodeQuest, ir a mis rutas">
+    <nav class="text-muted-foreground flex items-center gap-4">
+      @if (sessionStore.isAdmin()) {
+        <a
+          routerLink="/admin"
+          routerLinkActive="text-foreground"
+          class="hover:text-foreground px-2 py-2 text-xs font-semibold tracking-widest uppercase transition-colors"
+        >
+          Panel Administrador
+        </a>
+      }
+      <app-user-avatar-menu />
     </nav>
-  </header>
+  </app-glass-header>
 
-  <main class="mx-auto w-full max-w-6xl px-6 py-8">
+  <main class="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
     <router-outlet />
   </main>
+
+  <app-site-footer homeLink="/mis-rutas" homeLabel="CodeQuest, ir a mis rutas" />
 </div>

@@ -20,6 +20,7 @@
     "@angular/router": "^22.1.0",
     "@ng-icons/core": "^32.2.0",
     "@ng-icons/lucide": "^32.2.0",
+    "@ng-icons/simple-icons": "^32.5.0",
     "@spartan-ng/brain": "^1.4.1",
     "@tanstack/angular-charts": "0.16.0",
     "@tanstack/charts": "0.16.0",

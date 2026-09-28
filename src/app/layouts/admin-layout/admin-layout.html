@@ -1,0 +1,21 @@
+<!-- A column, so the footer stays at the foot of the window however short the page is -->
+<div class="bg-background text-foreground flex min-h-screen flex-col">
+  <app-glass-header homeLink="/mis-rutas" homeLabel="CodeQuest, ir a mis rutas">
+    <nav class="text-muted-foreground flex items-center gap-4">
+      <a
+        routerLink="/mis-rutas"
+        routerLinkActive="text-foreground"
+        class="hover:text-foreground px-2 py-2 text-xs font-semibold tracking-widest uppercase transition-colors"
+      >
+        Volver a la App
+      </a>
+      <app-user-avatar-menu />
+    </nav>
+  </app-glass-header>
+
+  <main class="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
+    <router-outlet />
+  </main>
+
+  <app-site-footer homeLink="/mis-rutas" homeLabel="CodeQuest, ir a mis rutas" />
+</div>

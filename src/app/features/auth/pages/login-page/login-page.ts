@@ -1,8 +1,93 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthApi } from '../../services/auth-api';
+import { SessionStore, SessionUser } from '../../../../core/auth/session-store';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthRedirect } from '../../../../core/auth/auth-redirect';
+import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideChevronLeft, lucideEye, lucideEyeOff } from '@ng-icons/lucide';
+import { HlmAlert } from '@spartan-ng/helm/alert';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmFieldImports } from '@spartan-ng/helm/field';
+import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
+import { HlmSpinner } from '@spartan-ng/helm/spinner';
+import { DiscordButton } from '../../../../shared/ui/discord-button/discord-button';
+import { GeolocationService } from '../../../../core/services/geolocation.service';
 
 @Component({
-  imports: [],
   selector: 'app-login-page',
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    NgIcon,
+    HlmAlert,
+    HlmButton,
+    HlmFieldImports,
+    HlmInput,
+    HlmInputGroupImports,
+    HlmSpinner,
+    DiscordButton,
+  ],
   templateUrl: './login-page.html',
+  viewProviders: [provideIcons({ lucideChevronLeft, lucideEye, lucideEyeOff })],
 })
-export class LoginPage {}
+export class LoginPage {
+  private fb = inject(FormBuilder);
+  private authApi = inject(AuthApi);
+  private sessionStorage = inject(SessionStore);
+  private router = inject(Router);
+ private geolocationService = inject(GeolocationService);
+  private authRedirect = inject(AuthRedirect);
+
+  // Set by the auth guard when the login interrupted a visit to another page
+  readonly redirectTo = inject(ActivatedRoute).snapshot.queryParamMap.get('redirectTo');
+
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
+  passwordVisible = signal(false);
+
+  loginForm = this.fb.nonNullable.group({
+    identifier: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
+
+  togglePassword() {
+    this.passwordVisible.update((visible) => !visible);
+  }
+
+  async onSubmit() {
+    if (this.loginForm.invalid) {
+      // Spartan only shows field errors once a control is touched, and its
+      // `submitted` check covers template-driven forms only, not this one
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    await this.geolocationService.captureAndStoreLocation();
+
+    const credentials = this.loginForm.getRawValue();
+
+    this.authApi.login(credentials).subscribe({
+      next: (response) => {
+        this.sessionStorage.handleAuthResponse(response);
+        this.isLoading.set(false);
+        this.router.navigateByUrl(this.authRedirect.consume(this.redirectTo));
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        // The backend words a wrong email or password in English, and that is the error people hit
+        const serverMessage = err.error?.error?.message;
+        this.errorMessage.set(
+          err.status === 401
+            ? 'Correo o contraseña incorrectos.'
+            : serverMessage || 'Credenciales inválidas.',
+        );
+      },
+    });
+  }
+}

@@ -1,0 +1,86 @@
+<!-- A way back that says where it leads: below lg the aside, logo included, is not shown -->
+<a hlmBtn variant="ghost" size="sm" routerLink="/"
+  class="text-muted-foreground hover:text-foreground mb-6 -ml-2.5 gap-1">
+  <ng-icon name="lucideChevronLeft" aria-hidden="true" />
+  Volver al inicio
+</a>
+
+<h1 class="text-2xl font-semibold tracking-tight">Crear cuenta</h1>
+
+<p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+  Arma tu ruta y guárdala para seguir marcando tu avance.
+</p>
+
+<app-discord-button class="mt-6" [redirectTo]="redirectTo" />
+
+<p class="text-muted-foreground mt-2 text-xs">Es la vía que usa la mayoría de la comunidad.</p>
+
+<hlm-field-separator class="my-7">
+  <span class="label-mono">o con tu correo</span>
+</hlm-field-separator>
+
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <div hlmFieldGroup>
+    <hlm-field>
+      <label hlmFieldLabel>Nombre de usuario</label>
+      <input hlmInput class="h-11" type="text" formControlName="username" placeholder="tu_usuario123"
+        autocomplete="username" />
+      <hlm-field-error validator="required">Elige un nombre de usuario.</hlm-field-error>
+      <hlm-field-error validator="minlength">Necesita al menos 3 caracteres.</hlm-field-error>
+      <hlm-field-error validator="maxlength">No puede pasar de 32 caracteres.</hlm-field-error>
+      <hlm-field-error validator="pattern">Solo letras, números y guiones bajos.</hlm-field-error>
+    </hlm-field>
+
+    <hlm-field>
+      <label hlmFieldLabel>Correo</label>
+      <input hlmInput class="h-11" type="email" formControlName="email" placeholder="tu@correo.com"
+        autocomplete="email" />
+      <hlm-field-error validator="required">Escribe tu correo.</hlm-field-error>
+      <hlm-field-error validator="email">Ese correo no tiene un formato válido.</hlm-field-error>
+    </hlm-field>
+
+    <hlm-field>
+      <label hlmFieldLabel>Contraseña</label>
+
+      <hlm-input-group class="h-11">
+        <!-- Edge adds its own reveal eye to password inputs; this field has one already -->
+        <input hlmInputGroupInput class="h-full [&::-ms-reveal]:hidden" [type]="passwordVisible() ? 'text' : 'password'"
+          formControlName="password" placeholder="Tu contraseña" autocomplete="new-password" />
+        <hlm-input-group-addon align="inline-end">
+          <button hlmInputGroupButton type="button" (click)="togglePassword()"
+            [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <ng-icon [name]="passwordVisible() ? 'lucideEyeOff' : 'lucideEye'" aria-hidden="true" />
+          </button>
+        </hlm-input-group-addon>
+      </hlm-input-group>
+
+      <!-- The backend rule is strict, so it is stated up front instead of only after a failed attempt -->
+      <p hlmFieldDescription>Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo.</p>
+      <hlm-field-error validator="required">Escribe una contraseña.</hlm-field-error>
+      <hlm-field-error validator="minlength">Necesita al menos 8 caracteres.</hlm-field-error>
+      <hlm-field-error validator="maxlength">No puede pasar de 128 caracteres.</hlm-field-error>
+      <hlm-field-error validator="pattern">
+        Le falta una mayúscula, una minúscula, un número o un símbolo.
+      </hlm-field-error>
+    </hlm-field>
+  </div>
+
+  @if (errorMessage()) {
+  <div hlmAlert variant="destructive" class="mt-5">{{ errorMessage() }}</div>
+  }
+
+  <button hlmBtn type="submit" size="lg" class="mt-7 h-11 w-full gap-2 text-base" [disabled]="isLoading()">
+    @if (isLoading()) {
+    <hlm-spinner class="text-base" />
+    }
+    Crear cuenta
+  </button>
+</form>
+
+<p class="text-muted-foreground mt-6 text-center text-sm">
+  ¿Ya tienes cuenta?
+  <a routerLink="/auth/login" queryParamsHandling="preserve"
+    class="text-foreground hover:text-highlight font-medium underline underline-offset-4 transition-colors">
+    Inicia sesión
+  </a>
+</p>

@@ -1,0 +1,18 @@
+<!-- The shared footer, with the public pages' own links -->
+<app-site-footer>
+  <nav class="text-muted-foreground flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+    <a
+      routerLink="/cursos"
+      routerLinkActive="text-foreground"
+      ariaCurrentWhenActive="page"
+      class="hover:text-foreground transition-colors"
+    >
+      Cursos
+    </a>
+    @if (sectionLinks()) {
+      <a href="#como-funciona" appSectionLink class="hover:text-foreground transition-colors">
+        Cómo funciona
+      </a>
+    }
+  </nav>
+</app-site-footer>

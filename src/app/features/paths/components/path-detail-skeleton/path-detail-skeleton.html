@@ -1,0 +1,13 @@
+<hlm-skeleton class="h-8 w-28" />
+<!-- The header card, whose wash and covers only come with the path -->
+<hlm-skeleton class="mt-6 h-56 rounded-lg md:h-52" />
+
+<div class="mt-10 flex flex-col gap-3">
+  @for (placeholder of steps; track $index) {
+    <div class="flex items-start gap-3">
+      <hlm-skeleton class="mt-4 size-5.5 shrink-0 rounded-full" />
+      <!-- A course card's height: the cover banner plus its text on phones, 160px from sm up -->
+      <hlm-skeleton class="h-60 flex-1 rounded-lg sm:h-40" />
+    </div>
+  }
+</div>

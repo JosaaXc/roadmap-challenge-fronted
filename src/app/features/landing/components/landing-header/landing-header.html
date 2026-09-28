@@ -1,0 +1,21 @@
+<!-- Glass bar: the wordmark on its own, the way in at the other end -->
+<app-glass-header>
+  <!-- Letter spacing opens up from sm: on the narrowest phones both labels only just fit -->
+  <nav class="flex items-center gap-1 sm:gap-4">
+    <a
+      routerLink="/auth/login"
+      class="text-foreground hover:text-highlight px-1.5 py-2 text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-colors sm:px-2 sm:tracking-widest"
+    >
+      Iniciar sesión
+    </a>
+
+    <!-- A pill inside the pill, as in the DevTalles bar: the only place hlmBtn changes shape -->
+    <a
+      hlmBtn
+      routerLink="/auth/register"
+      class="h-11 rounded-full px-4 text-xs font-semibold tracking-wider whitespace-nowrap uppercase sm:px-6 sm:tracking-widest"
+    >
+      Empezar
+    </a>
+  </nav>
+</app-glass-header>

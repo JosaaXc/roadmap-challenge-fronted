@@ -1,0 +1,134 @@
+<div class="grid relative group h-full">
+  <!-- The hover glow is the cover itself, blurred, so each path lights up in its own colours -->
+  @if (cover(); as src) {
+  <img [src]="src" alt=""
+    class="absolute inset-0 size-full scale-105 rounded-xl object-cover opacity-0 blur-2xl saturate-200 transition duration-300 group-hover:opacity-100 group-hover:-translate-y-1.5" />
+  } @else {
+  <div
+    class="absolute -inset-0.5 rounded-xl bg-primary/40 opacity-0 blur-lg transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1.5">
+  </div>
+  }
+
+  <article hlmCard class="p-0 gap-0 border-border hover:border-muted-foreground has-[a:focus-visible]:ring-ring relative isolate flex flex-col rounded-lg border ring-0 has-[a:focus-visible]:ring-2 overflow-hidden bg-card text-card-foreground
+  transition-all duration-300 ease-out hover:-translate-y-1.5 ">
+
+    <!-- A blurred copy of the cover tints the whole card, as on the course steps of a path -->
+    @if (cover(); as src) {
+    <div aria-hidden="true" class="absolute inset-0 -z-10 overflow-hidden">
+      <img [src]="src" alt="" class="size-full scale-150 object-cover opacity-35 blur-2xl saturate-150" />
+    </div>
+    }
+
+    <!-- 1. Cabecera con Imagen. The covers' own ratio, so the grid keeps its shape while they load -->
+    <div class="w-full aspect-760/420 relative">
+      @if(card().hasForked){
+      <div class="absolute top-0 right-0 m-5 z-10 bg-primary rounded-full">
+        <div class="flex items-center justify-between mx-2">
+          <ng-icon name="lucideGitFork" size="18px"></ng-icon>
+          <span hlmBadge class=" text-primary-foreground font-semibold">Forked</span>
+        </div>
+
+      </div>
+      }
+      @if (cover(); as src) {
+      <!-- Its foot melts into the tint, which carries the same colours on down the card -->
+      <img [src]="src" alt="Cover de la ruta" class="object-cover w-full h-full mask-b-from-70%"
+        (error)="coverFailed.set(true)" />
+      } @else {
+      <div class="w-full h-full bg-primary/10 flex items-center justify-center">
+        <span class="text-primary font-bold text-lg">{{ card().title | slice:0:10 }}...</span>
+      </div>
+      }
+    </div>
+
+    <!-- 2. Cuerpo Principal -->
+    <div class="flex flex-col p-5 gap-3 flex-1">
+      <div class="flex items-start justify-between gap-3">
+        <h2 class="line-clamp-2 text-base leading-snug font-semibold">
+          <a [routerLink]="[linkPrefix(), card().id]"
+            class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">
+            {{ card().title }}
+          </a>
+        </h2>
+
+        @if (isOwner()) {
+        <div class="relative z-10 -mt-1.5 -mr-2 shrink-0">
+          <app-favorite-toggle [pathId]="card().id" [isFavorite]="card().isFavorite"
+            (toggled)="store.setFavorite(card().id, $event)" />
+        </div>
+        }
+      </div>
+
+      @if (!isOwner()) {
+      <p class="text-sm text-muted-foreground line-clamp-2">
+        {{ card().description || 'Sin descripción' }}
+      </p>
+      }
+
+      <div class="flex items-center space-x-5 " [ngClass]="!isOwner() ? '' : 'my-2' ">
+        @if(!isOwner()){
+        <div class="flex items-center gap-2 relative z-10">
+          <div class="relative">
+            <hlm-avatar>
+                @if (card().owner?.avatarUrl; as avatarUrl) {
+                  <img hlmAvatarImage [src]="avatarUrl" alt="" referrerpolicy="no-referrer" />
+                }
+              <span hlmAvatarFallback>
+                {{card().owner?.username.charAt(0).toUpperCase() }}
+              </span>
+            </hlm-avatar>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-foreground capitalize">
+              {{ card().owner?.username }}
+            </span>
+            <span class="text-[10px] font-light text-muted-foreground"> Creador </span>
+          </div>
+        </div>
+        }
+
+        <div class="flex items-center space-x-1">
+          <ng-icon name="lucideNetwork" size="18px" aria-hidden="true"></ng-icon>
+          <p class="text-muted-foreground text-xs">
+            {{ card().courseCount }} curso{{ card().courseCount === 1 ? '' : 's' }} ·
+            {{ card().createdAt | shortDate }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Barra de Progreso -->
+      @if (isOwner()) {
+      <div class="mt-auto relative z-10">
+        <app-path-progress [value]="card().progress" />
+        @if (card().nextStep) {
+        <p class="text-muted-foreground mt-3 truncate text-xs">
+          Siguiente: {{ card().nextStep }}
+        </p>
+        } @else {
+        <p class="text-highlight mt-3 flex items-center gap-1.5 text-xs">
+          <ng-icon name="lucideCheck" size="14px" aria-hidden="true" />
+          Ruta completada
+        </p>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- 3. Pie de página (Footer) -->
+    @if (!isOwner()) {
+    <div class="flex items-center justify-center border-t border-border bg-muted/20 px-3 py-3">
+      <div class="flex items-center space-x-2 z-20">
+        @if(showLike()){
+          <app-like-button [pathId]="card().id" [initialLiked]="card().hasLiked || false" [initialCount]="card().likesCount || 0">
+          </app-like-button>
+        }
+        <app-fork-button [pathId]="card().id" [initialCount]="card().forksCount || 0"
+          (forkSuccess)="onPathForked($event)">
+        </app-fork-button>
+      </div>
+
+    </div>
+    }
+
+  </article>
+</div>

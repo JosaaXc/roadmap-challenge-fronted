@@ -1,0 +1,91 @@
+<!--
+  The cover dresses the card twice: blurred into a wash of its colours behind everything,
+  and sharp at one end, where it fades into that wash. The height from sm up leaves the
+  artwork's title below the checkbox that floats over it
+-->
+<div hlmCard
+  class="relative isolate rounded-lg border px-4 ring-0 transition-colors [--card-spacing:--spacing(4)] sm:min-h-40 sm:px-5"
+  [class]="
+    state() === 'current'
+      ? 'bg-card-raised border-highlight'
+      : 'bg-card border-border hover:border-muted-foreground'
+  " [attr.data-step]="state()">
+  @if (cover(); as src) {
+  <div aria-hidden="true" class="absolute inset-0 -z-10 overflow-hidden transition-opacity duration-700"
+    [class.opacity-0]="!coverLoaded()">
+    <img [src]="src" alt="" loading="lazy" decoding="async"
+      class="size-full scale-150 object-cover opacity-40 blur-2xl saturate-150 transition duration-500 group-hover/card:opacity-55 group-data-[step=completed]/card:opacity-25 group-data-[step=completed]/card:grayscale motion-safe:group-data-[step=current]/card:animate-drift"
+      (load)="coverLoaded.set(true)" (error)="coverFailed.set(true)" />
+  </div>
+  }
+
+  <!--
+    A banner on phones, the far half of the card from sm up. There the crop cuts through
+    the artwork's corner ornaments, so the top and bottom edges fade too
+  -->
+  <div
+    class="absolute inset-x-0 top-0 h-36 max-sm:mask-b-from-30% sm:inset-y-0 sm:left-auto sm:h-auto sm:w-1/2 sm:mask-y-from-80% sm:mask-l-from-40%">
+    @if (cover(); as src) {
+    <!-- A bigger target for the course link below, so it stays out of the tab order -->
+    <a [href]="course().url" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"
+      class="block size-full overflow-hidden transition-opacity duration-700" [class.opacity-0]="!coverLoaded()">
+      <img [src]="src" alt="" loading="lazy" decoding="async"
+        class="size-full object-cover transition duration-700 ease-out group-data-[step=completed]/card:opacity-70 group-data-[step=completed]/card:grayscale motion-safe:group-hover/card:scale-105"
+        (load)="coverLoaded.set(true)" (error)="coverFailed.set(true)" />
+    </a>
+    } @else {
+    <!-- Same footprint as the cover, so a missing one never moves the layout -->
+    <div aria-hidden="true" class="bg-primary/25 text-foreground/40 flex size-full items-center justify-center">
+      <ng-icon name="lucideGraduationCap" size="32px" />
+    </div>
+    }
+  </div>
+
+  @if (state() === 'current') {
+  <app-particle-field />
+  }
+
+  <div class="relative flex flex-1 flex-col max-sm:mt-28 sm:max-w-[55%]">
+    <p class="flex flex-wrap items-center gap-x-2">
+      <span class="label-mono text-muted-foreground">Paso {{ step() }}</span>
+      @if (state() === 'current') {
+      <span class="label-mono text-highlight">· Siguiente</span>
+      }
+    </p>
+
+    <h2 class="mt-1.5 text-base leading-snug font-semibold" [class.text-muted-foreground]="state() === 'completed'">
+      {{ course().title }}
+    </h2>
+
+    <!-- Down at the foot of the card whatever the title's length -->
+    <div class="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3">
+      @if (course().url; as url) {
+      <a [href]="url" target="_blank" rel="noopener noreferrer"
+        class="text-muted-foreground hover:text-highlight inline-flex items-center gap-1.5 text-sm transition-colors">
+        Ir al curso
+        <ng-icon name="lucideExternalLink" size="14px" aria-hidden="true" />
+        <span class="sr-only">(se abre en otra pestaña)</span>
+      </a>
+      }
+
+      <!-- Inside the card, as the course it hangs from is the one the backend needs -->
+      <button hlmBtn variant="ghost" size="sm" type="button" class="text-muted-foreground hover:text-foreground gap-1.5"
+        [attr.aria-label]="'Agregar un recurso a ' + course().title" (click)="resourceRequested.emit()">
+        <ng-icon name="lucidePlus" aria-hidden="true" />
+        Agregar recurso
+      </button>
+    </div>
+  </div>
+  <!-- In glass over the cover, and last so it paints above everything it floats on -->
+
+@if (!isReadOnly()) {
+  <div
+    class="bg-background/55 border-foreground/10 absolute top-3 right-3 rounded-full border px-3 py-1.5 backdrop-blur-md">
+    <app-step-checkbox [checked]="course().isCompleted" [busy]="busy()" [stepTitle]="course().title"
+      (toggled)="toggled.emit()" />
+  </div>
+}
+
+
+
+</div>

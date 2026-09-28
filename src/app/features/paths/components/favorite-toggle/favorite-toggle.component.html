@@ -1,0 +1,22 @@
+<button
+  hlmBtn
+  variant="ghost"
+  size="icon"
+  (click)="toggle($event)"
+  [disabled]="isToggling()"
+  [class]="isFavorite() ? 'text-highlight' : 'text-muted-foreground'"
+  [attr.aria-pressed]="isFavorite()"
+  [attr.aria-label]="isFavorite() ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+  [title]="isFavorite() ? 'Quitar de favoritos' : 'Añadir a favoritos'"
+>
+  @if (isToggling()) {
+    <hlm-spinner class="text-base" />
+  } @else {
+    <ng-icon
+      name="lucideStar"
+      size="18px"
+      [class]="isFavorite() ? '[&>svg]:fill-current' : ''"
+      aria-hidden="true"
+    />
+  }
+</button>

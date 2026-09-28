@@ -1,0 +1,15 @@
+<!--
+  The technology's light, from within: brightest at the centre and gone before the outline,
+  so it never spills past the pill
+-->
+<span
+  aria-hidden="true"
+  class="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,var(--tech),transparent)] opacity-0 transition-opacity duration-300 group-hover/pill:opacity-40 group-aria-pressed/pill:opacity-40"
+></span>
+
+<ng-icon [name]="badge().icon" size="16px" class="shrink-0 text-(--tech)" aria-hidden="true" />
+{{ badge().label }}
+
+@if (count() !== null) {
+  <span class="tabular-nums opacity-60">{{ count() }}</span>
+}

@@ -1,0 +1,31 @@
+<div
+  class="inline-flex items-center rounded-full overflow-hidden transition-colors hover:border-muted-foreground/50"
+  [class.border]="variant() !== 'community'"
+  [class.bg-card]="variant() !== 'community'">
+
+  <button hlmBtn variant="ghost"  size="sm"
+    class="flex items-center gap-1.5 px-3 rounded-none transition-colors h-8 text-muted-foreground hover:text-foreground"
+    [class.hover:bg-muted]="variant() !== 'community'"
+    (click)="fork($event)" [disabled]="isProcessing()" aria-label="Guardar copia en mis rutas">
+
+    @if (isProcessing()) {
+    <ng-icon name="lucideLoader2" size="18px" class="animate-spin"></ng-icon>
+    } @else {
+    <ng-icon name="lucideGitFork" size="18px" class="transition-transform hover:scale-110"></ng-icon>
+    }
+
+    <span class="text-xs font-medium">
+      {{ isProcessing() ? 'Guardando' : 'Guardar' }}
+    </span>
+  </button>
+
+  <div class="flex items-center gap-1.5 px-3 h-8 border-l border-border bg-muted/20">
+    <ng-icon name="lucideGitFork" size="14px" class="text-muted-foreground">
+    </ng-icon>
+
+    <span class="text-xs text-muted-foreground font-medium tabular-nums">
+      {{ forksCount() }}
+    </span>
+  </div>
+
+</div>

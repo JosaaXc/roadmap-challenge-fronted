@@ -11,3 +11,9 @@ export const authGuard: CanActivateFn = (_route, state) => {
     router.createUrlTree(['/auth/login'], { queryParams: { redirectTo: state.url } })
   );
 };
+
+export const guestGuard: CanActivateFn = () => {
+  const session = inject(SessionStore);
+  const router = inject(Router);
+  return session.isAuthenticated() ? router.createUrlTree(['/mis-rutas']) : true;
+}

@@ -1,0 +1,85 @@
+<div hlmCard class="border-border rounded-lg border ring-0" [class]="cardClasses()">
+  @if (covers().length > 0) {
+    <!--
+      Dressed like a path's own header: its covers washed behind, and the fan around the
+      course to take now, turning as the path plays. The fan comes first so the text paints over it
+    -->
+    <div
+      class="group/fan border-border relative isolate overflow-hidden border-b px-(--card-spacing) py-7"
+    >
+      <app-cover-wash [covers]="covers()" />
+      <app-cover-fan
+        [fan]="fan()"
+        class="absolute inset-y-0 -right-2 w-2/5 [--fan-cover-width:6rem] sm:w-1/2 sm:[--fan-cover-width:9rem]"
+      />
+
+      <div class="relative max-w-[58%] sm:max-w-[52%]">
+        <p class="label-mono text-muted-foreground">{{ headerLabel() }}</p>
+        <p class="mt-3 text-sm font-semibold">{{ progressLabel() }}</p>
+
+        <hlm-progress [value]="progressValue()" class="mt-3 h-1.5">
+          <!-- At 0% the rounded corners of the fill still show as a dot -->
+          @if (progressValue() > 0) {
+            <hlm-progress-indicator class="bg-highlight duration-500" />
+          }
+        </hlm-progress>
+      </div>
+    </div>
+  } @else {
+    <div hlmCardHeader class="flex flex-row items-center justify-between gap-3">
+      <p class="label-mono text-muted-foreground">{{ headerLabel() }}</p>
+      <p class="label-mono text-highlight whitespace-nowrap">{{ progressLabel() }}</p>
+    </div>
+  }
+
+  <div hlmCardContent>
+    <ol class="relative flex flex-col" [class]="compact() ? 'gap-2' : 'gap-3'">
+      @for (course of courses(); track course.title; let index = $index) {
+        @let status = statuses()[index];
+
+        <li
+          appPathTimelineStep
+          [state]="timelineState[status]"
+          [last]="$last"
+          [revealed]="pathRevealed()"
+          [revealDelay]="revealDelay(index)"
+          lockPending
+        >
+          <div
+            hlmCard
+            class="bg-card-raised rounded-lg border ring-0 transition-colors duration-500"
+            [class]="stepClasses(status)"
+          >
+            <div hlmCardContent>
+              <p
+                class="label-mono transition-colors duration-500"
+                [class.text-highlight]="status === 'next'"
+                [class.text-muted-foreground]="status !== 'next'"
+              >
+                {{ statusLabel[status] }}
+              </p>
+
+              <p hlmCardTitle class="mt-1.5 text-sm">{{ course.title }}</p>
+
+              @let hint = hints()[index];
+              @if (hint.text && !compact()) {
+                <!-- Unfolds under the course to take now and folds away once it is done -->
+                <div
+                  class="grid transition-[grid-template-rows,opacity] duration-500 motion-reduce:transition-none"
+                  [class]="hint.open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
+                >
+                  <p class="text-muted-foreground min-h-0 overflow-hidden text-xs">
+                    <!-- Two lines held on phones, where the longer hints wrap and the short one would not -->
+                    <span class="block pt-1.5 max-sm:min-h-[calc(2lh+0.375rem)]">{{
+                      hint.text
+                    }}</span>
+                  </p>
+                </div>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ol>
+  </div>
+</div>
