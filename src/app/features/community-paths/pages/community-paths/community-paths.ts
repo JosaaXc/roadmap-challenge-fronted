@@ -8,11 +8,11 @@ import { HlmEmptyImports } from "@spartan-ng/helm/empty";
 import { HlmSkeletonImports } from "@spartan-ng/helm/skeleton";
 import { lucideChevronDown, lucideChevronUp, lucideNetwork } from "@ng-icons/lucide";
 import { Component, inject, OnInit } from "@angular/core";
-import { CommunityPathsStore } from "../services/community-paths.store";
-import { PathCardComponent } from "../../../shared/ui/path-card/path-card";
-import { useListOrder } from "../../../shared/utils/use-list-order";
 import { HlmAlertImports } from "@spartan-ng/helm/alert";
-import { SearchComponent } from "../../admin/components/search/search.component";
+import { PathCardComponent } from "../../../../shared/ui/path-card/path-card";
+import { SearchComponent } from "../../../admin/components/search/search.component";
+import { CommunityPathsStore } from "../../services/community-paths.store";
+import { useListOrder } from "../../../../shared/utils/use-list-order";
 
 @Component({
   selector: 'app-community-paths-page',

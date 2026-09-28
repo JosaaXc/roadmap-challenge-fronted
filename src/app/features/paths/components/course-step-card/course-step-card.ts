@@ -19,6 +19,7 @@ import { StepCheckbox } from '../step-checkbox/step-checkbox';
 export class CourseStepCard {
 
   readonly course = input.required<PathNode>();
+  readonly isReadOnly = input<boolean>(false);
 
   // Numbered among courses only: resources are optional branches off them
   readonly step = input.required<number>();

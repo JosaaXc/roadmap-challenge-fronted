@@ -17,8 +17,8 @@ import { DeviMascot } from '../../../../shared/ui/devi-mascot/devi-mascot';
 import { PathsStore } from '../../services/paths-store';
 import { toPathCard } from '../../utils/path-card';
 import { PathCardComponent } from '../../../../shared/ui/path-card/path-card';
-import { CommunityPathsPageComponent } from '../../../community-paths/pages/community-paths';
 import { useListOrder } from '../../../../shared/utils/use-list-order';
+import { CommunityPathsPageComponent } from '../../../community-paths/pages/community-paths/community-paths';
 
 @Component({
   selector: 'app-my-paths-page',

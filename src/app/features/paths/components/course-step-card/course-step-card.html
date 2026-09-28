@@ -77,12 +77,15 @@
     </div>
   </div>
   <!-- In glass over the cover, and last so it paints above everything it floats on -->
+
+@if (!isReadOnly()) {
   <div
     class="bg-background/55 border-foreground/10 absolute top-3 right-3 rounded-full border px-3 py-1.5 backdrop-blur-md">
     <app-step-checkbox [checked]="course().isCompleted" [busy]="busy()" [stepTitle]="course().title"
       (toggled)="toggled.emit()" />
-
-
   </div>
+}
+
+
 
 </div>

@@ -17,6 +17,8 @@ export class ForkButtonComponent implements OnInit {
   readonly pathId = input.required<string>();
   readonly initialCount = input<number>(0);
 
+  readonly variant = input<'deafault' | 'community'>('deafault');
+
   // Emitimos el resultado para que el padre decida qué hacer (ej. redirigir a la nueva ruta)
   readonly forkSuccess = output<any>();
 
