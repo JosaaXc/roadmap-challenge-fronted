@@ -34,6 +34,7 @@ export interface LearningPath {
   isFavorite: boolean;
   isPublic: boolean;
   isFork: boolean;
+  hasForked: boolean;
   nodeCount: number;
   hasLiked: boolean;
   likesCount: number;
@@ -78,6 +79,7 @@ export interface PathCard {
   readonly nextStep: string | null;
   readonly isFavorite: boolean;
   readonly isFork: boolean;
+  readonly hasForked: boolean;
   readonly isPublic: boolean;
   readonly hasLiked: boolean;
   readonly likesCount: number;

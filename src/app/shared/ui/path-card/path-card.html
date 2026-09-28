@@ -21,7 +21,7 @@
 
     <!-- 1. Cabecera con Imagen. The covers' own ratio, so the grid keeps its shape while they load -->
     <div class="w-full aspect-760/420 relative">
-      @if(card().isFork){
+      @if(card().hasForked){
       <div class="absolute top-0 right-0 m-5 z-10 bg-primary rounded-full">
         <div class="flex items-center justify-between mx-2">
           <ng-icon name="lucideGitFork" size="18px"></ng-icon>
