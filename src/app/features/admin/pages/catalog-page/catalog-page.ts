@@ -25,6 +25,7 @@ import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { ShortDatePipe } from '../../../paths/pipes/short-date.pipe';
 import { CourseLevelPipe } from '../../pipes/course-level.pipe';
+import { TagPicker } from '../../components/tag-picker/tag-picker';
 
 @Component({
   imports: [
@@ -47,7 +48,8 @@ import { CourseLevelPipe } from '../../pipes/course-level.pipe';
     ShortDatePipe,
     CourseLevelPipe,
     ConfirmDialog,
-    BackButtonComponent
+    BackButtonComponent,
+    TagPicker
 ],
   providers: [
     provideIcons({
@@ -99,7 +101,7 @@ export class CatalogPage implements OnInit {
     slug: ['', Validators.required],
     description: ['', Validators.required],
     level: ['BEGINNER', Validators.required],
-    tags: ['', Validators.required],
+    tags: [[] as string[], Validators.required],
     url: ['', Validators.required],
     imageUrl: ['', Validators.required],
     isActive: [true],
@@ -140,7 +142,7 @@ export class CatalogPage implements OnInit {
     this.courseForm.reset({
       level: 'BEGINNER',
       isActive: true,
-      tags: '',
+      tags: [],
     });
     this.editDialogTrigger.nativeElement.click();
   }
@@ -150,7 +152,7 @@ export class CatalogPage implements OnInit {
     this.errorMessage.set(null);
     this.courseForm.patchValue({
       ...course,
-      tags: course.tags?.join(', ') || '',
+      tags: course.tags ?? [],
     });
 
     this.editDialogTrigger.nativeElement.click();
@@ -176,15 +178,7 @@ export class CatalogPage implements OnInit {
     this.errorMessage.set(null);
 
     // Preparamos los datos
-    const formValue = this.courseForm.getRawValue();
-    const courseDto: CourseDto = {
-      ...formValue,
-      // Transformamos el string separado por comas de vuelta a un array limpio
-      tags: formValue.tags
-        .split(',')
-        .map((t) => t.trim())
-        .filter((t) => t !== ''),
-    };
+    const courseDto: CourseDto = this.courseForm.getRawValue();
 
     const currentCourse = this.selectedCourse();
 

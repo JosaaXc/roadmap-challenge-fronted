@@ -1,0 +1,70 @@
+<!-- Anchored to the whole row: the button moves right as badges are added -->
+<hlm-combobox-multiple
+  brnComboboxAnchor
+  autoHighlight
+  class="flex flex-wrap items-center gap-1.5"
+  [value]="value()"
+  (valueChange)="update($event)"
+  [(search)]="search"
+  [filter]="filter"
+  [disabled]="isDisabled()"
+  (closed)="onTouched()"
+>
+  <ng-template hlmComboboxValues let-tags>
+    @for (tag of tags; track tag) {
+      <hlm-combobox-chip
+        class="border-primary/40 bg-primary/15 h-6 gap-1 rounded-full border ps-2.5 has-data-[slot=combobox-chip-remove]:pe-0.5 **:data-[slot=combobox-chip-remove]:ms-0 **:data-[slot=combobox-chip-remove]:size-5 **:data-[slot=combobox-chip-remove]:rounded-full"
+        [value]="tag"
+        >{{ tag }}</hlm-combobox-chip
+      >
+    }
+  </ng-template>
+
+  <!-- The search lives in the popover, so the badges never squeeze it -->
+  <button
+    hlmBtn
+    brnComboboxPopoverTrigger
+    type="button"
+    variant="outline"
+    size="xs"
+    class="text-muted-foreground hover:text-foreground group-data-[matches-spartan-invalid=true]/field:border-destructive group-data-[matches-spartan-invalid=true]/field:text-destructive rounded-full border-dashed bg-transparent dark:bg-transparent"
+    [disabled]="isDisabled()"
+  >
+    <ng-icon name="lucidePlus" aria-hidden="true" />
+    Agregar tag
+  </button>
+
+  <hlm-combobox-content *hlmComboboxPortal class="w-60">
+    <hlm-combobox-input
+      showTrigger="false"
+      [placeholder]="allowCreate() ? 'Busca o crea un tag' : 'Busca un tag'"
+    >
+      <hlm-input-group-addon>
+        <ng-icon name="lucideSearch" aria-hidden="true" />
+      </hlm-input-group-addon>
+    </hlm-combobox-input>
+
+    <hlm-combobox-empty>
+      @if (store.isLoading()) {
+        Cargando tags…
+      } @else if (store.failed()) {
+        No se pudieron cargar los tags.
+      } @else {
+        Ningún tag coincide. Si falta uno, agrégalo primero a un curso.
+      }
+    </hlm-combobox-empty>
+
+    <div hlmComboboxList>
+      @for (tag of options(); track tag) {
+        <hlm-combobox-item [value]="tag">{{ tag }}</hlm-combobox-item>
+      }
+      <!-- Last, so Enter on a partial search takes the existing match -->
+      @if (newTag(); as tag) {
+        <hlm-combobox-item [value]="tag">
+          <ng-icon name="lucidePlus" aria-hidden="true" />
+          Crear "{{ tag }}"
+        </hlm-combobox-item>
+      }
+    </div>
+  </hlm-combobox-content>
+</hlm-combobox-multiple>

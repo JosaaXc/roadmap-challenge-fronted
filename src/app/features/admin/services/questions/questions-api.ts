@@ -3,7 +3,7 @@ import { inject, Service } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../paths/models/paths-models';
-import { Question, QuestionDto } from '../../models/questions-model';
+import { Question, QuestionDto, QuestionOptionDto } from '../../models/questions-model';
 
 @Service()
 export class QuestionsApi {
@@ -32,7 +32,7 @@ export class QuestionsApi {
 
   addQuestionOption(
     questionId: string,
-    optionData: { text: string; tagsOutput: string[] },
+    optionData: QuestionOptionDto,
   ): Observable<ApiResponse<unknown>> {
     return this.http.post<ApiResponse<unknown>>(
       `${this.baseUrl}/questions/${questionId}/options`,
@@ -44,7 +44,7 @@ export class QuestionsApi {
   updateQuestionOption(
     questionId: string,
     optionId: string,
-    optionData: { text: string; tagsOutput: string[] },
+    optionData: Partial<QuestionOptionDto>,
   ): Observable<ApiResponse<unknown>> {
     return this.http.patch<ApiResponse<unknown>>(
       `${this.baseUrl}/questions/${questionId}/options/${optionId}`,

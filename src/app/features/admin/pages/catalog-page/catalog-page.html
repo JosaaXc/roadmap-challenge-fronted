@@ -178,44 +178,43 @@
         </hlm-field>
       </hlm-field-group>
 
-      <div class="flex flex-col sm:flex-row gap-4">
-        <hlm-field-group>
-          <hlm-field>
-            <label hlmFieldLabel>Nivel *</label>
+      <hlm-field-group>
+        <hlm-field>
+          <label hlmFieldLabel>Nivel *</label>
 
-            <!-- Conectamos el formControlName y el itemToString -->
-            <hlm-select formControlName="level" [itemToString]="levelToString">
-              <!-- El trigger es el botón que se ve en el formulario -->
-              <hlm-select-trigger class="w-full">
-                <hlm-select-value placeholder="Selecciona un nivel" />
-              </hlm-select-trigger>
+          <!-- Conectamos el formControlName y el itemToString -->
+          <hlm-select formControlName="level" [itemToString]="levelToString">
+            <!-- El trigger es el botón que se ve en el formulario -->
+            <hlm-select-trigger class="w-full">
+              <hlm-select-value placeholder="Selecciona un nivel" />
+            </hlm-select-trigger>
 
-              <!-- El content es el menú desplegable (Portal lo dibuja encima de todo) -->
-              <hlm-select-content *hlmSelectPortal>
-                <hlm-select-group>
-                  <hlm-select-label>Dificultad del Curso</hlm-select-label>
+            <!-- El content es el menú desplegable (Portal lo dibuja encima de todo) -->
+            <hlm-select-content *hlmSelectPortal>
+              <hlm-select-group>
+                <hlm-select-label>Dificultad del Curso</hlm-select-label>
 
-                  @for (level of levels; track level.value) {
-                  <hlm-select-item [value]="level.value">
-                    {{ level.label }}
-                  </hlm-select-item>
-                  }
+                @for (level of levels; track level.value) {
+                <hlm-select-item [value]="level.value">
+                  {{ level.label }}
+                </hlm-select-item>
+                }
 
-                </hlm-select-group>
-              </hlm-select-content>
-            </hlm-select>
+              </hlm-select-group>
+            </hlm-select-content>
+          </hlm-select>
 
-          </hlm-field>
-        </hlm-field-group>
+        </hlm-field>
+      </hlm-field-group>
 
-        <hlm-field-group>
-          <hlm-field>
-            <label hlmFieldLabel>Tags *</label>
-            <input hlmInput formControlName="tags" placeholder="react, node, docker">
-            <span class="text-xs text-muted-foreground mt-1">Separados por comas</span>
-          </hlm-field>
-        </hlm-field-group>
-      </div>
+      <!-- Full width, so several badges fit on one line -->
+      <hlm-field-group>
+        <hlm-field aria-labelledby="course-tags-label">
+          <label hlmFieldLabel id="course-tags-label">Tags *</label>
+          <app-tag-picker formControlName="tags" allowCreate />
+          <hlm-field-error validator="required">Elige al menos un tag.</hlm-field-error>
+        </hlm-field>
+      </hlm-field-group>
 
       <hlm-field-group>
         <hlm-field>

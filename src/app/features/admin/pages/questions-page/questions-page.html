@@ -158,36 +158,39 @@
         </div>
 
         @for (option of optionsFormArray.controls; track $index) {
-        <div [formGroupName]="$index" class="flex flex-col sm:flex-row gap-3 items-start border p-3 rounded-md bg-muted/30">
+        <div [formGroupName]="$index" class="space-y-3 border p-3 rounded-md bg-muted/30">
 
-          <div class="flex-1 w-full">
-            <label class="text-xs text-muted-foreground mb-1 block">Texto de la Opción</label>
-            <input hlmInput formControlName="text" class="w-full" placeholder="Ej. Frontend (Interfaces y Web)">
+          <div class="flex items-end gap-2">
+            <div class="flex-1 min-w-0">
+              <label class="text-xs text-muted-foreground mb-1 block">Texto de la Opción</label>
+              <input hlmInput formControlName="text" class="w-full" placeholder="Ej. Frontend (Interfaces y Web)">
+            </div>
+
+            <!-- BOTONES DE ACCIÓN INDIVIDUAL -->
+            <div class="flex gap-2">
+              <!-- Botón de Guardar Individual (SOLO VISIBLE EN MODO EDICIÓN) -->
+              @if (selectedQuestion()) {
+              <button type="button" hlmBtn variant="ghost" size="icon" (click)="saveSingleOption($index)"
+                [disabled]="processingOptionIndex() === $index || optionsFormArray.at($index).invalid"
+                title="Guardar esta opción">
+                <ng-icon name="lucideSave" class="size-4"></ng-icon>
+              </button>
+              }
+
+              <!-- Botón de Eliminar -->
+              <button type="button" hlmBtn variant="ghost" size="icon" (click)="removeOption($index)"
+                [disabled]="processingOptionIndex() === $index" class="text-destructive hover:bg-destructive/10"
+                title="Eliminar esta opción">
+                <ng-icon name="lucideTrash2" class="size-4"></ng-icon>
+              </button>
+            </div>
           </div>
 
-          <div class="flex-1 w-full">
-            <label class="text-xs text-muted-foreground mb-1 block">Tags (separados por coma)</label>
-            <input hlmInput formControlName="tagsOutput" class="w-full" placeholder="react, frontend, css">
-          </div>
-
-          <!-- BOTONES DE ACCIÓN INDIVIDUAL -->
-          <div class="flex gap-2 mt-5">
-            <!-- Botón de Guardar Individual (SOLO VISIBLE EN MODO EDICIÓN) -->
-            @if (selectedQuestion()) {
-            <button type="button" hlmBtn variant="ghost" size="icon" (click)="saveSingleOption($index)"
-              [disabled]="processingOptionIndex() === $index || !optionsFormArray.at($index).get('text')?.value || !optionsFormArray.at($index).get('tagsOutput')?.value"
-              title="Guardar esta opción">
-              <ng-icon name="lucideSave" class="size-4"></ng-icon>
-            </button>
-            }
-
-            <!-- Botón de Eliminar -->
-            <button type="button" hlmBtn variant="ghost" size="icon" (click)="removeOption($index)"
-              [disabled]="processingOptionIndex() === $index" class="text-destructive hover:bg-destructive/10"
-              title="Eliminar esta opción">
-              <ng-icon name="lucideTrash2" class="size-4"></ng-icon>
-            </button>
-          </div>
+          <hlm-field class="gap-1.5" [attr.aria-labelledby]="'option-tags-label-' + $index">
+            <span class="text-xs text-muted-foreground" [id]="'option-tags-label-' + $index">Tags</span>
+            <app-tag-picker formControlName="tagsOutput" />
+            <hlm-field-error validator="required">Elige al menos un tag.</hlm-field-error>
+          </hlm-field>
 
         </div>
         }
