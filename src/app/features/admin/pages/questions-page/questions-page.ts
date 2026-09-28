@@ -2,7 +2,12 @@ import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angul
 import { QuestionsStore } from '../../services/questions/questions-store';
 import { QuestionsApi } from '../../services/questions/questions-api';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Question, QuestionDto } from '../../models/questions-model';
+import {
+  Question,
+  QuestionDto,
+  QuestionOption,
+  QuestionOptionDto,
+} from '../../models/questions-model';
 import { finalize } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
@@ -29,6 +34,8 @@ import {
 } from '@ng-icons/lucide';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
+import { TagPicker } from '../../components/tag-picker/tag-picker';
+import { normalizeTags } from '../../utils/tags';
 
 @Component({
   selector: 'app-questions-page',
@@ -47,7 +54,8 @@ import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dial
     HlmBadge,
     NgIcon,
     BackButtonComponent,
-    ConfirmDialog
+    ConfirmDialog,
+    TagPicker
 ],
   providers: [
     provideIcons({
@@ -101,12 +109,7 @@ export class QuestionsPage implements OnInit {
   }
 
   addOption() {
-    const optionGroup = this.fb.group({
-      id: [null],
-      text: ['', Validators.required],
-      tagsOutput: ['', Validators.required],
-    });
-    this.optionsFormArray.push(optionGroup);
+    this.optionsFormArray.push(this.optionGroup());
   }
 
   // ==========================================
@@ -124,16 +127,15 @@ export class QuestionsPage implements OnInit {
     this.errorMessage.set(null);
 
     const optValue = optControl.value;
-    const optionDto = {
+    const optionDto: QuestionOptionDto = {
       text: optValue.text,
-      tagsOutput: optValue.tagsOutput
-        .split(',')
-        .map((t: string) => t.trim())
-        .filter((t: string) => t !== ''),
+      tagsOutput: optValue.tagsOutput ?? [],
     };
+    // The backend refuses an empty tag list, so an option stored without tags only sends its text
+    const updateDto = optionDto.tagsOutput.length > 0 ? optionDto : { text: optionDto.text };
 
     const request$ = optValue.id
-      ? this.questionsApi.updateQuestionOption(currentQ.id, optValue.id, optionDto)
+      ? this.questionsApi.updateQuestionOption(currentQ.id, optValue.id, updateDto)
       : this.questionsApi.addQuestionOption(currentQ.id, optionDto);
 
     request$.pipe(finalize(() => this.processingOptionIndex.set(null))).subscribe({
@@ -186,15 +188,7 @@ export class QuestionsPage implements OnInit {
     });
 
     this.optionsFormArray.clear();
-    question.options.forEach((opt) => {
-      this.optionsFormArray.push(
-        this.fb.group({
-          id: [opt.id],
-          text: [opt.text, Validators.required],
-          tagsOutput: [opt.tagsOutput ? opt.tagsOutput.join(', ') : ''],
-        }),
-      );
-    });
+    question.options.forEach((opt) => this.optionsFormArray.push(this.optionGroup(opt)));
 
     this.editDialogTrigger.nativeElement.click();
   }
@@ -271,10 +265,7 @@ export class QuestionsPage implements OnInit {
         isActive: formValue.isActive ?? true,
         options: (formValue.options || []).map((opt: any) => ({
           text: opt.text,
-          tagsOutput: opt.tagsOutput
-            .split(',')
-            .map((t: string) => t.trim())
-            .filter((t: string) => t !== ''),
+          tagsOutput: opt.tagsOutput,
         })),
       };
 
@@ -292,6 +283,18 @@ export class QuestionsPage implements OnInit {
             this.errorMessage.set(this.formatBackendError(err, 'Error al guardar la pregunta.')),
         });
     }
+  }
+
+  // Options stored without tags, like "No por ahora", stay editable without picking one
+  private optionGroup(option?: QuestionOption) {
+    const tags = normalizeTags(option?.tagsOutput ?? []);
+    const isStoredUntagged = option !== undefined && tags.length === 0;
+
+    return this.fb.group({
+      id: [option?.id ?? null],
+      text: [option?.text ?? '', Validators.required],
+      tagsOutput: [tags, isStoredUntagged ? [] : [Validators.required]],
+    });
   }
 
   private formatBackendError(error: any, fallback: string): string {

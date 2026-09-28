@@ -15,13 +15,15 @@ export interface Question {
   updatedAt: string;
 }
 
+export interface QuestionOptionDto {
+  text: string;
+  tagsOutput: string[];
+}
+
 export interface QuestionDto {
   text: string;
   order: number;
   isRequired: boolean;
   isActive: boolean;
-  options: {
-    text: string;
-    tagsOutput: string[];
-  }[];
+  options: QuestionOptionDto[];
 }

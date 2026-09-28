@@ -32,6 +32,13 @@ export class CatalogApi {
     });
   }
 
+  // Every tag in use across courses and questionnaire options
+  getTags(): Observable<ApiResponse<string[]>> {
+    return this.http.get<ApiResponse<string[]>>(`${this.baseUrl}/catalog/tags`, {
+      withCredentials: true,
+    });
+  }
+
   createCourse(course: CourseDto): Observable<ApiResponse<Course>> {
     const headers = new HttpHeaders({
       'Idempotency-Key': crypto.randomUUID(),
