@@ -19,6 +19,9 @@ import { toPathCard } from '../../utils/path-card';
 import { PathCardComponent } from '../../../../shared/ui/path-card/path-card';
 import { useListOrder } from '../../../../shared/utils/use-list-order';
 import { CommunityPathsPageComponent } from '../../../community-paths/pages/community-paths/community-paths';
+import { lightPageWith } from '../../../../shared/ui/page-light/page-light-store';
+import { pathCovers, pickResumePath } from '../../utils/path-courses';
+import { ResumeHero } from '../../components/resume-hero/resume-hero';
 
 @Component({
   selector: 'app-my-paths-page',
@@ -33,6 +36,7 @@ import { CommunityPathsPageComponent } from '../../../community-paths/pages/comm
     PathCardComponent,
     CommunityPathsPageComponent,
     DeviMascot,
+    ResumeHero,
   ],
   templateUrl: './my-paths-page.html',
   viewProviders: [
@@ -60,6 +64,20 @@ export class MyPathsPage implements OnInit {
 
   // PASO 3: Mapeamos el resultado final a PathCard para renderizar
   readonly cards = computed(() => this.listOrder.orderedList().map(toPathCard));
+
+  // The path to pick up again, whose covers light the page
+  readonly resumePath = computed(() => pickResumePath(this.store.paths()));
+
+  constructor() {
+    // Dark until the first answer; then the path to resume, or else the newest one
+    lightPageWith(() => {
+      const paths = this.store.paths();
+      if (this.store.isLoading() && paths.length === 0) return null;
+
+      const path = this.resumePath() ?? paths[0];
+      return path ? pathCovers(path) : [];
+    });
+  }
 
   ngOnInit() {
     // Cambio de store.load() a store.loadInitial()

@@ -1,15 +1,32 @@
 <section class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
+  @if (resumePath(); as path) {
+    <app-resume-hero [path]="path" class="mb-16 lg:mb-20" />
+  }
+
   <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
     <div>
       <h1 class="text-3xl font-extrabold tracking-tight">Mis rutas</h1>
-      <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
-        Retoma tus estudios desde donde los dejaste.
-      </p>
+      <!-- The hero above already does what this line promises -->
+      @if (!resumePath()) {
+        <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+          Retoma tus estudios desde donde los dejaste.
+        </p>
+      }
     </div>
 
-    <!-- With no paths the empty state already carries the action, and one screen holds one -->
+    <!--
+      With no paths the empty state already carries the action, and one screen holds one:
+      under the hero, whose button is the one to press, this one steps back to an outline
+    -->
     @if (store.isLoading() || store.paths().length > 0) {
-      <a hlmBtn routerLink="/cuestionario" class="shrink-0">Generar nueva ruta</a>
+      <a
+        hlmBtn
+        routerLink="/cuestionario"
+        [variant]="resumePath() ? 'outline' : 'default'"
+        class="shrink-0"
+      >
+        Generar nueva ruta
+      </a>
     }
   </header>
 
@@ -136,5 +153,13 @@
     }
   }
 </section>
+
+<!-- A line of light where your paths end and everyone else's begin -->
+<div aria-hidden="true" class="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
+  <div class="via-foreground/30 h-px bg-linear-to-r from-transparent to-transparent"></div>
+  <div
+    class="absolute inset-x-1/4 top-0 h-20 -translate-y-1/2 bg-[radial-gradient(closest-side,color-mix(in_oklch,var(--color-foreground)_12%,transparent),transparent)]"
+  ></div>
+</div>
 
 <app-community-paths-page/>
