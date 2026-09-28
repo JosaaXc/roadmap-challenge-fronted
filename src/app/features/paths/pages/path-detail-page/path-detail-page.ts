@@ -18,7 +18,8 @@ import { PathDetailNavigationState, PathNode } from '../../models/paths-models';
 import { PathDetailStore } from '../../services/path-detail-store';
 import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
 import { PathCardComponent } from '../../../../shared/ui/path-card/path-card';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 
 // Gap between the entrances of two consecutive steps of a new path
 const ENTRANCE_STAGGER_MS = 90;
@@ -40,8 +41,8 @@ const ENTRANCE_STAGGER_MS = 90;
     PathDetailSkeleton,
     ResourceCard,
     ResourceDialog,
-    PathCardComponent
-],
+    PathCardComponent,
+  ],
   templateUrl: './path-detail-page.html',
   providers: [PathDetailStore],
   viewProviders: [provideIcons({ lucideCircleAlert })],
@@ -60,12 +61,14 @@ export class PathDetailPage implements OnInit {
   // Bound from the :id route parameter
   readonly id = input.required<string>();
 
-  readonly backLink = this.route.snapshot.queryParamMap.get('from') === 'admin-public-paths'
-    ? '/admin/public-paths'
-    : '/mis-rutas';
-  readonly backLabel = this.route.snapshot.queryParamMap.get('from') === 'admin-public-paths'
-    ? 'Volver a rutas públicas'
-    : 'Mis rutas';
+  readonly backLink =
+    this.route.snapshot.queryParamMap.get('from') === 'admin-public-paths'
+      ? '/admin/public-paths'
+      : '/mis-rutas';
+  readonly backLabel =
+    this.route.snapshot.queryParamMap.get('from') === 'admin-public-paths'
+      ? 'Volver a rutas públicas'
+      : 'Mis rutas';
 
   // The resource waiting on its confirmation dialog
   protected readonly pendingResource = signal<PathNode | null>(null);
@@ -82,12 +85,14 @@ export class PathDetailPage implements OnInit {
   }
 
   ngOnInit() {
-    this.route.paramMap
-    .pipe(takeUntilDestroyed(this.destroyRed))
-    .subscribe((params) => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRed)).subscribe((params) => {
       const id = params.get('id');
       if (id) {
-        this.store.load(this.id());
+        this.store.load(id);
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
       }
     });
   }

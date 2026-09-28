@@ -1,5 +1,5 @@
 import { Component, inject, input, output } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideEllipsis, lucideGlobe, lucideLock, lucideTrash2 } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -14,6 +14,7 @@ import { ShortDatePipe } from '../../pipes/short-date.pipe';
 import { FavoriteToggleComponent } from '../favorite-toggle/favorite-toggle.component';
 import { PathProgress } from '../path-progress/path-progress';
 import { PathDetailStore } from '../../services/path-detail-store';
+import { ForkButtonComponent } from '../../../../shared/ui/fork-button/fork-button';
 
 // The way back, the path's name and actions, and its progress
 @Component({
@@ -30,14 +31,16 @@ import { PathDetailStore } from '../../services/path-detail-store';
     PathProgress,
     PathTitlePipe,
     ShortDatePipe,
+    ForkButtonComponent,
   ],
   templateUrl: './path-detail-header.html',
   viewProviders: [
-    provideIcons({ lucideChevronLeft, lucideEllipsis, lucideTrash2, lucideGlobe, lucideLock}),
+    provideIcons({ lucideChevronLeft, lucideEllipsis, lucideTrash2, lucideGlobe, lucideLock }),
   ],
   host: { class: 'block' },
 })
 export class PathDetailHeader {
+  readonly router = inject(Router);
   readonly store = inject(PathDetailStore);
   readonly path = input.required<LearningPath>();
   readonly courseCount = input.required<number>();
@@ -51,4 +54,9 @@ export class PathDetailHeader {
 
   readonly favoriteToggled = output<boolean>();
   readonly deleteRequested = output<void>();
+
+  onPathForked(newPath: any) {
+    this.router.navigate(['/mis-rutas', newPath.id]);
+  }
+
 }

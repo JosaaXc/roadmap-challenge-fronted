@@ -77,7 +77,9 @@ export class PathDetailStore {
 
   load(pathId: string): void {
     this.pathId = pathId;
-    this._status.set('loading');
+    if(!this._path()){
+      this._status.set('loading');
+    }
 
     this.api.getPathById(pathId).subscribe({
       next: (response) => {

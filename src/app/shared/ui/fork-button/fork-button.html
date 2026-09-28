@@ -1,8 +1,11 @@
 <div
-  class="inline-flex items-center border border-border rounded-full overflow-hidden bg-card transition-colors hover:border-muted-foreground/50">
+  class="inline-flex items-center rounded-full overflow-hidden transition-colors hover:border-muted-foreground/50"
+  [class.border]="variant() !== 'community'"
+  [class.bg-card]="variant() !== 'community'">
 
-  <button hlmBtn variant="ghost" size="sm"
-    class="flex items-center gap-1.5 px-3 rounded-none hover:bg-muted/50 transition-colors h-8 text-muted-foreground hover:text-foreground"
+  <button hlmBtn variant="ghost"  size="sm"
+    class="flex items-center gap-1.5 px-3 rounded-none transition-colors h-8 text-muted-foreground hover:text-foreground"
+    [class.hover:bg-muted]="variant() !== 'community'"
     (click)="fork($event)" [disabled]="isProcessing()" aria-label="Guardar copia en mis rutas">
 
     @if (isProcessing()) {

@@ -156,7 +156,7 @@
       <div class="grid items-stretch gap-5 sm:grid-cols-1 lg:grid-cols-2">
         @for (card of store.relatedCards(); track card.id) {
         <!-- Usamos linkPrefix="/community" para que al dar clic vayan a ver el detalle de esa ruta en modo explorador -->
-        <app-path-card [card]="card" linkPrefix="/mis-rutas" [showLike]="false"></app-path-card>
+        <app-path-card [card]="card" linkPrefix="/community" [showLike]="false"></app-path-card>
         }
       </div>
     </section>
