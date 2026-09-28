@@ -1,0 +1,13 @@
+@if (covers(); as list) {
+  @if (list.length > 0) {
+    <app-cover-wash [covers]="list" still />
+  } @else {
+    <!-- Nothing of their own yet: the violet and the accent that greeted them on the landing -->
+    <div
+      class="absolute -top-1/4 -left-1/5 h-[85%] w-3/5 bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-45"
+    ></div>
+    <div
+      class="absolute top-[5%] -right-1/5 h-[80%] w-1/2 bg-[radial-gradient(closest-side,var(--color-highlight),transparent)] opacity-15"
+    ></div>
+  }
+}

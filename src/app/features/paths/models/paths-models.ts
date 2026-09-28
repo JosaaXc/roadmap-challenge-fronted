@@ -68,6 +68,7 @@ export type PathOrder = 'desc' | 'asc';
 export interface PathCard {
   readonly id: string;
   readonly title: string;
+  readonly description: string;
   readonly courses: string;
   readonly courseCount: number;
   readonly createdAt: string;

@@ -26,6 +26,7 @@ export function toPathCard(path: LearningPath): PathCard {
   return {
     id: path?.id,
     title: path?.title,
+    description: path?.description || '',
     courses: coursesText,
     courseCount: path.nodes ? courses.length : (path.nodeCount || 0),
     createdAt: path?.createdAt,

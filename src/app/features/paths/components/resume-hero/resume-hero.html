@@ -1,0 +1,32 @@
+<!--
+  The page light behind it comes from the same covers, so the fan reads as the source of the
+  light. Pointing anywhere at the hero spreads the fan
+-->
+<section
+  class="group/fan relative grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_30rem]"
+  aria-labelledby="resume-hero-title"
+>
+  <app-particle-field />
+
+  <div class="relative">
+    <h2
+      id="resume-hero-title"
+      class="text-3xl leading-tight font-extrabold tracking-tight text-balance sm:text-4xl"
+    >
+      {{ next()?.title }}
+    </h2>
+
+    <p class="text-muted-foreground mt-3 text-sm leading-relaxed">
+      Paso {{ step() }} de {{ courses().length }} en {{ path().title | pathTitle }}
+    </p>
+
+    <app-path-progress [value]="path().progress" class="mt-6 max-w-md" />
+
+    <a hlmBtn size="lg" [routerLink]="['/mis-rutas', path().id]" class="mt-8 h-11 px-6">
+      {{ started() ? 'Continuar ruta' : 'Empezar ruta' }}
+    </a>
+  </div>
+
+  <!-- Beside the text only from lg up: below that it would squeeze the title -->
+  <app-cover-fan [fan]="fan()" class="relative [--fan-cover-width:18rem] max-lg:hidden" />
+</section>

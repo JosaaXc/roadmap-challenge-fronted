@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { booleanAttribute, Component, computed, input, signal } from '@angular/core';
 
 // A path's covers side by side, blurred into one slowly drifting wash of their colours. It fills
 // the positioned box it sits in, behind its content, and fades in once a cover has arrived
@@ -14,6 +14,8 @@ import { Component, computed, input, signal } from '@angular/core';
 })
 export class CoverWash {
   readonly covers = input.required<readonly string[]>();
+  // Holds the wash in place, for one that fills a whole page and should only be light
+  readonly still = input(false, { transform: booleanAttribute });
 
   private readonly failed = signal<ReadonlySet<string>>(new Set());
   protected readonly loaded = signal(false);

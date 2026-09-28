@@ -1,4 +1,7 @@
-<div class="flex size-full scale-125 opacity-45 blur-3xl saturate-150 motion-safe:animate-drift">
+<div
+  class="flex size-full scale-125 opacity-45 blur-3xl saturate-150"
+  [class]="still() ? '' : 'motion-safe:animate-drift'"
+>
   @for (cover of shown(); track $index) {
     <img
       [src]="cover"
