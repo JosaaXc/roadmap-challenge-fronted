@@ -1,4 +1,7 @@
-<div class="bg-background text-foreground min-h-screen">
+<div class="bg-background text-foreground relative isolate min-h-screen">
+  <!-- Each page lights it with its own covers, so the violet is never the only colour -->
+  <app-page-light />
+
   <app-glass-header homeLink="/mis-rutas" homeLabel="CodeQuest, ir a mis rutas">
     <nav class="text-muted-foreground flex items-center gap-4">
       @if (sessionStore.isAdmin()) {

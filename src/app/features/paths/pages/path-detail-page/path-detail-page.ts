@@ -20,6 +20,7 @@ import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
 import { PathCardComponent } from '../../../../shared/ui/path-card/path-card';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
+import { lightPageWith } from '../../../../shared/ui/page-light/page-light-store';
 
 // Gap between the entrances of two consecutive steps of a new path
 const ENTRANCE_STAGGER_MS = 90;
@@ -74,6 +75,12 @@ export class PathDetailPage implements OnInit {
   protected readonly pendingResource = signal<PathNode | null>(null);
 
   constructor() {
+    // The path's own covers light the page, softly, as if spilling out of the header's wash
+    lightPageWith(
+      () => (this.store.status() === 'ready' ? this.store.courseCovers() : null),
+      'soft',
+    );
+
     // The flag lives in the history entry, so it is dropped once used: a reload or a trip
     // back through history is a normal visit
     if (this.justGenerated) {
