@@ -1,15 +1,26 @@
 <div class="grid relative group h-full">
+  <!-- The hover glow is the cover itself, blurred, so each path lights up in its own colours -->
+  @if (cover(); as src) {
+  <img [src]="src" alt=""
+    class="absolute inset-0 size-full scale-105 rounded-xl object-cover opacity-0 blur-2xl saturate-200 transition duration-300 group-hover:opacity-100 group-hover:-translate-y-1.5" />
+  } @else {
   <div
     class="absolute -inset-0.5 rounded-xl bg-primary/40 opacity-0 blur-lg transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1.5">
   </div>
+  }
 
-  <article hlmCard class="p-0 gap-0 border-border hover:border-muted-foreground has-[a:focus-visible]:ring-ring relative flex flex-col rounded-lg border ring-0 has-[a:focus-visible]:ring-2 overflow-hidden bg-card text-card-foreground
+  <article hlmCard class="p-0 gap-0 border-border hover:border-muted-foreground has-[a:focus-visible]:ring-ring relative isolate flex flex-col rounded-lg border ring-0 has-[a:focus-visible]:ring-2 overflow-hidden bg-card text-card-foreground
   transition-all duration-300 ease-out hover:-translate-y-1.5 ">
 
+    <!-- A blurred copy of the cover tints the whole card, as on the course steps of a path -->
+    @if (cover(); as src) {
+    <div aria-hidden="true" class="absolute inset-0 -z-10 overflow-hidden">
+      <img [src]="src" alt="" class="size-full scale-150 object-cover opacity-35 blur-2xl saturate-150" />
+    </div>
+    }
 
-
-    <!-- 1. Cabecera con Imagen -->
-    <div class="w-full h-full bg-muted relative">
+    <!-- 1. Cabecera con Imagen. The covers' own ratio, so the grid keeps its shape while they load -->
+    <div class="w-full aspect-760/420 relative">
       @if(card().isFork){
       <div class="absolute top-0 right-0 m-5 z-10 bg-primary rounded-full">
         <div class="flex items-center justify-between mx-2">
@@ -19,8 +30,10 @@
 
       </div>
       }
-      @if (card().imageUrl) {
-      <img [src]="card().imageUrl" alt="Cover de la ruta" class="object-cover w-full h-full" />
+      @if (cover(); as src) {
+      <!-- Its foot melts into the tint, which carries the same colours on down the card -->
+      <img [src]="src" alt="Cover de la ruta" class="object-cover w-full h-full mask-b-from-70%"
+        (error)="coverFailed.set(true)" />
       } @else {
       <div class="w-full h-full bg-primary/10 flex items-center justify-center">
         <span class="text-primary font-bold text-lg">{{ card().title | slice:0:10 }}...</span>
@@ -58,13 +71,13 @@
           <div class="relative">
             <hlm-avatar>
               <span hlmAvatarFallback>
-                {{card().owner.username.charAt(0).toUpperCase() }}
+                {{card().owner?.username.charAt(0).toUpperCase() }}
               </span>
             </hlm-avatar>
           </div>
           <div class="flex flex-col">
             <span class="text-xs font-bold text-foreground capitalize">
-              {{ card().owner.username }}
+              {{ card().owner?.username }}
             </span>
             <span class="text-[10px] font-light text-muted-foreground"> Creador </span>
           </div>
@@ -74,7 +87,7 @@
         <div class="flex items-center space-x-1">
           <ng-icon name="lucideNetwork" size="18px" aria-hidden="true"></ng-icon>
           <p class="text-muted-foreground text-xs">
-            {{ card().nodeCount }} curso{{ card().nodeCount === 1 ? '' : 's' }} ·
+            {{ card().courseCount }} curso{{ card().courseCount === 1 ? '' : 's' }} ·
             {{ card().createdAt | shortDate }}
           </p>
         </div>

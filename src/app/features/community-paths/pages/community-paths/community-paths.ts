@@ -7,12 +7,13 @@ import { HlmCardImports } from "@spartan-ng/helm/card";
 import { HlmEmptyImports } from "@spartan-ng/helm/empty";
 import { HlmSkeletonImports } from "@spartan-ng/helm/skeleton";
 import { lucideChevronDown, lucideChevronUp, lucideNetwork } from "@ng-icons/lucide";
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, computed, inject, OnInit } from "@angular/core";
 import { HlmAlertImports } from "@spartan-ng/helm/alert";
 import { PathCardComponent } from "../../../../shared/ui/path-card/path-card";
 import { SearchComponent } from "../../../admin/components/search/search.component";
 import { CommunityPathsStore } from "../../services/community-paths.store";
 import { useListOrder } from "../../../../shared/utils/use-list-order";
+import { toPathCard } from "../../../paths/utils/path-card";
 
 @Component({
   selector: 'app-community-paths-page',
@@ -45,7 +46,8 @@ export class CommunityPathsPageComponent implements OnInit {
 
   readonly listOrder = useListOrder(this.store.paths);
 
-  readonly cards = this.listOrder.orderedList;
+  // Mapped as on Mis rutas, so the shared card reads the same fields on every list
+  readonly cards = computed(() => this.listOrder.orderedList().map(toPathCard));
   readonly order = this.listOrder.order;
   readonly toggleOrder = this.listOrder.toggleOrder;
 
