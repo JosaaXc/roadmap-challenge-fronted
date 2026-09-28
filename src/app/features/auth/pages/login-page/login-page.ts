@@ -80,8 +80,13 @@ export class LoginPage {
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
+        // The backend words a wrong email or password in English, and that is the error people hit
         const serverMessage = err.error?.error?.message;
-        this.errorMessage.set(serverMessage || 'Credenciales inválidas.');
+        this.errorMessage.set(
+          err.status === 401
+            ? 'Correo o contraseña incorrectos.'
+            : serverMessage || 'Credenciales inválidas.',
+        );
       },
     });
   }

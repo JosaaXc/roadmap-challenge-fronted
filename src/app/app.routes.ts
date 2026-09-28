@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin-guard';
 import { authGuard, guestGuard } from './core/auth/auth-guard';
 
@@ -18,6 +19,14 @@ export const routes: Routes = [
     canActivate: [guestGuard],
     loadComponent: () => import('./layouts/auth-layout/auth-layout').then((m) => m.AuthLayout),
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
+  },
+
+  // The reset email links to /reset-password (the backend builds it from FRONTEND_URL), so it
+  // goes on to the auth shell with its query, the email included
+  {
+    path: 'reset-password',
+    redirectTo: ({ queryParams }) =>
+      inject(Router).createUrlTree(['/auth/reset-password'], { queryParams }),
   },
 
   // Cuestionario: sin layout, porque es un flujo enfocado con su propia barra de salida

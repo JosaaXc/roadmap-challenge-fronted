@@ -15,6 +15,7 @@ import { SessionStore } from '../../../../core/auth/session-store';
 import { GeolocationService } from '../../../../core/services/geolocation.service';
 import { injectOAuthError } from '../../../../core/auth/utils/oauth-error.utils';
 import { DiscordButton } from '../../../../shared/ui/discord-button/discord-button';
+import { NEW_PASSWORD_VALIDATORS } from '../../constants/auth-constants';
 
 @Component({
   selector: 'app-register-page',
@@ -60,15 +61,7 @@ export class RegisterPage {
       ],
     ],
     email: ['', [Validators.required, Validators.email]],
-    password: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(128),
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/),
-      ],
-    ],
+    password: ['', NEW_PASSWORD_VALIDATORS],
   });
 
   togglePassword() {

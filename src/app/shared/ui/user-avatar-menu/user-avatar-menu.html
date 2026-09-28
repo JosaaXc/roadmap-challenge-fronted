@@ -12,6 +12,11 @@
         <span class="text-xs text-center text-muted-foreground font-normal">{{
           sessionStore.user()?.email}}</span>
       </div>
+      <button hlmDropdownMenuItem class="justify-center whitespace-nowrap" type="button"
+        (triggered)="changePasswordDialog.open()">
+        <ng-icon name="lucideKeyRound" aria-hidden="true" />
+        Cambiar contraseña
+      </button>
       <button hlmDropdownMenuItem variant="destructive" class="justify-around mb-2" type="button"
         (click)="authStore.executeLogout()">
         Cerrar Sesión
@@ -19,3 +24,6 @@
     </hlm-dropdown-menu-group>
   </hlm-dropdown-menu>
 </ng-template>
+
+<!-- Opened from the menu, which lives in an overlay and cannot hold the dialog itself -->
+<app-change-password-dialog #changePasswordDialog />
