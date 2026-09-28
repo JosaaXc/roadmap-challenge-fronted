@@ -52,6 +52,13 @@ export class AuthApi {
     );
   }
 
+  // The signed-in account, through the usual session: its token, and a refresh if it expired
+  getCurrentProfile() {
+    return this.http.get<UserProfileResponse>(`${this.baseUrl}/users/me`, {
+      withCredentials: true,
+    });
+  }
+
   // Checks a token this app did not issue itself, so a 401 is the answer, not a session to refresh
   getProfile(accessToken: string) {
     return this.http.get<UserProfileResponse>(`${this.baseUrl}/users/me`, {

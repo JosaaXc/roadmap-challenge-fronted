@@ -1,5 +1,16 @@
-<button hlmBtn variant="ghost" size="icon" class="rounded-full" [hlmDropdownMenuTrigger]="menu">
+<button
+  hlmBtn
+  variant="ghost"
+  size="icon"
+  class="rounded-full"
+  aria-label="Abrir el menú de tu cuenta"
+  [hlmDropdownMenuTrigger]="menu"
+>
+  <!-- The avatar shows the photo once it has loaded, and the initial until then or if it fails -->
   <hlm-avatar size="lg">
+    @if (profileStore.avatarUrl(); as avatarUrl) {
+      <img hlmAvatarImage [src]="avatarUrl" alt="" referrerpolicy="no-referrer" />
+    }
     <span hlmAvatarFallback>{{ userInitial() }}</span>
   </hlm-avatar>
 </button>

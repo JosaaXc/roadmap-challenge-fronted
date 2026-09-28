@@ -7,6 +7,7 @@ import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu";
 import { SessionStore } from "../../../core/auth/session-store";
 import { ChangePasswordDialog } from "../../../features/auth/components/change-password-dialog/change-password-dialog";
 import { AuthStore } from "../../../features/auth/services/auth-store";
+import { ProfileStore } from "../../../features/auth/services/profile-store";
 
 @Component({
   selector: 'app-user-avatar-menu',
@@ -18,9 +19,15 @@ import { AuthStore } from "../../../features/auth/services/auth-store";
 export class UserAvatarMenuComponent {
   readonly sessionStore = inject(SessionStore);
   readonly authStore = inject(AuthStore);
+  readonly profileStore = inject(ProfileStore);
 
   readonly userInitial = computed(() => {
     const name = this.sessionStore.user()?.name || '';
     return name ? name.charAt(0).toUpperCase() : 'A';
   });
+
+  constructor() {
+    // The photo comes from the profile; until it arrives, or without one, the initial stands in
+    this.profileStore.load();
+  }
 }
