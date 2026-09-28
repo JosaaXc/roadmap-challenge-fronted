@@ -36,6 +36,7 @@ export function toPathCard(path: LearningPath): PathCard {
     isFavorite: path?.isFavorite || false,
     isPublic: path?.isPublic || false,
     isFork: path?.isFork || false,
+    hasForked: path?.hasForked || false,
     hasLiked: path?.hasLiked || false,
     likesCount: path?.likesCount || 0,
     forksCount: path?.forksCount || 0,
